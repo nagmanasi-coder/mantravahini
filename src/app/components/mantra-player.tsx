@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect, type MouseEvent } from "react";
-import Image from "next/image";
 import {
   Play,
   Pause,
   SkipForward,
   SkipBack,
-  ListMusic,
-  Music,
 } from "lucide-react";
-import { mantras, type Mantra } from "@/lib/mantras";
+import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +18,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { InterstitialAd } from "@/app/components/ads";
 
 interface MantraPlayerProps {
@@ -110,14 +105,6 @@ export function MantraPlayer({ mantras }: MantraPlayerProps) {
     const newIndex = (currentTrackIndex - 1 + mantras.length) % mantras.length;
     handleTrackChange(newIndex);
   };
-
-  const handleTrackSelect = (index: number) => {
-    if (index !== currentTrackIndex) {
-      handleTrackChange(index);
-    } else {
-      handlePlayPause();
-    }
-  };
   
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
     const progressBar = progressBarRef.current;
@@ -173,33 +160,6 @@ export function MantraPlayer({ mantras }: MantraPlayerProps) {
             <SkipForward className="h-6 w-6" />
           </Button>
         </CardFooter>
-      </Card>
-
-      <Card className="shadow-xl">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="space-y-1.5">
-            <CardTitle>ಮಂತ್ರಗಳು</CardTitle>
-            <CardDescription>ಪಟ್ಟಿಯಿಂದ ಮಂತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ</CardDescription>
-          </div>
-          <ListMusic className="h-6 w-6 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-64">
-            <div className="space-y-2">
-              {mantras.map((mantra, index) => (
-                <Button
-                  key={mantra.id}
-                  variant={index === currentTrackIndex ? "secondary" : "ghost"}
-                  className="w-full justify-start h-auto"
-                  onClick={() => handleTrackSelect(index)}
-                >
-                  <Music className="mr-3 h-5 w-5 flex-shrink-0 text-primary" />
-                  <span className="truncate text-left whitespace-normal">{mantra.name}</span>
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-        </CardContent>
       </Card>
 
       <audio ref={audioRef} onEnded={handleNext} />
