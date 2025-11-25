@@ -12,7 +12,7 @@ export default function Home() {
               ಮಂತ್ರವಾಹಿನಿ
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              ನಿಮ್ಮ ದೈನಂದಿನ ಶಾಂತಿ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕತೆಗಾಗಿ
+              ಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
           <MantraPlayer mantras={mantras} />
