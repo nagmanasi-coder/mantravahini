@@ -19,24 +19,6 @@ export default function Home() {
           </header>
           <MantraPlayer mantras={mantras} />
 
-          <div className="mt-12">
-            <h2 className="text-center font-headline text-3xl font-bold text-primary">
-              ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ
-            </h2>
-            <Card className="mt-4 overflow-hidden shadow-xl">
-              <CardContent className="p-0">
-                <div className="relative aspect-[1200/815] w-full">
-                  <Image
-                    src="/images/kali-mantra-pain.png"
-                    alt="ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="religious diagram"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </main>
       <BannerAd />
