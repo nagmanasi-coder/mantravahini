@@ -3,7 +3,7 @@
     {
       "id": "interstitial-ad",
       "description": "Placeholder for an interstitial advertisement",
-      "imageUrl": "https://images.unsplash.com/photo-1636220409261-794e0464ca2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhYnN0cmFjdCUyMGNvbG9yZnVsfGVufDB8fHx8MTc2NDA0ODQ0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/images/interstitial-ad.jpg",
       "imageHint": "abstract colorful"
     }
   ]
