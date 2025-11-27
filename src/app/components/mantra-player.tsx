@@ -131,7 +131,6 @@ export function MantraPlayer({ mantras }: MantraPlayerProps) {
     <div className="space-y-8">
       <Card className="overflow-hidden shadow-xl">
         <CardHeader>
-          <CardDescription>ಈಗ ಪ್ಲೇ ಆಗುತ್ತಿದೆ</CardDescription>
           <CardTitle className="font-headline text-3xl">{currentMantra.name}</CardTitle>
         </CardHeader>
         <CardContent>
