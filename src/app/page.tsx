@@ -104,9 +104,14 @@ export default function Home() {
                         data-ai-hint="infographic ritual"
                       />
                     </div>
-                    <p className="mt-4 text-center text-muted-foreground">
-                      ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ.
-                    </p>
+                    <div className="mt-4 space-y-4 text-center">
+                      <p className="text-muted-foreground">
+                        ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ.
+                      </p>
+                      <p className="font-semibold text-primary">
+                        ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವನ್ನು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ. ಆದ್ದರಿಂದ, 7 ಜನರಿಗೆ ಸೇವೆ ಸಲ್ಲಿಸುವ ಉದ್ದೇಶ ನಿಮಗಿದ್ದರೆ, ಈ ಮಂತ್ರವು ಸಂಪೂರ್ಣವಾಗಿ ಫಲ ನೀಡುವುದು ಖಚಿತ.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
             </TabsContent>
