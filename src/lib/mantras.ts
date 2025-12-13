@@ -13,4 +13,5 @@ export const mantras: Mantra[] = [
   { id: 5, name: 'ಹರೇ ಕೃಷ್ಣ ಮಂತ್ರ', url: '/audio/hare-krishna-mantra.mp3' },
   { id: 6, name: 'ಓಂ ನಮೋ ಭಗವತೇ ವಾಸುದೇವಾಯ', url: '/audio/om-namo-bhagavate.mp3' },
   { id: 7, name: 'ಸರಸ್ವತಿ ವಂದನಾ', url: '/audio/saraswati-vandana.mp3' },
+  { id: 8, name: 'ಚಾಕ್ಷುಸ ಮಂತ್ರ', url: '/audio/chakshusa-mantra.mp3' },
 ];

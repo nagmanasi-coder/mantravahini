@@ -1,5 +1,7 @@
+"use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
@@ -7,6 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+  const handleTabChange = (value: string) => {
+    if (value === 'pain-relief') {
+      // Find index of Kali Mantra
+      const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
+      if (kaliMantraIndex !== -1) {
+        setCurrentTrackIndex(kaliMantraIndex);
+      }
+    } else if (value === 'eye-problems') {
+      // Find index of Chakshusa Mantra
+      const chakshusaMantraIndex = mantras.findIndex(m => m.id === 8);
+      if (chakshusaMantraIndex !== -1) {
+        setCurrentTrackIndex(chakshusaMantraIndex);
+      }
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -34,9 +54,9 @@ export default function Home() {
             </CardHeader>
           </Card>
 
-          <MantraPlayer mantras={mantras} />
+          <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
 
-          <Tabs defaultValue="pain-relief" className="mt-8">
+          <Tabs defaultValue="pain-relief" className="mt-8" onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="pain-relief">ನೋವು ನಿವಾರಣೆ</TabsTrigger>
               <TabsTrigger value="eye-problems">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</TabsTrigger>

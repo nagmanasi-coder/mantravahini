@@ -22,10 +22,11 @@ import { InterstitialAd } from "@/app/components/ads";
 
 interface MantraPlayerProps {
   mantras: Mantra[];
+  currentTrackIndex: number;
+  onTrackChange: (index: number) => void;
 }
 
-export function MantraPlayer({ mantras }: MantraPlayerProps) {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: MantraPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -74,11 +75,13 @@ export function MantraPlayer({ mantras }: MantraPlayerProps) {
     const audio = audioRef.current;
     if (audio) {
       audio.src = mantras[currentTrackIndex].url;
+      setProgress(0);
       if (isPlaying) {
         audio.play().catch((e) => console.error("Playback failed:", e));
       }
     }
-  }, [currentTrackIndex, mantras, isPlaying]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTrackIndex]);
   
   useEffect(() => {
     if (trackChangeCount > 0 && trackChangeCount % 3 === 0) {
@@ -88,7 +91,7 @@ export function MantraPlayer({ mantras }: MantraPlayerProps) {
   }, [trackChangeCount]);
 
   const handleTrackChange = (newIndex: number) => {
-    setCurrentTrackIndex(newIndex);
+    onTrackChange(newIndex);
     setTrackChangeCount(prev => prev + 1);
   };
   
