@@ -3,6 +3,7 @@ import Link from 'next/link';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Home, Sparkles } from 'lucide-react';
+import { ShareButton } from './components/share-button';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -23,7 +24,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 max-w-2xl items-center">
+          <div className="container flex h-14 max-w-2xl items-center justify-between">
             <nav className="flex items-center space-x-4 lg:space-x-6">
               <Link href="/" className="flex items-center space-x-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
                 <Home className="h-4 w-4" />
@@ -34,6 +35,7 @@ export default function RootLayout({
                 <span>Mantra Corner</span>
               </Link>
             </nav>
+            <ShareButton />
           </div>
         </header>
         {children}
