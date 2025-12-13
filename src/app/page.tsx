@@ -105,6 +105,9 @@ export default function Home() {
                       />
                     </div>
                     <div className="mt-4 space-y-4 text-center">
+                       <p className="text-muted-foreground">
+                        ಈ ಮಂತ್ರವು ಸೂರ್ಯ ದೇವರಿಗೆ ಮತ್ತು ಮಾನವಕುಲದ ಸೇವೆಗೆ ಸಂಬಂಧಿಸಿದೆ.
+                      </p>
                       <p className="text-muted-foreground">
                         ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ.
                       </p>
