@@ -26,13 +26,16 @@ export default function Home() {
             <CardContent>
               <div className="relative aspect-auto w-full">
                 <Image
-                  src="/kali-matra-pain.png"
+                  src="/kali-mantra-pain.png"
                   alt="ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
                   width={1080}
                   height={1350}
                   className="object-contain rounded-md"
                   data-ai-hint="infographic ritual"
                 />
+              </div>
+              <div className="mt-4 space-y-2 text-center text-muted-foreground">
+                <p>1. ಚಿತ್ರದಲ್ಲಿ ತೋರಿಸಿರುವಂತೆ ಮೊಬೈಲ್ ಹಿಡಿದುಕೊಳ್ಳಿ. ಸ್ಪೀಕರ್ ನೀರಿನ ಕಡೆಗೆ ಇರುವಂತೆ ನೋಡಿಕೊಳ್ಳಿ.</p>
               </div>
             </CardContent>
           </Card>
