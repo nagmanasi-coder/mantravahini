@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { Home, Sparkles } from 'lucide-react';
+import { Home, Sparkles, ShoppingBag } from 'lucide-react';
 import { ShareButton } from './components/share-button';
 
 export const metadata: Metadata = {
@@ -33,6 +33,10 @@ export default function RootLayout({
               <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                 <Sparkles className="h-4 w-4" />
                 <span>Mantra Corner</span>
+              </Link>
+              <Link href="/special-products" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                <ShoppingBag className="h-4 w-4" />
+                <span>Special Products</span>
               </Link>
             </nav>
             <ShareButton />
