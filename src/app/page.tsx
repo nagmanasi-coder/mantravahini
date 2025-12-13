@@ -2,7 +2,7 @@ import Image from "next/image";
 import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -19,6 +19,23 @@ export default function Home() {
           </header>
           <MantraPlayer mantras={mantras} />
 
+          <Card className="mt-8 overflow-hidden shadow-xl">
+            <CardHeader>
+              <CardTitle className="font-headline text-center text-2xl">ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative aspect-auto w-full">
+                <Image
+                  src="/kali-matra-pain.png"
+                  alt="ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
+                  width={1080}
+                  height={1350}
+                  className="object-contain rounded-md"
+                  data-ai-hint="infographic ritual"
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
       <BannerAd />
