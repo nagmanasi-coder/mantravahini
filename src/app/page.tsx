@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
@@ -17,6 +18,13 @@ export default function Home() {
               ಮಂತ್ರ ಶಕ್ತಿ: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
+
+          <Card className="mb-8 text-center bg-accent text-accent-foreground">
+            <CardHeader>
+              <CardTitle className="font-headline text-2xl">Activated Mantra</CardTitle>
+            </CardHeader>
+          </Card>
+
           <MantraPlayer mantras={mantras} />
 
           <Card className="mt-8 overflow-hidden shadow-xl">
