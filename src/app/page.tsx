@@ -19,6 +19,14 @@ export default function Home() {
             </p>
           </header>
 
+          <Card className="mb-8 text-center">
+            <CardContent className="p-6">
+              <p className="font-semibold text-foreground">
+                ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ನೀವು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!
+              </p>
+            </CardContent>
+          </Card>
+
           <Card className="mb-8 text-center bg-accent text-accent-foreground">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">Activated Mantra</CardTitle>
@@ -50,14 +58,6 @@ export default function Home() {
                 <p>ಇದು ದೇಹ ಅಥವಾ ಕೀಲುಗಳಲ್ಲಿನ ನೋವನ್ನು ತಕ್ಷಣವೇ ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.</p>
                 <p className="font-semibold text-foreground">Observe the pain subsides instantly.. continue with full faith and trust till heal.</p>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-8 text-center">
-            <CardContent className="p-6">
-              <p className="font-semibold text-foreground">
-                ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ನೀವು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!
-              </p>
             </CardContent>
           </Card>
 
