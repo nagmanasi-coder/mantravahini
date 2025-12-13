@@ -1,6 +1,8 @@
 import type {Metadata} from 'next';
+import Link from 'next/link';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import { Home, Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -20,6 +22,20 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container flex h-14 max-w-2xl items-center">
+            <nav className="flex items-center space-x-4 lg:space-x-6">
+              <Link href="/" className="flex items-center space-x-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
+                <Home className="h-4 w-4" />
+                <span>Home</span>
+              </Link>
+              <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                <Sparkles className="h-4 w-4" />
+                <span>Mantra Corner</span>
+              </Link>
+            </nav>
+          </div>
+        </header>
         {children}
         <Toaster />
       </body>
