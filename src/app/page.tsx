@@ -123,6 +123,12 @@ export default function Home() {
             </TabsContent>
           </Tabs>
 
+          <Card className="mt-8 text-center">
+            <CardContent className="p-6">
+              <p>ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
+            </CardContent>
+          </Card>
+
         </div>
       </main>
       <BannerAd />
