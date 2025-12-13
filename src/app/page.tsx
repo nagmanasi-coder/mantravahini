@@ -124,8 +124,9 @@ export default function Home() {
           </Tabs>
 
           <Card className="mt-8 text-center">
-            <CardContent className="p-6">
+            <CardContent className="p-6 space-y-2">
               <p>ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
+              <p className="font-bold text-lg">7022070287</p>
             </CardContent>
           </Card>
 
