@@ -96,7 +96,7 @@ export default function Home() {
                   <CardContent>
                      <div className="relative aspect-auto w-full">
                       <Image
-                        src="/chaksu-mantra.png"
+                        src="/chaksu mantra.png"
                         alt="ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
                         width={1080}
                         height={1350}
@@ -105,7 +105,7 @@ export default function Home() {
                       />
                     </div>
                     <p className="mt-4 text-center text-muted-foreground">
-                      ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸೂಚನೆಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿವೆ.
+                      ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ.
                     </p>
                   </CardContent>
                 </Card>
