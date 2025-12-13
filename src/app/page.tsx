@@ -89,13 +89,23 @@ export default function Home() {
               </Card>
             </TabsContent>
             <TabsContent value="eye-problems">
-                <Card className="mt-4">
+                <Card className="mt-4 overflow-hidden shadow-xl">
                   <CardHeader>
-                    <CardTitle className="font-headline text-center text-2xl">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಚಿಕಿತ್ಸೆ</CardTitle>
+                    <CardTitle className="font-headline text-center text-2xl">ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-center text-muted-foreground">
-                      ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸೂಚನೆಗಳು ಮತ್ತು ವಿಷಯಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿವೆ.
+                     <div className="relative aspect-auto w-full">
+                      <Image
+                        src="/chaksu-mantra.png"
+                        alt="ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
+                        width={1080}
+                        height={1350}
+                        className="object-contain rounded-md"
+                        data-ai-hint="infographic ritual"
+                      />
+                    </div>
+                    <p className="mt-4 text-center text-muted-foreground">
+                      ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸೂಚನೆಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿವೆ.
                     </p>
                   </CardContent>
                 </Card>
