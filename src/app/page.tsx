@@ -36,7 +36,7 @@ export default function Home() {
               ಮಂತ್ರವಾಹಿನಿ
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              ಮಂತ್ರ ಶಕ್ತಿ: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
+              Mantra Shakti: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
 
@@ -125,7 +125,7 @@ export default function Home() {
 
           <Card className="mt-8 text-center">
             <CardContent className="p-6 space-y-2">
-              <p>ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
+              <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
               <p className="font-bold text-lg">7022070287</p>
             </CardContent>
           </Card>
