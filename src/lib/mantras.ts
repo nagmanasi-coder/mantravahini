@@ -6,7 +6,6 @@ export type Mantra = {
 
 // Using placeholder audio files from a public source for a better demo experience
 export const mantras: Mantra[] = [
-  { id: 8, name: 'ಚಾಕ್ಷುಸ ಮಂತ್ರ', url: '/audio/chakshusa-mantra.mp3' },
   { id: 9, name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', url: '/audio/anjaneya-mantra.mp3' },
   { id: 10, name: 'ಮಾನಸಿಕ ನೋವು, ದುಃಖ, ಚಿಂತೆ ನಿವಾರಣಾ ಹಂಸ ಮಂತ್ರ', url: '/audio/hamsa-mantra.mp3' },
   { id: 11, name: 'ಶತ್ರು ಮತ್ತು ಹಿತಶತ್ರು ನಿವಾರಣಾ ಬಗಲಾಮುಖಿ ಮಂತ್ರ', url: '/audio/bagalamukhi-mantra.mp3' },

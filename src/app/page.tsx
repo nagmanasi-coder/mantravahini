@@ -14,15 +14,13 @@ export default function Home() {
 
   const handleTabChange = (value: string) => {
     if (value === 'pain-relief') {
-      // Since Kali Mantra is removed, we default to the first available mantra or handle appropriately.
-      // Let's set it to the first mantra in the list.
+      // Since Kali Mantra is removed, we default to the first available mantra.
       setCurrentTrackIndex(0);
     } else if (value === 'eye-problems') {
-      // Find index of Chakshusa Mantra
-      const chakshusaMantraIndex = mantras.findIndex(m => m.id === 8);
-      if (chakshusaMantraIndex !== -1) {
-        setCurrentTrackIndex(chakshusaMantraIndex);
-      }
+      // Chakshusa Mantra has been removed.
+      // We can either disable this tab or play another mantra.
+      // For now, let's also default to the first mantra.
+      setCurrentTrackIndex(0);
     }
   };
 
