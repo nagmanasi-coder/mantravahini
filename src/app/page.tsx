@@ -7,6 +7,7 @@ import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles } from "lucide-react";
 
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -50,8 +51,15 @@ export default function Home() {
 
           <Card className="mb-8 text-center bg-accent text-accent-foreground">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Activated Mantra</CardTitle>
+              <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
+                <Sparkles className="h-6 w-6" />
+                Activated Mantra
+                <Sparkles className="h-6 w-6" />
+              </CardTitle>
             </CardHeader>
+            <CardContent>
+              <p className="text-lg font-semibold">Try it and explore the power</p>
+            </CardContent>
           </Card>
 
           <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
