@@ -62,8 +62,12 @@ export default function MantraCornerPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">{selectedMantra?.name}</DialogTitle>
-            <DialogDescription>
-              Details about this mantra will be available soon.
+            <DialogDescription asChild>
+                {selectedMantra?.description ? (
+                  <p className="font-bold">{selectedMantra.description}</p>
+                ) : (
+                  <p>Details about this mantra will be available soon.</p>
+                )}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

@@ -2,11 +2,17 @@ export type Mantra = {
   id: number;
   name: string;
   url: string;
+  description?: string;
 };
 
 // Using placeholder audio files from a public source for a better demo experience
 export const mantras: Mantra[] = [
-  { id: 9, name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', url: '/audio/anjaneya-mantra.mp3' },
+  { 
+    id: 9, 
+    name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', 
+    url: '/audio/anjaneya-mantra.mp3',
+    description: 'ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ'
+  },
   { id: 10, name: 'ಮಾನಸಿಕ ನೋವು, ದುಃಖ, ಚಿಂತೆ ನಿವಾರಣಾ ಹಂಸ ಮಂತ್ರ', url: '/audio/hamsa-mantra.mp3' },
   { id: 11, name: 'ಶತ್ರು ಮತ್ತು ಹಿತಶತ್ರು ನಿವಾರಣಾ ಬಗಲಾಮುಖಿ ಮಂತ್ರ', url: '/audio/bagalamukhi-mantra.mp3' },
   { id: 12, name: 'ಐಶ್ವರ್ಯ ಮತ್ತು ಸಂಪತ್ತಿಗಾಗಿ ಕುಭೇರ ಮಂತ್ರ', url: '/audio/kubera-mantra.mp3' },
