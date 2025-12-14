@@ -15,6 +15,7 @@ export const mantras: Mantra[] = [
   },
   { id: 11, name: 'ಶತ್ರು ಮತ್ತು ಹಿತಶತ್ರು ನಿವಾರಣಾ ಬಗಲಾಮುಖಿ ಮಂತ್ರ', url: '/audio/bagalamukhi-mantra.mp3' },
   { id: 10, name: 'ಮಾನಸಿಕ ನೋವು, ದುಃಖ, ಚಿಂತೆ ನಿವಾರಣಾ ಹಂಸ ಮಂತ್ರ', url: '/audio/hamsa-mantra.mp3' },
+  { id: 15, name: 'ಮಹಾ ಆಕರ್ಷಣ ಮಂತ್ರ', url: '/audio/maha-akarshana-mantra.mp3' },
   { id: 12, name: 'ಐಶ್ವರ್ಯ ಮತ್ತು ಸಂಪತ್ತಿಗಾಗಿ ಕುಭೇರ ಮಂತ್ರ', url: '/audio/kubera-mantra.mp3' },
   { id: 13, name: 'ಹಣಕಾಸಿನ ಹರಿವಿನ ತೊಡಕಿನ ನಿವಾರಣೆಗೆ ಮಹಾಲಕ್ಷ್ಮಿ ಮಂತ್ರ', url: '/audio/mahalakshmi-mantra.mp3' },
   { id: 14, name: 'ವಿದ್ಯಾ ಬುದ್ದಿಗಾಗಿ ಸರಸ್ವತಿ ಮಂತ್ರ', url: '/audio/saraswati-vidya-mantra.mp3' },
