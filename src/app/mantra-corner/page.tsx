@@ -25,7 +25,7 @@ export default function MantraCornerPage() {
               Mantra Corner
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Discover more mantras and their benefits. 100% works with trust, respect and faith.
+              ಹೆಚ್ಚಿನ ಮಂತ್ರಗಳನ್ನು ಮತ್ತು ಅವುಗಳ ಪ್ರಯೋಜನಗಳನ್ನು ಅನ್ವೇಷಿಸಿ. ನಂಬಿಕೆ, ಗೌರವ ಮತ್ತು ಶ್ರದ್ಧೆಯಿಂದ 100% ಕೆಲಸ ಮಾಡುತ್ತದೆ.
             </p>
           </header>
 
