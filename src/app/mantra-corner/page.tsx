@@ -25,7 +25,7 @@ export default function MantraCornerPage() {
               Mantra Corner
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Discover more mantras and their benefits.
+              Discover more mantras and their benefits. 100% works with trust, respect and faith.
             </p>
           </header>
 
