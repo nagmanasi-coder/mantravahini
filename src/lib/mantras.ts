@@ -14,4 +14,10 @@ export const mantras: Mantra[] = [
   { id: 6, name: 'ಓಂ ನಮೋ ಭಗವತೇ ವಾಸುದೇವಾಯ', url: '/audio/om-namo-bhagavate.mp3' },
   { id: 7, name: 'ಸರಸ್ವತಿ ವಂದನಾ', url: '/audio/saraswati-vandana.mp3' },
   { id: 8, name: 'ಚಾಕ್ಷುಸ ಮಂತ್ರ', url: '/audio/chakshusa-mantra.mp3' },
+  { id: 9, name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', url: '/audio/anjaneya-mantra.mp3' },
+  { id: 10, name: 'ಮಾನಸಿಕ ನೋವು, ದುಃಖ, ಚಿಂತೆ ನಿವಾರಣಾ ಹಂಸ ಮಂತ್ರ', url: '/audio/hamsa-mantra.mp3' },
+  { id: 11, name: 'ಶತ್ರು ಮತ್ತು ಹಿತಶತ್ರು ನಿವಾರಣಾ ಬಗಲಾಮುಖಿ ಮಂತ್ರ', url: '/audio/bagalamukhi-mantra.mp3' },
+  { id: 12, name: 'ಐಶ್ವರ್ಯ ಮತ್ತು ಸಂಪತ್ತಿಗಾಗಿ ಕುಭೇರ ಮಂತ್ರ', url: '/audio/kubera-mantra.mp3' },
+  { id: 13, name: 'ಹಣಕಾಸಿನ ಹರಿವಿನ ತೊಡಕಿನ ನಿವಾರಣೆಗೆ ಮಹಾಲಕ್ಷ್ಮಿ ಮಂತ್ರ', url: '/audio/mahalakshmi-mantra.mp3' },
+  { id: 14, name: 'ವಿದ್ಯಾ ಬುದ್ದಿಗಾಗಿ ಸರಸ್ವತಿ ಮಂತ್ರ', url: '/audio/saraswati-vidya-mantra.mp3' },
 ];
