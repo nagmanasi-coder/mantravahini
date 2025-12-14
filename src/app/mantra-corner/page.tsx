@@ -1,6 +1,21 @@
+"use client";
+
+import { useState } from "react";
+import { mantras, type Mantra } from "@/lib/mantras";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function MantraCornerPage() {
+  const [selectedMantra, setSelectedMantra] = useState<Mantra | null>(null);
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -16,14 +31,38 @@ export default function MantraCornerPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Coming Soon!</CardTitle>
+              <CardTitle>Available Mantras</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">This section is under construction. Check back later for more powerful mantras!</p>
+              <ScrollArea className="h-96">
+                <div className="space-y-4">
+                  {mantras.map((mantra) => (
+                    <Button
+                      key={mantra.id}
+                      variant="outline"
+                      className="w-full justify-start text-left"
+                      onClick={() => setSelectedMantra(mantra)}
+                    >
+                      {mantra.name}
+                    </Button>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
       </main>
+
+      <Dialog open={!!selectedMantra} onOpenChange={(open) => !open && setSelectedMantra(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-headline text-2xl">{selectedMantra?.name}</DialogTitle>
+            <DialogDescription>
+              Details about this mantra will be available soon.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
