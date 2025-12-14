@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function MantraCornerPage() {
   const [selectedMantra, setSelectedMantra] = useState<Mantra | null>(null);
@@ -30,10 +30,7 @@ export default function MantraCornerPage() {
           </header>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Available Mantras</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <ScrollArea className="h-96">
                 <div className="space-y-4">
                   {mantras.map((mantra) => (

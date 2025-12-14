@@ -104,7 +104,7 @@ export default function Home() {
                   <CardContent>
                      <div className="relative aspect-auto w-full">
                       <Image
-                        src="/chaksu mantra.png"
+                        src="/chaksu-mantra.png"
                         alt="ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
                         width={1080}
                         height={1350}
