@@ -47,6 +47,14 @@ export default function MantraCornerPage() {
               </ScrollArea>
             </CardContent>
           </Card>
+
+          <Card className="mt-8">
+            <CardContent className="p-6 text-center">
+              <p className="text-muted-foreground">
+                New mantras will be coming soon.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </main>
 
