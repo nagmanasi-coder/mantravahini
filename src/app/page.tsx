@@ -14,11 +14,9 @@ export default function Home() {
 
   const handleTabChange = (value: string) => {
     if (value === 'pain-relief') {
-      // Find index of Kali Mantra
-      const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
-      if (kaliMantraIndex !== -1) {
-        setCurrentTrackIndex(kaliMantraIndex);
-      }
+      // Since Kali Mantra is removed, we default to the first available mantra or handle appropriately.
+      // Let's set it to the first mantra in the list.
+      setCurrentTrackIndex(0);
     } else if (value === 'eye-problems') {
       // Find index of Chakshusa Mantra
       const chakshusaMantraIndex = mantras.findIndex(m => m.id === 8);
@@ -123,7 +121,7 @@ export default function Home() {
                         ಕೆಲವೇ ದಿನಗಳಲ್ಲಿ ಯಾವುದೇ ಕಣ್ಣಿನ ಸಮಸ್ಯೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ, ಎಲ್ಲಾ ರೋಗಲಕ್ಷಣಗಳು ಗುಣವಾಗುವವರೆಗೆ ಮುಂದುವರಿಸಿ.
                       </p>
                       <p className="font-semibold text-primary">
-                        ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವನ್ನು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ. ಆದ್ದರಿಂದ, 7 ಜನರಿಗೆ ಸೇವೆ ಸಲ್ಲಿಸುವ ಉದ್ದೇಶ ನಿಮಗಿದ್ದರೆ, ಈ ಮಂತ್ರವು ಸಂಪೂರ್ಣವಾಗಿ ಫಲ ನೀಡುವುದು ಖಚಿತ.
+                        ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ. ಆದ್ದರಿಂದ, 7 ಜನರಿಗೆ ಸೇವೆ ಸಲ್ಲಿಸುವ ಉದ್ದೇಶ ನಿಮಗಿದ್ದರೆ, ಈ ಮಂತ್ರವು ಸಂಪೂರ್ಣವಾಗಿ ಫಲ ನೀಡುವುದು ಖಚಿತ.
                       </p>
                     </div>
                   </CardContent>
