@@ -42,6 +42,11 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    
+    // Set initial source
+    if (currentMantra && audio.src !== currentMantra.url) {
+        audio.src = currentMantra.url;
+    }
 
     const setAudioData = () => {
       setDuration(audio.duration);
@@ -56,32 +61,41 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
 
     audio.addEventListener("loadedmetadata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
+    
+    if (isPlaying) {
+        audio.play().catch((e) => console.error("Playback failed:", e));
+    } else {
+        audio.pause();
+    }
 
     return () => {
       audio.removeEventListener("loadedmetadata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
     };
-  }, []);
+  }, [currentTrackIndex, isPlaying, mantras, currentMantra]);
 
   useEffect(() => {
-    if (isPlaying) {
-      audioRef.current?.play().catch((e) => console.error("Playback failed:", e));
-    } else {
-      audioRef.current?.pause();
+    const audio = audioRef.current;
+    if (audio) {
+      if (!isPlaying) {
+          audio.pause();
+      } else if (audio.src) {
+          audio.play().catch((e) => console.error("Playback failed:", e));
+      }
     }
   }, [isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
+    if (audio && mantras[currentTrackIndex]) {
       audio.src = mantras[currentTrackIndex].url;
       setProgress(0);
       if (isPlaying) {
+        audio.load();
         audio.play().catch((e) => console.error("Playback failed:", e));
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, mantras, isPlaying]);
   
   useEffect(() => {
     if (trackChangeCount > 0 && trackChangeCount % 3 === 0) {
@@ -91,8 +105,10 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
   }, [trackChangeCount]);
 
   const handleTrackChange = (newIndex: number) => {
-    onTrackChange(newIndex);
-    setTrackChangeCount(prev => prev + 1);
+    if (newIndex >= 0 && newIndex < mantras.length) {
+      onTrackChange(newIndex);
+      setTrackChangeCount(prev => prev + 1);
+    }
   };
   
   const handlePlayPause = () => {
@@ -112,7 +128,7 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
     const progressBar = progressBarRef.current;
     const audio = audioRef.current;
-    if (!progressBar || !audio) return;
+    if (!progressBar || !audio || isNaN(duration)) return;
 
     const rect = progressBar.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -134,7 +150,7 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
     <div className="space-y-8">
       <Card className="overflow-hidden shadow-xl">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{currentMantra.name}</CardTitle>
+          <CardTitle className="font-headline text-3xl">{currentMantra?.name}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

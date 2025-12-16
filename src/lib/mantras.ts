@@ -10,7 +10,7 @@ export const mantras: Mantra[] = [
   {
     id: 1,
     name: 'Kali Mantra for Pain Relief',
-    url: '/audio/kali-mantra.mp3',
+    url: '/kali-mantra.mp3',
   },
   { 
     id: 9, 
