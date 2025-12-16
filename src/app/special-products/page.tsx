@@ -27,7 +27,7 @@ export default function SpecialProductsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="relative aspect-square w-full">
                   <Image
-                    src="/akshaya-cash-box-1.jpg"
+                    src="/akshaya-cash-box-1.png"
                     alt="Akshaya Cash Box"
                     fill
                     className="rounded-md object-cover"
@@ -36,7 +36,7 @@ export default function SpecialProductsPage() {
                 </div>
                 <div className="relative aspect-square w-full">
                   <Image
-                    src="/akshaya-cash-box-2.jpg"
+                    src="/akshaya-cash-box-2.png"
                     alt="Akshaya Cash Box alternate view"
                     fill
                     className="rounded-md object-cover"

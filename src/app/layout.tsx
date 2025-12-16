@@ -31,13 +31,13 @@ export default function RootLayout({
                 <Home className="h-4 w-4" />
                 <span>Home</span>
               </Link>
-              <Link href="/special-products" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                <ShoppingBag className="h-4 w-4" />
-                <span>Special Products</span>
-              </Link>
               <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                 <Sparkles className="h-4 w-4" />
                 <span>Mantra Corner</span>
+              </Link>
+              <Link href="/special-products" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                <ShoppingBag className="h-4 w-4" />
+                <span>Special Products</span>
               </Link>
               <Link href="/vijnana-bhairava-tantra" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                 <BookHeart className="h-4 w-4" />
