@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { InterstitialAd } from "@/app/components/ads";
+import { cn } from "@/lib/utils";
 
 interface MantraPlayerProps {
   mantras: Mantra[];
@@ -148,7 +149,7 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
 
   return (
     <div className="space-y-8">
-      <Card className="overflow-hidden shadow-xl">
+      <Card className={cn("overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl")}>
         <CardHeader>
           <CardTitle className="font-headline text-3xl">{currentMantra?.name}</CardTitle>
         </CardHeader>

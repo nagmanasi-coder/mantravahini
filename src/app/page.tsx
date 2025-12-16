@@ -42,7 +42,7 @@ export default function Home() {
             </p>
           </header>
 
-          <Card className={cn("mb-8 text-center", cardAnimation)} style={{ animationDelay: "0.2s" }}>
+          <Card className={cn("mb-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.2s" }}>
             <CardContent className="p-6">
               <p className="font-semibold text-foreground">
                 ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!
@@ -50,7 +50,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className={cn("mb-8 text-center", cardAnimation)} style={{ animationDelay: "0.3s" }}>
+          <Card className={cn("mb-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.3s" }}>
             <CardContent className="p-6">
               <p className="font-semibold text-foreground">
               ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
@@ -58,7 +58,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className={cn("mb-8 text-center bg-accent text-accent-foreground", cardAnimation)} style={{ animationDelay: "0.4s" }}>
+          <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.4s" }}>
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
                 <Sparkles className="h-6 w-6" />
@@ -82,7 +82,7 @@ export default function Home() {
                 <TabsTrigger value="eye-problems">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</TabsTrigger>
               </TabsList>
               <TabsContent value="pain-relief">
-                <Card className="mt-4 overflow-hidden shadow-xl">
+                <Card className="mt-4 overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
                   <CardHeader>
                     <CardTitle className="font-headline text-center text-2xl">ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
                   </CardHeader>
@@ -109,7 +109,7 @@ export default function Home() {
                 </Card>
               </TabsContent>
               <TabsContent value="eye-problems">
-                  <Card className="mt-4 overflow-hidden shadow-xl">
+                  <Card className="mt-4 overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
                     <CardHeader>
                       <CardTitle className="font-headline text-center text-2xl">ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
                     </CardHeader>
@@ -144,7 +144,7 @@ export default function Home() {
             </Tabs>
           </div>
 
-          <Card className={cn("mt-8 text-center", cardAnimation)} style={{ animationDelay: "0.7s" }}>
+          <Card className={cn("mt-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.7s" }}>
             <CardContent className="p-6 space-y-2">
               <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
               <p className="font-bold text-lg">7022070287</p>
