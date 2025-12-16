@@ -50,14 +50,6 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className={cn("mb-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.3s" }}>
-            <CardContent className="p-6">
-              <p className="font-semibold text-foreground">
-              ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
-              </p>
-            </CardContent>
-          </Card>
-
           <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.4s" }}>
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
@@ -77,9 +69,10 @@ export default function Home() {
 
           <div className={cardAnimation} style={{ animationDelay: "0.6s" }}>
             <Tabs defaultValue="pain-relief" className="mt-8" onValueChange={handleTabChange}>
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="pain-relief">ನೋವು ನಿವಾರಣೆ</TabsTrigger>
                 <TabsTrigger value="eye-problems">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</TabsTrigger>
+                <TabsTrigger value="service">ಸೇವೆ</TabsTrigger>
               </TabsList>
               <TabsContent value="pain-relief">
                 <Card className="mt-4 overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
@@ -140,6 +133,15 @@ export default function Home() {
                       </div>
                     </CardContent>
                   </Card>
+              </TabsContent>
+              <TabsContent value="service">
+                <Card className="mt-4">
+                  <CardContent className="p-6 text-center">
+                    <p className="font-semibold text-foreground text-lg">
+                      ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
+                    </p>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
