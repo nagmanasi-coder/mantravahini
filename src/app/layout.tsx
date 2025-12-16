@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Home, Sparkles, ShoppingBag, BookHeart } from 'lucide-react';
 import { ShareButton } from './components/share-button';
+import { SplashScreen } from './components/splash-screen';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -24,6 +25,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
+        <SplashScreen />
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-14 max-w-2xl items-center justify-between">
             <nav className="flex items-center space-x-4 lg:space-x-6">
