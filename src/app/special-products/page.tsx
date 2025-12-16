@@ -9,10 +9,10 @@ export default function SpecialProductsPage() {
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Special Spiritual Products
+              ವಿಶೇಷ ಆಧ್ಯಾತ್ಮಿಕ ಉತ್ಪನ್ನಗಳು
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Unique items to enhance your spiritual journey.
+              ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣವನ್ನು ಹೆಚ್ಚಿಸಲು ಅನನ್ಯ ವಸ್ತುಗಳು.
             </p>
           </header>
 
@@ -20,7 +20,7 @@ export default function SpecialProductsPage() {
             <CardHeader>
               <CardTitle className="font-headline text-3xl">ಅಕ್ಷಯ Cash Box</CardTitle>
               <CardDescription>
-                Solves money inflow problems for your business and home.
+                ನಿಮ್ಮ ವ್ಯಾಪಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಒಳಹರಿವಿನ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸುತ್ತದೆ.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -45,12 +45,12 @@ export default function SpecialProductsPage() {
                 </div>
               </div>
                <div className="text-center text-muted-foreground">
-                <p>This energized cash box helps attract financial abundance and smooths the flow of money into your business and home.</p>
-                <p className="mt-2 font-semibold text-foreground">For pricing and to order, please contact us.</p>
+                <p>ಈ ಶಕ್ತಿಯುತ ನಗದು ಪೆಟ್ಟಿಗೆಯು ಆರ್ಥಿಕ ಸಮೃದ್ಧಿಯನ್ನು ಆಕರ್ಷಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಪಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಹರಿವನ್ನು ಸುಗಮಗೊಳಿಸುತ್ತದೆ.</p>
+                <p className="mt-2 font-semibold text-foreground">ಬೆಲೆ ಮತ್ತು ಆರ್ಡರ್ ಮಾಡಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.</p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center gap-2 bg-muted/50 p-4">
-               <p>Contact us to order:</p>
+               <p>ಆರ್ಡರ್ ಮಾಡಲು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ:</p>
               <p className="font-bold text-lg text-primary">7022070287</p>
             </CardFooter>
           </Card>
