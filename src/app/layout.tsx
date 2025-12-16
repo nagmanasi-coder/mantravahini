@@ -8,6 +8,7 @@ import { ShareButton } from './components/share-button';
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
   description: 'A serene mantra playback experience',
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

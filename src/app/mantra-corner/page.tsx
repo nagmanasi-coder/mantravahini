@@ -25,7 +25,7 @@ export default function MantraCornerPage() {
               Mantra Corner
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              ಹೆಚ್ಚಿನ ಮಂತ್ರಗಳನ್ನು ಮತ್ತು ಅವುಗಳ ಪ್ರಯೋಜನಗಳನ್ನು ಅನ್ವೇಷಿಸಿ. ನಂಬಿಕೆ, ಗೌರವ ಮತ್ತು ಶ್ರದ್ಧೆಯಿಂದ 100% ಕೆಲಸ ಮಾಡುತ್ತದೆ.
+            ಶಕ್ತಿಶಾಲಿ ಮಂತ್ರಗಳನ್ನು ಮತ್ತು ಅವುಗಳ ಪ್ರಯೋಜನಗಳನ್ನು ಅನ್ವೇಷಿಸಿ. ನಂಬಿಕೆ, ಗೌರವ ಮತ್ತು ಶ್ರದ್ಧೆಯಿಂದ 100% works.
             </p>
           </header>
 
@@ -51,7 +51,7 @@ export default function MantraCornerPage() {
           <Card className="mt-8">
             <CardContent className="p-6 text-center">
               <p className="text-muted-foreground">
-                New mantras will be coming soon.
+                Powerful mantras will be coming soon.
               </p>
             </CardContent>
           </Card>
