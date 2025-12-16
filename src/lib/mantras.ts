@@ -9,7 +9,7 @@ export type Mantra = {
 export const mantras: Mantra[] = [
   {
     id: 1,
-    name: 'Kali Mantra for Pain Relief',
+    name: 'ನೋವು ನಿವಾರಣೆಗೆ ಕಾಳಿ ಮಂತ್ರ',
     url: '/kali-mantra.mp3',
   },
   {

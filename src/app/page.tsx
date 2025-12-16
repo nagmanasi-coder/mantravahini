@@ -35,7 +35,7 @@ export default function Home() {
               ಮಂತ್ರವಾಹಿನಿ
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Mantra Shakti: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
+            ಮಂತ್ರ ಶಕ್ತಿ: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
 
