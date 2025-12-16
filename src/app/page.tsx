@@ -7,12 +7,14 @@ import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Heart } from "lucide-react";
+import { Sparkles, Heart, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const { toast } = useToast();
 
   const handleTabChange = (value: string) => {
     if (value === 'pain-relief') {
@@ -24,6 +26,44 @@ export default function Home() {
       const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
       if (chakshuMantraIndex !== -1) {
         setCurrentTrackIndex(chakshuMantraIndex);
+      }
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "ಮಂತ್ರವಾಹಿನಿ",
+      text: "Share power of mantras to reach everyone",
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          return;
+        }
+        console.error("Error sharing:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not share the app at this moment.",
+        });
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: "Copied to clipboard",
+          description: "App link has been copied to your clipboard.",
+        });
+      } catch (error) {
+         toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not copy link to clipboard.",
+        });
       }
     }
   };
@@ -148,6 +188,12 @@ export default function Home() {
                      <p className="text-sm text-muted-foreground">
                       Contact us to contribute to our cause.
                     </p>
+                    <div className="border-t border-border pt-4">
+                      <Button onClick={handleShare}>
+                        <Share2 className="mr-2 h-4 w-4" />
+                        Share app to serve mankind
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
