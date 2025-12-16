@@ -7,8 +7,9 @@ import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -136,9 +137,16 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="service">
                 <Card className="mt-4">
-                  <CardContent className="p-6 text-center">
+                  <CardContent className="p-6 text-center space-y-4">
                     <p className="font-semibold text-foreground text-lg">
                       ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
+                    </p>
+                    <Button onClick={() => window.open('tel:7022070287')}>
+                      <Heart className="mr-2 h-4 w-4" />
+                      Donate
+                    </Button>
+                     <p className="text-sm text-muted-foreground">
+                      Contact us to contribute to our cause.
                     </p>
                   </CardContent>
                 </Card>
