@@ -18,16 +18,16 @@ export function SplashScreen() {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[1000] flex items-center justify-center bg-background transition-opacity duration-500",
+        "fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-background transition-opacity duration-500",
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >
-      <div className="relative h-screen w-screen">
+      <div className="relative h-64 w-64">
         <Image
           src="/mine.jpeg"
           alt="Splash Screen"
           fill
-          className="object-cover"
+          className="object-contain"
           priority
         />
       </div>
