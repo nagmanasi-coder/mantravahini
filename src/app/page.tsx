@@ -100,7 +100,7 @@ export default function Home() {
                     <CardTitle className="font-headline text-center text-2xl">ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
                   </CardHeader>
                   <CardContent>
-                     <div className="relative aspect-auto w-full">
+                     <div className="relative mx-auto aspect-auto w-full max-w-md">
                       <Image
                         src="/chaksu-mantra.png"
                         alt="ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ"
