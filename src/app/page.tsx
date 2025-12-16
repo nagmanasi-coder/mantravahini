@@ -223,9 +223,11 @@ export default function Home() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Join our Divine Entity Group</AlertDialogTitle>
+                          <AlertDialogTitle>Join our Divine Entity Group / ನಮ್ಮ ದೈವಿಕ ಘಟಕದ ಗುಂಪಿಗೆ ಸೇರಿ</AlertDialogTitle>
                           <AlertDialogDescription>
                             To spread the power of mantras to everyone, join our group of divine entities.
+                            <br />
+                            ಮಂತ್ರಗಳ ಶಕ್ತಿಯನ್ನು ಎಲ್ಲರಿಗೂ ತಲುಪಿಸಲು, ನಮ್ಮ ದೈವಿಕ ಘಟಕಗಳ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -259,5 +261,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
