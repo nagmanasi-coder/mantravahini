@@ -17,7 +17,11 @@ export function ShareButton() {
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-      } catch (error) {
+      } catch (error: any) {
+        // Silently fail if the user cancels the share dialog.
+        if (error.name === 'AbortError') {
+          return;
+        }
         console.error("Error sharing:", error);
         toast({
           variant: "destructive",
