@@ -19,10 +19,10 @@ export default function Home() {
         setCurrentTrackIndex(kaliMantraIndex);
       }
     } else if (value === 'eye-problems') {
-      // Chakshusa Mantra has been removed.
-      // We can either disable this tab or play another mantra.
-      // For now, let's also default to the first mantra.
-      setCurrentTrackIndex(0);
+      const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
+      if (chakshuMantraIndex !== -1) {
+        setCurrentTrackIndex(chakshuMantraIndex);
+      }
     }
   };
 

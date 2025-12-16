@@ -12,6 +12,11 @@ export const mantras: Mantra[] = [
     name: 'Kali Mantra for Pain Relief',
     url: '/kali-mantra.mp3',
   },
+  {
+    id: 2,
+    name: 'Chakshu Mantra for Eye Problems',
+    url: '/chakshu-mantra.mp3',
+  },
   { 
     id: 9, 
     name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', 
