@@ -11,6 +11,16 @@ import { Sparkles, Heart, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -180,10 +190,26 @@ export default function Home() {
                     <p className="font-semibold text-foreground text-lg">
                       ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
                     </p>
-                    <Button onClick={() => window.open('tel:7022070287')}>
-                      <Heart className="mr-2 h-4 w-4" />
-                      Donate
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button>
+                          <Heart className="mr-2 h-4 w-4" />
+                          Donate
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Donate for the Cause</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            PhonePe - 7022070287 and screenshot to this whatsapp
+                            number
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>OK</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                      <p className="text-sm text-muted-foreground">
                       Contact us to contribute to our cause.
                     </p>
