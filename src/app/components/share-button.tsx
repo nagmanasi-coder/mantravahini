@@ -9,8 +9,8 @@ export function ShareButton() {
 
   const handleShare = async () => {
     const shareData = {
-      title: "ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)",
-      text: "Mantra Shakti: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ",
+      title: "ಮಂತ್ರವಾಹಿನಿ",
+      text: "Share power of mantras to reach everyone",
       url: window.location.href,
     };
 
