@@ -43,11 +43,35 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    
-    // Set initial source
+
+    const handlePlayPromise = (promise: Promise<void> | undefined) => {
+      if (promise !== undefined) {
+        promise.catch(error => {
+          if (error.name !== 'AbortError') {
+            console.error("Playback failed:", error);
+          }
+        });
+      }
+    };
+
     if (currentMantra && audio.src !== currentMantra.url) {
-        audio.src = currentMantra.url;
+      audio.src = currentMantra.url;
+      audio.load();
+      if (isPlaying) {
+        handlePlayPromise(audio.play());
+      }
+    } else {
+      if (isPlaying && audio.paused) {
+        handlePlayPromise(audio.play());
+      } else if (!isPlaying && !audio.paused) {
+        audio.pause();
+      }
     }
+  }, [currentTrackIndex, isPlaying, currentMantra]);
+  
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
     const setAudioData = () => {
       setDuration(audio.duration);
@@ -62,42 +86,16 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
 
     audio.addEventListener("loadedmetadata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
-    
-    if (isPlaying) {
-        audio.play().catch((e) => console.error("Playback failed:", e));
-    } else {
-        audio.pause();
-    }
+    audio.addEventListener("ended", handleNext);
 
     return () => {
       audio.removeEventListener("loadedmetadata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
+      audio.removeEventListener("ended", handleNext);
     };
-  }, [currentTrackIndex, isPlaying, mantras, currentMantra]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      if (!isPlaying) {
-          audio.pause();
-      } else if (audio.src) {
-          audio.play().catch((e) => console.error("Playback failed:", e));
-      }
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && mantras[currentTrackIndex]) {
-      audio.src = mantras[currentTrackIndex].url;
-      setProgress(0);
-      if (isPlaying) {
-        audio.load();
-        audio.play().catch((e) => console.error("Playback failed:", e));
-      }
-    }
-  }, [currentTrackIndex, mantras, isPlaying]);
-  
   useEffect(() => {
     if (trackChangeCount > 0 && trackChangeCount % 3 === 0) {
       setIsPlaying(false);
@@ -129,7 +127,7 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
     const progressBar = progressBarRef.current;
     const audio = audioRef.current;
-    if (!progressBar || !audio || isNaN(duration)) return;
+    if (!progressBar || !audio || isNaN(duration) || duration === 0) return;
 
     const rect = progressBar.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -181,7 +179,7 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
         </CardFooter>
       </Card>
 
-      <audio ref={audioRef} onEnded={handleNext} />
+      <audio ref={audioRef} />
       <InterstitialAd open={showInterstitial} onOpenChange={setShowInterstitial} />
     </div>
   );
