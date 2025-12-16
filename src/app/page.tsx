@@ -14,8 +14,10 @@ export default function Home() {
 
   const handleTabChange = (value: string) => {
     if (value === 'pain-relief') {
-      // Since Kali Mantra is removed, we default to the first available mantra.
-      setCurrentTrackIndex(0);
+      const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
+      if (kaliMantraIndex !== -1) {
+        setCurrentTrackIndex(kaliMantraIndex);
+      }
     } else if (value === 'eye-problems') {
       // Chakshusa Mantra has been removed.
       // We can either disable this tab or play another mantra.

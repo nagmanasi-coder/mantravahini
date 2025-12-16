@@ -7,6 +7,11 @@ export type Mantra = {
 
 // Using placeholder audio files from a public source for a better demo experience
 export const mantras: Mantra[] = [
+  {
+    id: 1,
+    name: 'Kali Mantra for Pain Relief',
+    url: '/audio/kali-mantra.mp3',
+  },
   { 
     id: 9, 
     name: 'ಸರ್ವ ರೋಗ ನಿವಾರಣಾ ಆಂಜನೇಯ ಮಂತ್ರ', 
