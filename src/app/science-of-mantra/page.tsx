@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export default function ScienceOfMantraPage() {
   return (
@@ -27,21 +26,11 @@ export default function ScienceOfMantraPage() {
                 Mantras are not just religious chants; they are powerful sound vibrations that can have a profound effect on our mind, body, and consciousness. The science of Cymatics demonstrates how sound vibrations can create intricate geometric patterns in matter. Similarly, the vibrations from chanting mantras can create a positive and healing resonance within us.
               </p>
               
-               <div className="rounded-lg border overflow-hidden">
-                <AspectRatio ratio={16 / 9}>
-                  <iframe
-                    className="h-full w-full"
-                    src="https://www.youtube.com/embed/1_oA9o62HPA"
-                    title="Cymatics: The Science of Sound and Vibration"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </AspectRatio>
+              <div className="rounded-lg border overflow-hidden p-6 text-center">
+                <p className="font-semibold text-lg text-primary">Classes will be conducted soon.</p>
+                <p className="text-muted-foreground mt-2">Contact us to learn more about the science of mantras and our upcoming classes.</p>
               </div>
 
-              <p className="text-muted-foreground pt-4">
-                This video on Cymatics provides a visual representation of how sound can influence physical form. This principle is at the heart of how mantras work, helping to align our internal energy and promote well-being.
-              </p>
             </CardContent>
           </Card>
         </div>
