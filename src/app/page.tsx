@@ -7,7 +7,7 @@ import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Heart, Share2 } from "lucide-react";
+import { Sparkles, Heart, Share2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -213,6 +213,27 @@ export default function Home() {
                      <p className="text-sm text-muted-foreground">
                       Contact us to contribute to our cause.
                     </p>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline">
+                          <Users className="mr-2 h-4 w-4" />
+                          Join Our group
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Join our Divine Entity Group</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            To spread the power of mantras to everyone, join our group of divine entities.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>OK</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
                     <div className="border-t border-border pt-4">
                       <Button onClick={handleShare}>
                         <Share2 className="mr-2 h-4 w-4" />
@@ -238,3 +259,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
