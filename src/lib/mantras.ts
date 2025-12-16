@@ -9,12 +9,12 @@ export type Mantra = {
 export const mantras: Mantra[] = [
   {
     id: 1,
-    name: 'ನೋವು ನಿವಾರಣೆಗೆ ಕಾಳಿ ಮಂತ್ರ',
+    name: 'ನೋವು ನಿವಾರಣೆಗೆ ಶಕ್ತಿಶಾಲಿ ಕಾಳಿ ಮಂತ್ರ',
     url: '/kali-mantra.mp3',
   },
   {
     id: 2,
-    name: 'Chakshu Mantra for Eye Problems',
+    name: 'ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಶಕ್ತಿಶಾಲಿ ಚಾಕ್ಷುಷ ಮಂತ್ರ',
     url: '/chakshu-mantra.mp3',
   },
   { 

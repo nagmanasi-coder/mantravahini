@@ -47,6 +47,14 @@ export default function Home() {
             </CardContent>
           </Card>
 
+          <Card className="mb-8 text-center">
+            <CardContent className="p-6">
+              <p className="font-semibold text-foreground">
+              ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
+              </p>
+            </CardContent>
+          </Card>
+
           <Card className="mb-8 text-center bg-accent text-accent-foreground">
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
