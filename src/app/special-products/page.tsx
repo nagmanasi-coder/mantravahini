@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ export default function SpecialProductsPage() {
   const products = [
     {
       name: "ಹೇರ್ ಆಯಿಲ್",
-      description: "ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಗಿಡಮೂಲಿಕೆಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ.",
+      description: "ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಗಿಡಮೂಲಿಕೆಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ. ಬೆಲೆ - 299 ರೂ. 100 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
       image: "/Hair oil.png",
       aiHint: "hair oil natural",
     },
@@ -121,7 +122,13 @@ export default function SpecialProductsPage() {
               </CardFooter>
             </Card>
           </div>
-
+        <Card className="mt-8">
+            <CardContent className="p-6 text-center">
+              <p className="text-muted-foreground">
+                Special products will be updated soon.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
