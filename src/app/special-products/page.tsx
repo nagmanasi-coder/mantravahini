@@ -14,7 +14,7 @@ export default function SpecialProductsPage() {
     },
     {
       name: "ನೋವು ನಿವಾರಕ ತೈಲ",
-      description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ.",
+      description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ಬೆಲೆ - 299 ರೂ. 50 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
       image: "/pain oil.png",
       aiHint: "pain relief oil",
     },
