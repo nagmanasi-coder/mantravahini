@@ -3,6 +3,34 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 
 export default function SpecialProductsPage() {
+
+  const products = [
+    {
+      name: "ಹೇರ್ ಆಯಿಲ್",
+      description: "ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಗಿಡಮೂಲಿಕೆಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ.",
+      image: "https://picsum.photos/seed/hairoil/600/400",
+      aiHint: "hair oil natural",
+    },
+    {
+      name: "ನೋವು ನಿವಾರಕ ತೈಲ",
+      description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ.",
+      image: "https://picsum.photos/seed/painoil/600/400",
+      aiHint: "pain relief oil",
+    },
+    {
+      name: "ಚರ್ಮದ ಸಮಸ್ಯೆಗೆ ಕನಕ ತೈಲ",
+      description: "ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಎಣ್ಣೆ.",
+      image: "https://picsum.photos/seed/skinoil/600/400",
+      aiHint: "skin oil natural",
+    },
+    {
+      name: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆಗೆ ಕನಕಧಾರಾ ತೈಲ",
+      description: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
+      image: "https://picsum.photos/seed/potencyoil/600/400",
+      aiHint: "wellness oil natural",
+    },
+  ];
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -16,7 +44,7 @@ export default function SpecialProductsPage() {
             </p>
           </header>
 
-          <Card className="overflow-hidden shadow-xl">
+          <Card className="mb-8 overflow-hidden shadow-xl">
             <CardHeader>
               <CardTitle className="font-headline text-3xl">ಅಕ್ಷಯ Cash Box</CardTitle>
               <CardDescription>
@@ -54,6 +82,46 @@ export default function SpecialProductsPage() {
               <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
             </CardFooter>
           </Card>
+
+          <div className="space-y-8">
+             <Card>
+                <CardHeader>
+                  <CardTitle className="font-headline text-3xl text-center">ಮಂತ್ರ ಚಿಕಿತ್ಸಿತ ತೈಲಗಳು</CardTitle>
+                  <CardDescription className="text-center">
+                  ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಿ ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಶಕ್ತಿಶಾಲಿ ತೈಲಗಳು.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {products.map((product) => (
+                <Card key={product.name} className="overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+                  <CardHeader>
+                    <CardTitle className="font-headline text-xl">{product.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="relative aspect-video w-full">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="rounded-md object-cover"
+                        data-ai-hint={product.aiHint}
+                      />
+                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground">{product.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Card className="mt-8">
+              <CardFooter className="flex flex-col items-center justify-center gap-2 bg-muted/50 p-4">
+                 <p>ಯಾವುದೇ ಉತ್ಪನ್ನವನ್ನು ಆರ್ಡರ್ ಮಾಡಲು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ:</p>
+                <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+              </CardFooter>
+            </Card>
+          </div>
+
         </div>
       </main>
     </div>
