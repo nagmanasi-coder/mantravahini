@@ -8,25 +8,25 @@ export default function SpecialProductsPage() {
     {
       name: "ಹೇರ್ ಆಯಿಲ್",
       description: "ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಗಿಡಮೂಲಿಕೆಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ.",
-      image: "https://picsum.photos/seed/hairoil/600/400",
+      image: "/hair-oil.jpeg",
       aiHint: "hair oil natural",
     },
     {
       name: "ನೋವು ನಿವಾರಕ ತೈಲ",
       description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ.",
-      image: "https://picsum.photos/seed/painoil/600/400",
+      image: "/pain-oil.jpeg",
       aiHint: "pain relief oil",
     },
     {
       name: "ಚರ್ಮದ ಸಮಸ್ಯೆಗೆ ಕನಕ ತೈಲ",
       description: "ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಎಣ್ಣೆ.",
-      image: "https://picsum.photos/seed/skinoil/600/400",
+      image: "/skin-oil.jpeg",
       aiHint: "skin oil natural",
     },
     {
       name: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆಗೆ ಕನಕಧಾರಾ ತೈಲ",
       description: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
-      image: "https://picsum.photos/seed/potencyoil/600/400",
+      image: "/wellness-oil.jpeg",
       aiHint: "wellness oil natural",
     },
   ];
