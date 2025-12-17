@@ -8,11 +8,24 @@ const beejaMantras = ["ಹ್ರೀಂ", "ಕ್ಲೀಂ", "ಐಂ", "ಶ್ರ
 
 export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
+  const [mantraStyles, setMantraStyles] = useState<{ transform: string; animationDelay: string }[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
     }, 4000); // Show splash screen for 4 seconds
+
+    const styles = beejaMantras.map((mantra, index) => {
+        const angle = (index / beejaMantras.length) * 2 * Math.PI;
+        const radius = 160; // in pixels
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+        return {
+          transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
+          animationDelay: `${0.5 + index * 0.2}s`,
+        };
+    });
+    setMantraStyles(styles);
 
     return () => clearTimeout(timer);
   }, []);
@@ -34,19 +47,12 @@ export function SplashScreen() {
             priority
           />
         </div>
-        {beejaMantras.map((mantra, index) => {
-          const angle = (index / beejaMantras.length) * 2 * Math.PI;
-          const radius = 160; // in pixels
-          const x = radius * Math.cos(angle);
-          const y = radius * Math.sin(angle);
+        {mantraStyles.length > 0 && beejaMantras.map((mantra, index) => {
           return (
             <span
               key={mantra}
               className="absolute left-1/2 top-1/2 text-primary font-headline text-2xl animate-fade-in"
-              style={{
-                transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
-                animationDelay: `${0.5 + index * 0.2}s`,
-              }}
+              style={mantraStyles[index]}
             >
               {mantra}
             </span>

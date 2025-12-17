@@ -8,19 +8,19 @@ export default function SpecialProductsPage() {
   const products = [
     {
       name: "ಹೇರ್ ಆಯಿಲ್",
-      description: "ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಗಿಡಮೂಲಿಕೆಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ. ಬೆಲೆ - 299 ರೂ. 100 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
+      description: "ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು  ಮಂತ್ರಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ. ಬೆಲೆ - 299 ರೂ. 100 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
       image: "/Hair oil.png",
       aiHint: "hair oil natural",
     },
     {
       name: "ನೋವು ನಿವಾರಕ ತೈಲ",
-      description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ಬೆಲೆ - 299 ರೂ. 50 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
+      description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ, ಮಂತ್ರಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ಬೆಲೆ - 299 ರೂ. 50 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
       image: "/pain oil.png",
       aiHint: "pain relief oil",
     },
     {
       name: "ಚರ್ಮದ ಸಮಸ್ಯೆಗೆ ಕನಕ ತೈಲ",
-      description: "ಸೋರಿಯಾಸಿಸ್ ಇತ್ಯಾದಿ ಜಿಗುಟಿದಾದ ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು ಮಂತ್ರಗಳಿಂದ ತಯಾರಾದ ತೈಲ. ಬೆಲೆ - 499 ರೂ. 50 ಮಿ.ಲೀ.",
+      description: "ಸೋರಿಯಾಸಿಸ್ ಇತ್ಯಾದಿ ಜಿಗುಟಾದ ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು ಮಂತ್ರಗಳಿಂದ ತಯಾರಾದ ತೈಲ. ಬೆಲೆ - 499 ರೂ. 50 ಮಿ.ಲೀ.",
       image: "/skin oil.png",
       aiHint: "skin oil natural",
     },
@@ -89,7 +89,7 @@ export default function SpecialProductsPage() {
                 <CardHeader>
                   <CardTitle className="font-headline text-3xl text-center">ಮಂತ್ರ ಚಿಕಿತ್ಸಿತ ತೈಲಗಳು</CardTitle>
                   <CardDescription className="text-center">
-                  ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಿ ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಶಕ್ತಿಶಾಲಿ ತೈಲಗಳು.
+                  ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ ತಯಾರಿಸಿ, ಮಂತ್ರಗಳನ್ನು ತುಂಬಿದ ಶಕ್ತಿಶಾಲಿ ತೈಲಗಳು.
                   </CardDescription>
                 </CardHeader>
               </Card>
