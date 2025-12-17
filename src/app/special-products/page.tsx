@@ -51,7 +51,7 @@ export default function SpecialProductsPage() {
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center gap-2 bg-muted/50 p-4">
                <p>ಆರ್ಡರ್ ಮಾಡಲು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ:</p>
-              <p className="font-bold text-lg text-primary">7022070287</p>
+              <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
             </CardFooter>
           </Card>
         </div>
