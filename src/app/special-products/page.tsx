@@ -20,7 +20,7 @@ export default function SpecialProductsPage() {
     },
     {
       name: "ಚರ್ಮದ ಸಮಸ್ಯೆಗೆ ಕನಕ ತೈಲ",
-      description: "ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ಮಂತ್ರಗಳಿಂದ ತುಂಬಿದ ಎಣ್ಣೆ.",
+      description: "ಸೋರಿಯಾಸಿಸ್ ಇತ್ಯಾದಿ ಜಿಗುಟಿದಾದ ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು ಮಂತ್ರಗಳಿಂದ ತಯಾರಾದ ತೈಲ. ಬೆಲೆ - 499 ರೂ. 50 ಮಿ.ಲೀ.",
       image: "/skin oil.png",
       aiHint: "skin oil natural",
     },
