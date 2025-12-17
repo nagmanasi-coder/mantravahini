@@ -26,7 +26,7 @@ export default function SpecialProductsPage() {
     },
     {
       name: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆಗೆ ಕನಕಧಾರಾ ತೈಲ",
-      description: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
+      description: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಿ ನವಯೌವನವನ್ನು ನೀಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಮಲಗುವಾಗ ಅಂಗಾಲಿಗೆ ಹಚ್ಚುವುದು. ಬೆಲೆ - 999 ರೂ. 50 ಮಿ.ಲೀ.",
       image: "/sexual power.png",
       aiHint: "wellness oil natural",
     },
