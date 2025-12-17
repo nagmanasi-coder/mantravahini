@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -6,6 +7,13 @@ import { ArrowRight } from "lucide-react";
 
 export default function OurAppsPage() {
   const apps = [
+    {
+      name: "ತಂತ್ರ ವಿಜ್ಞಾನ",
+      description: "Explore the science of Tantra.",
+      icon: "https://picsum.photos/seed/app1/400/400",
+      href: "https://tantra-vigyan.vercel.app/",
+      aiHint: "abstract spiritual science",
+    },
     {
       name: "ಮಂತ್ರವಾಹಿನಿ",
       description: "A serene mantra playback experience for spiritual well-being.",
@@ -55,7 +63,7 @@ export default function OurAppsPage() {
                 </CardHeader>
                 <CardFooter className="mt-auto bg-muted/50 p-4">
                   <Button asChild className="w-full" disabled={app.href === "#"}>
-                    <Link href={app.href}>
+                    <Link href={app.href} target={app.href.startsWith('http') ? '_blank' : '_self'} rel={app.href.startsWith('http') ? 'noopener noreferrer' : ''}>
                       {app.name === "Coming Soon" ? "Stay Tuned" : "Open App"}
                       {app.name !== "Coming Soon" && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Link>
