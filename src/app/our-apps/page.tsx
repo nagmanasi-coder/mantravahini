@@ -10,7 +10,7 @@ export default function OurAppsPage() {
     {
       name: "ತಂತ್ರ ವಿಜ್ಞಾನ",
       description: "Explore the science of Tantra.",
-      icon: "/tantra-vigyan.jpeg",
+      icon: "/Trishul.png",
       href: "https://tantra-vigyan.vercel.app/",
       aiHint: "abstract spiritual science",
     },
