@@ -44,7 +44,7 @@ export default function HealingPage() {
               <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
                  <p className="font-headline text-xl font-bold text-primary">ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ</p>
                  <p className="mt-2 text-sm text-foreground">
-                   "All diseases and pains are eradicated by the constant repetition of Hanuman's brave name." This doha is renowned for its healing powers, offering relief from all forms of physical and mental suffering when chanted with faith.
+                   "ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ." ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ.
                  </p>
               </div>
               <div className="text-center">
