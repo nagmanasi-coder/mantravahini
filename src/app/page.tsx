@@ -7,7 +7,7 @@ import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Heart, Share2, Users } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -110,7 +110,10 @@ export default function Home() {
           </div>
 
           <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
-            <Button size="lg">ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ</Button>
+            <Button size="lg">
+              ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
 
           <div className={cardAnimation} style={{ animationDelay: "0.6s" }}>
