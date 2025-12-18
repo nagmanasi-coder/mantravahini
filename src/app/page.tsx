@@ -88,7 +88,7 @@ export default function Home() {
               ಮಂತ್ರವಾಹಿನಿ
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-            ಮಂತ್ರ ಶಕ್ತಿ: ನಿಮ್ಮಜೀವನದ ಉನ್ನತಿಗಾಗಿ
+            ನೋವು ರಹಿತ ಜೀವನಕ್ಕಾಗಿ,ಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
 
@@ -107,6 +107,10 @@ export default function Home() {
 
           <div className={cardAnimation} style={{ animationDelay: "0.5s" }}>
             <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
+          </div>
+
+          <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
+            <Button size="lg">ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ</Button>
           </div>
 
           <div className={cardAnimation} style={{ animationDelay: "0.6s" }}>
@@ -240,18 +244,18 @@ export default function Home() {
             </Tabs>
           </div>
 
-          <Card className={cn("mt-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.7s" }}>
-            <CardContent className="p-6 space-y-2">
-              <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
-              <p className="font-bold text-lg">7022070287, ಹೊಸದುರ್ಗ</p>
-            </CardContent>
-          </Card>
-
           <Card className={cn("mt-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.2s" }}>
             <CardContent className="p-6">
               <p className="font-semibold text-foreground">
                 ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!
               </p>
+            </CardContent>
+          </Card>
+
+          <Card className={cn("mt-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.7s" }}>
+            <CardContent className="p-6 space-y-2">
+              <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
+              <p className="font-bold text-lg">7022070287, ಹೊಸದುರ್ಗ</p>
             </CardContent>
           </Card>
 
