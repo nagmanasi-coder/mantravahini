@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
@@ -110,9 +111,11 @@ export default function Home() {
           </div>
 
           <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
-            <Button size="lg">
-              ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button asChild size="lg">
+              <Link href="/healing">
+                ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
           </div>
 
