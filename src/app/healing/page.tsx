@@ -40,7 +40,15 @@ export default function HealingPage() {
               <div className="text-center text-muted-foreground space-y-2">
                 <p>ಈ ವಿಧಾನವು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಶಕ್ತಿಯನ್ನು ಬಳಸಿ, ದೀರ್ಘಕಾಲದ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಗುಣಪಡಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</p>
                 <p>ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ ಎಂದು ಸಾಬೀತಾಗಿದೆ.</p>
-                <p className="mt-2 font-semibold text-foreground">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.</p>
+              </div>
+              <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
+                 <p className="font-headline text-xl font-bold text-primary">ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ</p>
+                 <p className="mt-2 text-sm text-foreground">
+                   "All diseases and pains are eradicated by the constant repetition of Hanuman's brave name." This doha is renowned for its healing powers, offering relief from all forms of physical and mental suffering when chanted with faith.
+                 </p>
+              </div>
+              <div className="text-center">
+                 <p className="mt-2 font-semibold text-foreground">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.</p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center gap-2 bg-muted/50 p-4">
