@@ -21,7 +21,7 @@ export default function HealingPage() {
 
           <Card className="overflow-hidden shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">ಹನುಮಾನ್ ಚಾಲೀಸಾ ಚಿಕಿತ್ಸೆ</CardTitle>
+              <CardTitle className="font-headline text-3xl">ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ</CardTitle>
               <CardDescription>
                 ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಗೆ ಮತ್ತು ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ.
               </CardDescription>
@@ -29,7 +29,7 @@ export default function HealingPage() {
             <CardContent className="space-y-4">
               <div className="relative aspect-auto w-full">
                 <Image
-                  src="/hanuman-healing.png"
+                  src="/hanuman.png"
                   alt="Hanuman Chalisa Healing Method"
                   width={1080}
                   height={1350}
@@ -39,7 +39,7 @@ export default function HealingPage() {
               </div>
               <div className="text-center text-muted-foreground space-y-2">
                 <p>ಈ ವಿಧಾನವು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಶಕ್ತಿಯನ್ನು ಬಳಸಿ, ದೀರ್ಘಕಾಲದ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಗುಣಪಡಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</p>
-                <p>ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ ಎಂದು ಸಾಬೀತಾಗಿದೆ.</p>
+                <p>ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ,  ಇದು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತ ಮನುಕುಲಕ್ಕೆ ನೀಡಿರುವ ವಚನ.</p>
               </div>
               <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
                  <p className="font-headline text-xl font-bold text-primary">ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ</p>
