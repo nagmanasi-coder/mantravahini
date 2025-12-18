@@ -31,28 +31,27 @@ export default function MantraCornerPage() {
 
           <Card>
             <CardContent className="p-4">
-              <ScrollArea className="h-96">
+              <ScrollArea className="h-[60vh]">
                 <div className="space-y-4">
                   {mantras.map((mantra) => (
                     <Button
                       key={mantra.id}
                       variant="outline"
-                      className="w-full justify-start text-left"
+                      className="w-full justify-start text-left h-auto"
                       onClick={() => setSelectedMantra(mantra)}
                     >
-                      {mantra.name}
+                      <div className="flex flex-col items-start">
+                        <span className="font-semibold">{mantra.name}</span>
+                        {mantra.description && (
+                           <span className="text-xs text-muted-foreground whitespace-pre-wrap text-left">
+                            {mantra.description.split('\n')[0]}
+                          </span>
+                        )}
+                      </div>
                     </Button>
                   ))}
                 </div>
               </ScrollArea>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-8">
-            <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">
-                Powerful mantras will be coming soon.
-              </p>
             </CardContent>
           </Card>
         </div>
