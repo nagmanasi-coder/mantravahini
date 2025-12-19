@@ -16,7 +16,7 @@ export default function OurAppsPage() {
     },
     {
       name: "ಮಂತ್ರವಾಹಿನಿ",
-      description: "A serene mantra playback experience for spiritual well-being.",
+      description: "ನೋವು, ರೋಗ, ದುಃಖರಹಿತ ಜೀವನಕ್ಕಾಗಿ",
       icon: "/mine.jpeg",
       href: "/",
       aiHint: "meditation app icon",

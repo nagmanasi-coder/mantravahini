@@ -12,7 +12,8 @@ export default function HealingPage() {
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              ಮಂತ್ರ ಚಿಕಿತ್ಸೆ
+              ಮಂತ್ರ ಚಿಕಿತ್ಸೆ - 
+              ಹನುಮನಿದ್ದಲ್ಲಿ ರೋಗಕ್ಕೆ ಜಾಗವೆಲ್ಲಿ?
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
               ಹನುಮಾನ್ ಚಾಲೀಸಾದ ತಾಂತ್ರಿಕ ವಿಧಾನದಿಂದ ದೀರ್ಘಕಾಲದ ರೋಗಗಳ ನಿವಾರಣೆ
