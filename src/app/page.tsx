@@ -83,7 +83,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
-        <div className="container mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center animate-fade-in">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
               ಮಂತ್ರವಾಹಿನಿ
@@ -106,22 +106,9 @@ export default function Home() {
             </CardContent>
           </Card>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 md:items-start">
-            <div className={cn("sticky top-20", cardAnimation)} style={{ animationDelay: "0.5s" }}>
-              <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
-
-              <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
-                <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
-                  <Link href="/healing">
-                    ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
+          <div className="flex flex-col gap-8">
             <div className={cardAnimation} style={{ animationDelay: "0.6s" }}>
-              <Tabs defaultValue="pain-relief" className="mt-8 md:mt-0" onValueChange={handleTabChange}>
+              <Tabs defaultValue="pain-relief" onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="pain-relief">ನೋವು ನಿವಾರಣೆ</TabsTrigger>
                   <TabsTrigger value="eye-problems">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</TabsTrigger>
@@ -250,6 +237,20 @@ export default function Home() {
                 </TabsContent>
               </Tabs>
             </div>
+            
+            <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
+              <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
+
+              <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
+                <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
+                  <Link href="/healing">
+                    ಮಂತ್ರ ಚಿಕಿತ್ಸೆ -ರೋಗ ಮುಕ್ತಿಗಾಗಿ
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
           </div>
 
 
@@ -274,5 +275,3 @@ export default function Home() {
     </div>
   );
 }
-
-  
