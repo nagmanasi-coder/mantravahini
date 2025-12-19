@@ -11,7 +11,7 @@ export default function PracticalVideosPage() {
       description: "A practical demonstration of using the Kali mantra to get relief from physical pain.",
     },
     {
-        id: "v3RDEsT5vA4",
+        id: "L1kL2bE1E-Q",
         title: "Chakshushmati Mantra for Eye Problems",
         description: "Learn how to use the Chakshushmati mantra to improve eyesight and heal eye-related issues.",
     }
