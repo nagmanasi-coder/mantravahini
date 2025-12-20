@@ -19,11 +19,11 @@ export default function AboutUsPage() {
               ನಮ್ಮ ಬಗ್ಗೆ
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              ಮಂತ್ರವಾಹಿನಿಯ ಹಿಂದಿನ ತಂಡ
+              ಮಂತ್ರವಾಹಿನಿಯ ಹಿಂದಿನ ಮೆದುಳು
             </p>
           </header>
 
-          <Card className={cn("overflow-hidden shadow-xl", cardAnimation)} style={{ animationDelay: "0.2s" }}>
+          <Card className={cn("overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.2s" }}>
             <CardContent className="p-6 space-y-6">
               <div className={cn("relative mx-auto h-48 w-48 overflow-hidden rounded-full border-4 border-primary/50 shadow-lg", cardAnimation)} style={{ animationDelay: "0.3s" }}>
                 <Image
@@ -46,7 +46,7 @@ export default function AboutUsPage() {
                 <div className={cardAnimation} style={{ animationDelay: "0.5s" }}>
                     <h3 className="font-headline text-2xl font-bold text-primary mb-2">1️⃣ ಪರಿಚಯ (Introduction)</h3>
                     <p>
-                        ನಾನು ಮಂತ್ರ ಮತ್ತು ತಂತ್ರ ಕ್ಷೇತ್ರದಲ್ಲಿ ದೀರ್ಘ ಅನುಭವ ಹೊಂದಿರುವ ಸಾಧಕ, ಪ್ರಯೋಗಕಾರ ಮತ್ತು ಅನ್ವೇಷಕ. ಕಳಿಯುಗದ ಇಂದಿನ ಜೀವನಶೈಲಿ, ಮಾನಸಿಕ ಒತ್ತಡ, ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳು ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ಗೊಂದಲಗಳನ್ನು ಅರಿತು, ಅವುಗಳಿಗೆ ಪ್ರಾಯೋಗಿಕ ಹಾಗೂ ಫಲಪ್ರದ ಪರಿಹಾರಗಳನ್ನು ಹುಡುಕುವ ಉದ್ದೇಶದಿಂದ ನಾನು ಈ ಕ್ಷೇತ್ರದಲ್ಲಿ ನಿರಂತರವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದ್ದೇನೆ.
+                        ನಾನು ಮಂತ್ರ ಮತ್ತು ತಂತ್ರ ಕ್ಷೇತ್ರದಲ್ಲಿ ದೀರ್ಘ ಅನುಭವ ಹೊಂದಿರುವ ಸಾಧಕ, ಪ್ರಯೋಗಕಾರ ಮತ್ತು ಅನ್ವೇಷಕ. ಕಲಿಯುಗದ ಇಂದಿನ ಜೀವನಶೈಲಿ, ಮಾನಸಿಕ ಒತ್ತಡ, ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳು ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ಗೊಂದಲಗಳನ್ನು ಅರಿತು, ಅವುಗಳಿಗೆ ಪ್ರಾಯೋಗಿಕ ಹಾಗೂ ಫಲಪ್ರದ ಪರಿಹಾರಗಳನ್ನು ಹುಡುಕುವ ಉದ್ದೇಶದಿಂದ ನಾನು ಈ ಕ್ಷೇತ್ರದಲ್ಲಿ ನಿರಂತರವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದ್ದೇನೆ.
                     </p>
                 </div>
                 
@@ -58,13 +58,13 @@ export default function AboutUsPage() {
                 </div>
 
                 <div className={cardAnimation} style={{ animationDelay: "0.7s" }}>
-                    <h3 className="font-headline text-2xl font-bold text-primary mb-2">3️⃣ ಕಳಿಯುಗಕ್ಕೆ ಹೊಂದುವ ಮಂತ್ರ–ತಂತ್ರ (Relevance in Kaliyuga)</h3>
-                    <p className="mb-2">ಇದು ಕಳಿಯುಗ. ಇಲ್ಲಿ ಸಮಯ ಕಡಿಮೆ, ಮನಸ್ಸು ಚಂಚಲ, ಶಿಸ್ತಿನ ಕೊರತೆ, ಭಯ ಮತ್ತು ಅನುಮಾನ ಹೆಚ್ಚಾಗಿದೆ. ಅದಕ್ಕಾಗಿ ಪುರಾತನವಾದರೂ ಸರಳ, ಸುರಕ್ಷಿತ ಮತ್ತು ಕಾರ್ಯಕಾರಿ ಮಂತ್ರ–ತಂತ್ರಗಳನ್ನು ಮಾತ್ರ ಆರಿಸಿ, ಇಂದಿನ ಮನುಷ್ಯರಿಗೆ ಅನುಸರಿಸಲು ಸಾಧ್ಯವಾಗುವಂತೆ ರೂಪಿಸಲಾಗಿದೆ.</p>
+                    <h3 className="font-headline text-2xl font-bold text-primary mb-2">3️⃣ ಕಲಿಯುಗಕ್ಕೆ ಹೊಂದುವ ಮಂತ್ರ–ತಂತ್ರ (Relevance in Kaliyuga)</h3>
+                    <p className="mb-2">ಇದು ಕಲಿಯುಗ. ಇಲ್ಲಿ ಸಮಯ ಕಡಿಮೆ, ಮನಸ್ಸು ಚಂಚಲ, ಶಿಸ್ತಿನ ಕೊರತೆ, ಭಯ ಮತ್ತು ಅನುಮಾನ ಹೆಚ್ಚಾಗಿದೆ. ಅದಕ್ಕಾಗಿ ಪುರಾತನವಾದರೂ ಸರಳ, ಸುರಕ್ಷಿತ ಮತ್ತು ಕಾರ್ಯಕಾರಿ ಮಂತ್ರ–ತಂತ್ರಗಳನ್ನು ಮಾತ್ರ ಆರಿಸಿ, ಇಂದಿನ ಮನುಷ್ಯರಿಗೆ ಅನುಸರಿಸಲು ಸಾಧ್ಯವಾಗುವಂತೆ ರೂಪಿಸಲಾಗಿದೆ.</p>
                 </div>
 
                 <div className={cardAnimation} style={{ animationDelay: "0.8s" }}>
                     <h3 className="font-headline text-2xl font-bold text-primary mb-2">4️⃣ ಪರೀಕ್ಷಿತ ಮತ್ತು ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ (Tested & Practical Approach)</h3>
-                    <p>ನಾವು ಪ್ರಕಟಿಸುವ ಯಾವುದೇ ಮಂತ್ರ ಅಥವಾ ತಂತ್ರ ಮೊದಲು ಸ್ವಯಂ ಪರೀಕ್ಷಿತ, ಪ್ರಾಯೋಗಿಕವಾಗಿ ಫಲ ಕಂಡ ನಂತರ ಮಾತ್ರ, ಅಂಧವಿಶ್ವಾಸಕ್ಕೆ ಉತ್ತೇಜನ ನೀಡದೇ, ನೈತಿಕತೆ ಮತ್ತು ಮಾನವ ಕಲ್ಯಾಣವನ್ನು ಕೇಂದ್ರವಾಗಿಟ್ಟುಕೊಂಡು ಜನರಿಗೆ ಹಂಚಲಾಗುತ್ತದೆ.</p>
+                    <p>ನಾವು ಪ್ರಕಟಿಸುವ ಯಾವುದೇ ಮಂತ್ರ ಅಥವಾ ತಂತ್ರ ಮೊದಲು ಸ್ವಯಂ ಪರೀಕ್ಷಿತ, ಪ್ರಾಯೋಗಿಕವಾಗಿ ಫಲ ಕಂಡ ನಂತರ ಮಾತ್ರ, ಅಂಧವಿಶ್ವಾಸಕ್ಕೆ ಉತ್ತೇಜನ ನೀಡದೇ, ನೈತಿಕತೆ ಮತ್ತು ಮಾನವ ಕಲ್ಯಾಣವನ್ನು ಕೇಂದ್ರವಾಗಿಟ್ಟುಕೊಂಡು ಜನರಿಗೆ ನೀಡಲಾಗುತ್ತದೆ.</p>
                 </div>
 
                 <div className={cardAnimation} style={{ animationDelay: "0.9s" }}>
@@ -93,7 +93,7 @@ export default function AboutUsPage() {
 
                 <div className={cn("text-center space-y-2", cardAnimation)} style={{ animationDelay: "1.2s" }}>
                     <p className="font-bold text-accent text-xl">"ಪರೀಕ್ಷಿತ ಮಂತ್ರ – ಪ್ರಾಯೋಗಿಕ ಫಲ"</p>
-                    <p className="font-semibold text-muted-foreground">“ಕಳಿಯುಗಕ್ಕೆ ಹೊಂದುವ ಶಕ್ತಿ ಸಾಧನೆ”</p>
+                    <p className="font-semibold text-muted-foreground">“ಕಲಿಯುಗಕ್ಕೆ ಹೊಂದುವ ಶಕ್ತಿ ಸಾಧನೆ”</p>
                     <p className="font-semibold text-muted-foreground">“ಅನುಭವದಿಂದ ಜನೋಪಯೋಗಕ್ಕೆ”</p>
                 </div>
 
