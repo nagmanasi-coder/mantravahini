@@ -85,10 +85,10 @@ export default function Home() {
       <main className="flex-1">
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center animate-fade-in">
-            <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+            <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
               ಮಂತ್ರವಾಹಿನಿ
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
+            <p className="mt-4 text-lg text-muted-foreground">
             ನೋವು ರಹಿತ ಜೀವನಕ್ಕಾಗಿ,ಜೀವನದ ಉನ್ನತಿಗಾಗಿ
             </p>
           </header>
@@ -107,7 +107,7 @@ export default function Home() {
           </Card>
           
           <div className="flex flex-col gap-8">
-            <div className={cardAnimation} style={{ animationDelay: "0.6s" }}>
+            <div className={cn(cardAnimation)} style={{ animationDelay: "0.6s" }}>
               <Tabs defaultValue="pain-relief" onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="pain-relief">ನೋವು ನಿವಾರಣೆ</TabsTrigger>

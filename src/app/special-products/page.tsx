@@ -1,7 +1,6 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default function SpecialProductsPage() {
 
@@ -26,7 +25,7 @@ export default function SpecialProductsPage() {
     },
     {
       name: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆಗೆ ಕನಕಧಾರಾ ತೈಲ",
-      description: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಿ ನವಯೌವನವನ್ನು ನೀಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಮಲಗುವಾಗ ಅಂಗಾಲಿಗೆ ಹಚ್ಚುವುದು. ಬೆಲೆ - 999 ರೂ. 50 ಮಿ.ಲೀ.",
+      description: "ಲೈಂಗಿಕ ದೌर्ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಿ ನವಯೌವನವನ್ನು ನೀಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಮಲಗುವಾಗ ಅಂಗಾಲಿಗೆ ಹಚ್ಚುವುದು. ಬೆಲೆ - 999 ರೂ. 50 ಮಿ.ಲೀ.",
       image: "/sexual power.png",
       aiHint: "wellness oil natural",
     },
@@ -37,10 +36,10 @@ export default function SpecialProductsPage() {
       <main className="flex-1">
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center">
-            <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+            <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
               ವಿಶೇಷ ಆಧ್ಯಾತ್ಮಿಕ ಉತ್ಪನ್ನಗಳು
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
+            <p className="mt-4 text-lg text-muted-foreground">
               ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣವನ್ನು ಹೆಚ್ಚಿಸಲು ಅನನ್ಯ ವಸ್ತುಗಳು.
             </p>
           </header>
