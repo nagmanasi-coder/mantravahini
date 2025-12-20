@@ -31,6 +31,10 @@ export default function AboutUsPage() {
                 />
               </div>
               <div className="text-center space-y-4 text-foreground">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-primary">Nagaraja D</h2>
+                  <p className="text-muted-foreground">Mystic and explorer</p>
+                </div>
                 <p>
                   ಮಂತ್ರವಾಹಿನಿ ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಮತ್ತು ದೈಹಿಕ ಯೋಗಕ್ಷೇಮಕ್ಕಾಗಿ ಸಮರ್ಪಿತವಾಗಿದೆ. ನಮ್ಮ ಗುರಿ ಪುರಾತನ ಜ್ಞಾನ ಮತ್ತು ಆಧುನಿಕ ತಂತ್ರಜ್ಞಾನವನ್ನು ಸಂಯೋಜಿಸಿ, ನಿಮ್ಮ ಜೀವನದಲ್ಲಿ ಶಾಂತಿ, ಆರೋಗ್ಯ ಮತ್ತು ಸಮೃದ್ಧಿಯನ್ನು ತರುವುದು.
                 </p>
