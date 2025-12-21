@@ -5,7 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
+const WhatsAppIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+);
+
+
 export default function HealingPage() {
+  const whatsAppUrl = "https://wa.me/917022070287";
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -52,9 +59,17 @@ export default function HealingPage() {
                  <p className="mt-2 font-semibold text-foreground">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.</p>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col items-center justify-center gap-2 bg-muted/50 p-4">
-               <p>ಸಂಪರ್ಕಿಸಿ:</p>
-              <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+            <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
+              <div className="text-center">
+                <p>ಸಂಪರ್ಕಿಸಿ:</p>
+                <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+              </div>
+              <Button asChild>
+                <Link href={whatsAppUrl} target="_blank">
+                  <WhatsAppIcon />
+                  WhatsApp ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ
+                </Link>
+              </Button>
             </CardFooter>
           </Card>
           

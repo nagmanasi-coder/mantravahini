@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -23,9 +24,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const WhatsAppIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+);
+
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const { toast } = useToast();
+  const whatsAppUrl = "https://wa.me/917022070287";
 
   const handleTabChange = (value: string) => {
     if (value === 'pain-relief') {
@@ -191,8 +197,7 @@ export default function Home() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Donate for the Cause</AlertDialogTitle>
                             <AlertDialogDescription>
-                              PhonePe - 7022070287 and screenshot to this whatsapp
-                              number
+                              PhonePe/WhatsApp: 7022070287. Please send a screenshot to this number after payment.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -263,9 +268,17 @@ export default function Home() {
           </Card>
 
           <Card className={cn("mt-8", cardAnimation)} style={{ animationDelay: "0.7s" }}>
-            <CardFooter className="flex flex-col items-center justify-center gap-2 p-4">
-              <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
-              <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+            <CardFooter className="flex flex-col items-center justify-center gap-4 p-4">
+               <div className="text-center">
+                <p>ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ</p>
+                <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+              </div>
+              <Button asChild>
+                <Link href={whatsAppUrl} target="_blank">
+                  <WhatsAppIcon />
+                  WhatsApp ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ
+                </Link>
+              </Button>
             </CardFooter>
           </Card>
 
