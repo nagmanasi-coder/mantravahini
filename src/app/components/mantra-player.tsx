@@ -84,14 +84,18 @@ export function MantraPlayer({ mantras, currentTrackIndex, onTrackChange }: Mant
       setProgress((newTime / audio.duration) * 100);
     };
 
+    const handleEnded = () => {
+      setIsPlaying(false);
+    }
+
     audio.addEventListener("loadedmetadata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
-    audio.addEventListener("ended", handleNext);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
       audio.removeEventListener("loadedmetadata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
-      audio.removeEventListener("ended", handleNext);
+      audio.removeEventListener("ended", handleEnded);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
