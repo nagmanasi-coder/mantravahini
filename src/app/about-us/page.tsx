@@ -36,7 +36,7 @@ export default function AboutUsPage() {
               </div>
               <div className={cn("text-center space-y-2", cardAnimation)} style={{ animationDelay: "0.4s" }}>
                 <h2 className="text-3xl font-bold font-headline text-primary">Nagaraja D</h2>
-                <p className="text-muted-foreground text-lg">Mystic and Explorer</p>
+                <p className="text-muted-foreground text-lg">Mystic Explorer</p>
               </div>
 
               <Separator />
