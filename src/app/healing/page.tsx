@@ -22,13 +22,13 @@ export default function HealingPage() {
 
           <Card className="overflow-hidden shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-headline text-3xl text-center">ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ</CardTitle>
+              <CardDescription className="text-center">
                 ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಗೆ ಮತ್ತು ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="relative aspect-auto w-full">
+              <div className="relative aspect-auto w-full max-w-md mx-auto">
                 <Image
                   src="/hanuman.png"
                   alt="Hanuman Chalisa Healing Method"
@@ -72,5 +72,3 @@ export default function HealingPage() {
     </div>
   );
 }
-
-  
