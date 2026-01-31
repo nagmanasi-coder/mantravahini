@@ -3,11 +3,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
-import { Sparkles, Footprints } from "lucide-react";
+import { Sparkles, Footprints, Check } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 export default function GuruDikshaPage() {
   const { t } = useLanguage();
+  const freeConditions = [
+    t('guruDikshaFreeCondition1'),
+    t('guruDikshaFreeCondition2'),
+  ];
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -35,6 +39,32 @@ export default function GuruDikshaPage() {
                 <p className="mt-8 font-semibold text-foreground">
                   {t('guruDikshaComingSoon')}
                 </p>
+              </CardContent>
+            </Card>
+
+            <Separator />
+            
+            {/* Fee Information Card */}
+            <Card className="border-primary border-2 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl text-center text-primary">{t('guruDikshaFeeTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-center">
+                <p className="text-2xl font-bold text-accent">{t('guruDikshaFee')}</p>
+                <p className="text-muted-foreground">{t('guruDikshaMode')}</p>
+                 <Card className="bg-secondary/50 mt-4">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-semibold text-center">{t('guruDikshaFreeConditionsTitle')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-left">
+                        {freeConditions.map((condition, index) => (
+                             <p key={index} className="flex items-start">
+                                <Check className="mr-2 mt-1 h-4 w-4 text-green-500 flex-shrink-0" />
+                                <span className="text-muted-foreground">{condition}</span>
+                            </p>
+                        ))}
+                    </CardContent>
+                </Card>
               </CardContent>
             </Card>
 

@@ -149,7 +149,13 @@ export const translations = {
     guruDikshaNathaContent: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ, ಗುರುವಿಗೆ ಉನ್ನತ ಸ್ಥಾನವಿದೆ. ಗುರು ತೋರಿಸಿದ ಮಾರ್ಗ ಮತ್ತು ಪರಂಪರೆಯೇ ಸರ್ವಶ್ರೇಷ್ಠವೆಂದು ಪರಿಗಣಿಸಲಾಗಿದೆ. ಗುರುವು ಸಂಪ್ರದಾಯದ ಜೀವಂತ ಸ್ವರೂಪ ಮತ್ತು ದೈವಿಕ ಜ್ಞಾನಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ. ಗುರುವಿನ ಕೃಪೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶನವಿಲ್ಲದೆ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಗತಿ ಅಸಾಧ್ಯವೆಂದು ನಂಬಲಾಗಿದೆ. ಈ ಸಂಪ್ರದಾಯವು ಗುರುವಿನ ಮಾತೇ ಅಂತಿಮ ಶಾಸನ ಮತ್ತು ಅವರ ಮಾರ್ಗದರ್ಶನವೇ ಜ್ಞಾನೋದಯಕ್ಕೆ ಏಕೈಕ ನಿಜವಾದ ಮಾರ್ಗವೆಂದು ಒತ್ತಿಹೇಳುತ್ತದೆ.",
     guruMantraTitle: "ಗುರು ಮಂತ್ರ",
     guruMantra: "ಗುರುರ್ಬ್ರಹ್ಮಾ ಗುರುರ್ವಿಷ್ಣುಃ ಗುರುರ್ದೇವೋ ಮಹೇಶ್ವರಃ |\nಗುರುಃ ಸಾಕ್ಷಾತ್ ಪರಬ್ರಹ್ಮ ತಸ್ಮೈ ಶ್ರೀ ಗುರವೇ ನಮಃ ||",
-    guruMantraMeaning: "ಗುರು ಬ್ರಹ್ಮ (ಸೃಷ್ಟಿಕರ್ತ), ಗುರು ವಿಷ್ಣು (ಪಾಲಕ), ಮತ್ತು ಗುರು ದೇವೋ ಮಹೇಶ್ವರ (ನಾಶಕ). ಗುರು ಸಾಕ್ಷಾತ್ ಪರಬ್ರಹ್ಮ (ಪರಮ ಸತ್ಯ). ಅಂತಹ ಗುರುವಿಗೆ ನಾನು ನಮಸ್ಕರಿಸುತ್ತೇನೆ."
+    guruMantraMeaning: "ಗುರು ಬ್ರಹ್ಮ (ಸೃಷ್ಟಿಕರ್ತ), ಗುರು ವಿಷ್ಣು (ಪಾಲಕ), ಮತ್ತು ಗುರು ದೇವೋ ಮಹೇಶ್ವರ (ನಾಶಕ). ಗುರು ಸಾಕ್ಷಾತ್ ಪರಬ್ರಹ್ಮ (ಪರಮ ಸತ್ಯ). ಅಂತಹ ಗುರುವಿಗೆ ನಾನು ನಮಸ್ಕರಿಸುತ್ತೇನೆ.",
+    guruDikshaFeeTitle: "ಗುರು ದೀಕ್ಷಾ ಶುಲ್ಕ",
+    guruDikshaFee: "ಶುಲ್ಕ: ₹5500",
+    guruDikshaMode: "ವಿಧಾನ: ದೂರಸ್ಥ ಗುರು ದೀಕ್ಷಾ ಪ್ರಕ್ರಿಯೆ",
+    guruDikshaFreeConditionsTitle: "ಉಚಿತ ದೀಕ್ಷೆ (ಷರತ್ತುಗಳು ಅನ್ವಯ)",
+    guruDikshaFreeCondition1: "1. ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
+    guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -220,9 +226,9 @@ export const translations = {
     healingInfo2: "It is effective for arthritis, diabetes, and other chronic diseases. This is the promise given by the god of life, Hanuman, to mankind through the Hanuman Chalisa.",
     hanumanDoha: "Nasai Rog Hare Sab Peera, Japat Nirantar Hanumat Beera",
     hanumanDohaMeaning: "\"All diseases and pains are removed by continuously chanting the heroic name of Hanuman.\" This couplet is known for its healing powers, and when recited with faith, it provides relief from all kinds of physical and mental afflictions. This couplet holds the formula to cure all kinds of diseases if practiced with proper activation according to age, disease, and severity.",
-    healingContact: "For more information and to receive mantra therapy, please contact us.",
+    healingContact: "For more information and to receive Mantra Therapy, please contact us.",
     hanumanTherapyFee: "Fee: Starting from ₹5500",
-    hanumanTherapyFeeDetails: "based on the disease, its severity, and the patient's age. Contact us for activation and procedure. For Free 👇",
+    hanumanTherapyFeeDetails: "Contact us for activation and procedure based on the disease, its severity, and the patient's age. For Free 👇",
     freeHealingTitle: "Free Mantra Therapy",
     freeHealingCondition1: "Must be a premium member of Mantravaahini.",
     freeHealingCondition2: "Must be dedicated to serving the Guru and humanity with honesty.",
@@ -300,6 +306,12 @@ export const translations = {
     guruDikshaNathaContent: "In the Natha tradition, the Guru holds a high position. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
     guruMantraTitle: "Guru Mantra",
     guruMantra: "GururBrahma GururVishnu GururDevo Maheshwaraha |\nGuru Saakshaat ParaBrahma Tasmai Sri Gurave Namaha ||",
-    guruMantraMeaning: "The Guru is Brahma (the Creator), the Guru is Vishnu (the Preserver), and the Guru is Lord Maheshwara (the Destroyer). The Guru is the absolute reality. I bow to that Guru."
+    guruMantraMeaning: "The Guru is Brahma (the Creator), the Guru is Vishnu (the Preserver), and the Guru is Lord Maheshwara (the Destroyer). The Guru is the absolute reality. I bow to that Guru.",
+    guruDikshaFeeTitle: "Guru Diksha Fee",
+    guruDikshaFee: "Fee: ₹5500",
+    guruDikshaMode: "Mode: Distance Guru Diksha Process",
+    guruDikshaFreeConditionsTitle: "Free Diksha (Conditions Apply)",
+    guruDikshaFreeCondition1: "1. Must be a premium member of Mantravaahini.",
+    guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru and humanity with honesty.",
   }
 };
