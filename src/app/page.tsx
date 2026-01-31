@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef, type MouseEvent } from "react";
 import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
@@ -23,6 +23,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { UpgradeDialog } from "@/app/components/upgrade-dialog";
+import { differenceInDays, isToday } from "date-fns";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -30,10 +32,144 @@ const WhatsAppIcon = () => (
 
 export default function Home() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const { toast } = useToast();
+  
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
+  const [isTrialActive, setIsTrialActive] = useState(true);
+  const [painMantraPlayedToday, setPainMantraPlayedToday] = useState(false);
+
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
   const whatsAppUrl = "https://wa.me/917022070287";
   const kaliMantraImage = PlaceHolderImages.find(img => img.id === 'kali-mantra-infographic');
   const chakshuMantraImage = PlaceHolderImages.find(img => img.id === 'chakshu-mantra-infographic');
+
+  useEffect(() => {
+    // Trial period logic
+    const trialStartDateStr = localStorage.getItem("trialStartDate");
+    if (!trialStartDateStr) {
+      localStorage.setItem("trialStartDate", new Date().toISOString());
+      setIsTrialActive(true);
+    } else {
+      const trialStartDate = new Date(trialStartDateStr);
+      const daysSinceStart = differenceInDays(new Date(), trialStartDate);
+      if (daysSinceStart > 7) {
+        setIsTrialActive(false);
+      }
+    }
+
+    // Daily play limit for pain mantra
+    const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
+    if (lastPlayDateStr) {
+      const lastPlayDate = new Date(lastPlayDateStr);
+      if (isToday(lastPlayDate)) {
+        setPainMantraPlayedToday(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.play().catch(e => console.error("Playback failed", e));
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+     const audio = audioRef.current;
+     const currentMantra = mantras[currentTrackIndex];
+     if (audio && currentMantra) {
+        const newSrc = currentMantra.url.startsWith('http') ? currentMantra.url : `${window.location.origin}${currentMantra.url}`;
+         if(audio.src !== newSrc) {
+            audio.src = newSrc;
+            audio.load();
+            setIsPlaying(false);
+            setProgress(0);
+            setCurrentTime(0);
+            setDuration(0);
+         }
+     }
+  }, [currentTrackIndex]);
+
+   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const setAudioData = () => {
+      setDuration(audio.duration);
+      setCurrentTime(audio.currentTime);
+    };
+
+    const setAudioTime = () => {
+      const newTime = audio.currentTime;
+      setCurrentTime(newTime);
+      setProgress((newTime / audio.duration) * 100);
+    };
+
+    audio.addEventListener("loadeddata", setAudioData);
+    audio.addEventListener("timeupdate", setAudioTime);
+    audio.addEventListener("ended", () => setIsPlaying(false));
+
+    return () => {
+      audio.removeEventListener("loadeddata", setAudioData);
+      audio.removeEventListener("timeupdate", setAudioTime);
+      audio.removeEventListener("ended", () => setIsPlaying(false));
+    };
+  }, []);
+
+  const handlePlayPause = () => {
+    const currentMantra = mantras[currentTrackIndex];
+    if (!currentMantra) return;
+
+    if (isPlaying) {
+        setIsPlaying(false);
+        return;
+    }
+
+    switch(currentMantra.tier) {
+        case 'free':
+            if (painMantraPlayedToday) {
+                toast({
+                    variant: "destructive",
+                    title: "Daily Limit Reached",
+                    description: "You can play this mantra once per day. The count resets at midnight.",
+                });
+            } else {
+                setIsPlaying(true);
+                localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
+                setPainMantraPlayedToday(true);
+            }
+            break;
+        
+        case 'trial':
+            if (isTrialActive) {
+                setIsPlaying(true);
+            } else {
+                setUpgradeDialogContent({
+                    title: "Trial Period Ended",
+                    description: "Your 7-day trial for this mantra has ended. Please upgrade to continue listening.",
+                });
+                setShowUpgradeDialog(true);
+            }
+            break;
+
+        case 'paid':
+            setUpgradeDialogContent({
+                title: "Upgrade Required",
+                description: "This is a premium mantra. Please upgrade to access our full library of powerful mantras.",
+            });
+            setShowUpgradeDialog(true);
+            break;
+    }
+  }
 
   const handlePainReliefSelect = () => {
     const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
@@ -47,6 +183,14 @@ export default function Home() {
   };
 
   const handleEyeProblemsSelect = () => {
+    if (!isTrialActive) {
+        setUpgradeDialogContent({
+            title: "Trial Period Ended",
+            description: "Your 7-day trial for this mantra has ended. Please upgrade to continue listening.",
+        });
+        setShowUpgradeDialog(true);
+        return;
+    }
     const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
     if (chakshuMantraIndex !== -1) {
       setCurrentTrackIndex(chakshuMantraIndex);
@@ -56,6 +200,21 @@ export default function Home() {
       });
     }
   };
+
+  const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || !e.currentTarget) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const newTime = (clickX / width) * duration;
+    
+    if (isFinite(newTime)) {
+      audio.currentTime = newTime;
+    }
+  };
+
 
   const handleShare = async () => {
     const shareData = {
@@ -176,7 +335,17 @@ export default function Home() {
             </div>
             
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
-              <MantraPlayer mantras={mantras} currentTrackIndex={currentTrackIndex} onTrackChange={setCurrentTrackIndex} />
+              <MantraPlayer 
+                mantras={mantras} 
+                currentTrackIndex={currentTrackIndex} 
+                onTrackChange={setCurrentTrackIndex}
+                isPlaying={isPlaying}
+                onPlayPause={handlePlayPause}
+                progress={progress}
+                duration={duration}
+                currentTime={currentTime}
+                onProgressClick={handleProgressClick}
+              />
 
               <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
                 <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
@@ -271,8 +440,13 @@ export default function Home() {
 
         </div>
       </main>
+      <audio ref={audioRef} />
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={setShowUpgradeDialog}
+        title={upgradeDialogContent.title}
+        description={upgradeDialogContent.description}
+      />
       <BannerAd />
     </div>
   );
-
-    
