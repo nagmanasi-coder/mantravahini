@@ -145,6 +145,8 @@ export const translations = {
     guruDikshaTitle: "ಗುರು ದೀಕ್ಷೆ",
     guruDikshaSubtitle: "ಆಧ್ಯಾತ್ಮಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ದೀಕ್ಷೆ",
     guruDikshaComingSoon: "ವಿವರಗಳನ್ನು ಶೀಘ್ರದಲ್ಲೇ ನವೀಕರಿಸಲಾಗುತ್ತದೆ... ನಿರೀಕ್ಷಿಸಿರಿ.",
+    guruDikshaNathaTitle: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ ಗುರುವಿನ ಮಹತ್ವ",
+    guruDikshaNathaContent: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ, ಗುರುವಿಗೆ ದೇವರಿಗಿಂತಲೂ ಉನ್ನತ ಸ್ಥಾನವಿದೆ. ಗುರು ತೋರಿಸಿದ ಮಾರ್ಗ ಮತ್ತು ಪರಂಪರೆಯೇ ಸರ್ವಶ್ರೇಷ್ಠವೆಂದು ಪರಿಗಣಿಸಲಾಗಿದೆ. ಗುರುವು ಸಂಪ್ರದಾಯದ ಜೀವಂತ ಸ್ವರೂಪ ಮತ್ತು ದೈವಿಕ ಜ್ಞಾನಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ. ಗುರುವಿನ ಕೃಪೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶನವಿಲ್ಲದೆ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಗತಿ ಅಸಾಧ್ಯವೆಂದು ನಂಬಲಾಗಿದೆ. ಈ ಸಂಪ್ರದಾಯವು ಗುರುವಿನ ಮಾತೇ ಅಂತಿಮ ಶಾಸನ ಮತ್ತು ಅವರ ಮಾರ್ಗದರ್ಶನವೇ ಜ್ಞಾನೋದಯಕ್ಕೆ ಏಕೈಕ ನಿಜವಾದ ಮಾರ್ಗವೆಂದು ಒತ್ತಿಹೇಳುತ್ತದೆ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -291,6 +293,8 @@ export const translations = {
     guruDikshaTitle: "Guru Diksha",
     guruDikshaSubtitle: "Spiritual Guidance and Initiation",
     guruDikshaComingSoon: "Details will be updated soon... stay tuned.",
+    guruDikshaNathaTitle: "The Importance of the Guru in the Natha Tradition",
+    guruDikshaNathaContent: "In the Natha tradition, the Guru holds the highest position, even above the gods. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
   }
 };
 

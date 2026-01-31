@@ -1,8 +1,9 @@
+
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Footprints } from "lucide-react";
 
 export default function GuruDikshaPage() {
   const { t } = useLanguage();
@@ -35,6 +36,19 @@ export default function GuruDikshaPage() {
                 </p>
               </CardContent>
             </Card>
+
+            <Card className="bg-secondary/50">
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
+                  <Footprints className="h-6 w-6 text-primary" />
+                  {t('guruDikshaNathaTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-foreground">
+                <p>{t('guruDikshaNathaContent')}</p>
+              </CardContent>
+            </Card>
+
           </div>
         </div>
       </main>
