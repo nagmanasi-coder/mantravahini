@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser } from "@/firebase";
+import { Badge } from "@/components/ui/badge";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -141,7 +142,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   };
 
   return (
-    <Card className={cn("overflow-hidden shadow-xl")}>
+    <Card className={cn("overflow-hidden shadow-xl relative")}>
+        {mantra.tier === 'free' && (
+          <Badge variant="secondary" className="absolute top-4 right-4 z-10">
+            {t('free')}
+          </Badge>
+        )}
         <CardHeader>
           <CardTitle className="font-headline text-2xl text-center">{language === 'kn' ? mantra?.name : mantra?.name_en}</CardTitle>
         </CardHeader>

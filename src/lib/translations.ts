@@ -133,7 +133,8 @@ export const translations = {
     featureDivineGroup: "ದೈವಿಕ ಗುಂಪಿಗೆ ಪ್ರವೇಶ*",
     upgradeButton: "ಈಗಲೇ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ",
     currentPlan: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ",
-    contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ"
+    contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ",
+    free: "ಉಚಿತ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -268,6 +269,7 @@ export const translations = {
     featureDivineGroup: "Access to Divine Group*",
     upgradeButton: "Upgrade Now",
     currentPlan: "Your Current Plan",
-    contactToActivate: "Contact to activate"
+    contactToActivate: "Contact to activate",
+    free: "Free",
   }
 };
