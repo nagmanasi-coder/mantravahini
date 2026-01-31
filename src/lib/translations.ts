@@ -71,7 +71,7 @@ export const translations = {
     hanumanDohaMeaning: "\"ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ.\" ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.",
     healingContact: "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಮಂತ್ರ ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     hanumanTherapyFee: "ಶುಲ್ಕ: ₹5500 ರಿಂದ ಪ್ರಾರಂಭ",
-    hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
+    hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ ಶುಲ್ಕವು ಬದಲಾಗುತ್ತದೆ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
     freeHealingTitle: "ಉಚಿತ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ",
     freeHealingCondition1: "ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
     freeHealingCondition2: "ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
@@ -156,6 +156,9 @@ export const translations = {
     guruDikshaFreeConditionsTitle: "ಉಚಿತ ದೀಕ್ಷೆ (ಷರತ್ತುಗಳು ಅನ್ವಯ)",
     guruDikshaFreeCondition1: "1. ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
     guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
+    shishyaDutiesTitle: "ಶಿಷ್ಯನ ಕರ್ತವ್ಯಗಳು",
+    shishyaDutiesSubtitle: "ಎರಡನೇ ಷರತ್ತಿನ ಮಹತ್ವ",
+    shishyaDutiesContent: "ಗುರು ದೀಕ್ಷೆ ಪಡೆದ ನಂತರ, ಶಿಷ್ಯನಿಗೆ ಕೆಲವು ಜವಾಬ್ದಾರಿಗಳಿರುತ್ತವೆ. ಎರಡನೇ ಷರತ್ತಿನಲ್ಲಿ ತಿಳಿಸಿದಂತೆ, ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಗೆ ನಿಷ್ಠೆಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವುದು ಶಿಷ್ಯನ ಪ್ರಮುಖ ಕರ್ತವ್ಯ. ಇದು ಕೇವಲ ಒಂದು ಷರತ್ತಲ್ಲ, ಬದಲಿಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣದ ಒಂದು ಅವಿಭಾಜ್ಯ ಅಂಗ. ಈ ಸೇವಾ ಮನೋಭಾವದಿಂದ ಮಾತ್ರ ಶಿಷ್ಯನು ಗುರುವಿನ ಸಂಪೂರ್ಣ ಕೃಪೆಗೆ ಪಾತ್ರನಾಗುತ್ತಾನೆ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕವಾಗಿ ಬೆಳೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -313,5 +316,8 @@ export const translations = {
     guruDikshaFreeConditionsTitle: "Free Diksha (Conditions Apply)",
     guruDikshaFreeCondition1: "1. Must be a premium member of Mantravaahini.",
     guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru, the Guru Tradition, and humanity with honesty.",
+    shishyaDutiesTitle: "Duties of a Disciple",
+    shishyaDutiesSubtitle: "The Importance of the Second Condition",
+    shishyaDutiesContent: "After receiving Guru Diksha, a disciple has certain responsibilities. As mentioned in the second condition, it is the foremost duty of the disciple to serve the Guru, the Guru tradition, and humanity with loyalty and honesty. This is not just a condition, but an integral part of the spiritual journey. Only with this attitude of service can the disciple receive the Guru's full grace and grow spiritually.",
   }
 };

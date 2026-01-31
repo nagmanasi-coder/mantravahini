@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
 import { Sparkles, Footprints, Check } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -36,6 +36,16 @@ const GuruDikshaPageSkeleton = () => (
               <div className="pt-4">
                 <Skeleton className="h-32 w-full" />
               </div>
+            </CardContent>
+          </Card>
+          <Separator />
+           <Card>
+            <CardHeader>
+                <Skeleton className="h-6 w-2/3 mx-auto" />
+                <Skeleton className="h-4 w-1/3 mx-auto mt-2" />
+            </CardHeader>
+            <CardContent className="text-center">
+              <Skeleton className="h-16 w-full" />
             </CardContent>
           </Card>
           <Separator />
@@ -134,6 +144,19 @@ export default function GuruDikshaPage() {
                         ))}
                     </CardContent>
                 </Card>
+              </CardContent>
+            </Card>
+
+            <Separator />
+
+            {/* Duties of a Disciple Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl text-center">{t('shishyaDutiesTitle')}</CardTitle>
+                <CardDescription className="text-center">{t('shishyaDutiesSubtitle')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">{t('shishyaDutiesContent')}</p>
               </CardContent>
             </Card>
 
