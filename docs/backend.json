@@ -34,12 +34,48 @@
         "duration",
         "language"
       ]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "type": "object",
+      "description": "Represents a user's public profile.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the user's profile picture."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user profile was created."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "createdAt"
+      ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com"
     ]
   },
   "firestore": {
@@ -59,8 +95,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. Users can only read and write their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The user's unique ID."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "Based on the application requirements, which primarily involve playing pre-loaded mantra MP3 tracks, the Firestore data structure is designed for simplicity and read optimization. We'll store mantra track metadata in a single collection. This approach avoids unnecessary complexity, since there is no user-generated data or collaborative features, which would require more sophisticated access control.\n\nAuthorization Independence is not a primary concern here since there are no specific authorization requirements outlined (no user-specific data or collaborative features). If future versions of the application require user-specific preferences or playlists, the structure can be extended to include user-specific subcollections. QAPs are also not a major concern as it is expected that all the Mantra tracks will be publicly visible in the app.\n\nThe system has no roles or ownership requirements. Thus, complex ACL's are not required."
+    "reasoning": "The Firestore data structure is designed for simplicity and read optimization. We'll store mantra track metadata in a single public collection. User profiles will be stored in a separate `users` collection, with security rules ensuring that users can only access and modify their own data. This approach supports the freemium model while maintaining data privacy and security."
   }
 }

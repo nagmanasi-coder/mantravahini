@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 
-import { useAuth } from '@/firebase/provider';
+import { useAuth, useFirestore } from '@/firebase/provider';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useFirestore } from '..';
+import { errorEmitter } from '../error-emitter';
+import { FirestorePermissionError } from '../errors';
 
 export function useUser() {
   const auth = useAuth();
@@ -14,7 +15,7 @@ export function useUser() {
 
   useEffect(() => {
     if (!auth) {
-      // Auth service might not be initialized yet
+      setLoading(false);
       return;
     }
 
@@ -24,15 +25,33 @@ export function useUser() {
         // Sync user to firestore
         if (firestore) {
           const userRef = doc(firestore, 'users', userAuth.uid);
-          const userSnap = await getDoc(userRef);
-          if (!userSnap.exists()) {
-            await setDoc(userRef, {
-              uid: userAuth.uid,
-              email: userAuth.email,
-              displayName: userAuth.displayName,
-              photoURL: userAuth.photoURL,
-              createdAt: new Date().toISOString(),
-            }, { merge: true });
+          try {
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists()) {
+              const userData = {
+                uid: userAuth.uid,
+                email: userAuth.email,
+                displayName: userAuth.displayName,
+                photoURL: userAuth.photoURL,
+                createdAt: new Date().toISOString(),
+              };
+              setDoc(userRef, userData, { merge: true }).catch(
+                (serverError) => {
+                  const permissionError = new FirestorePermissionError({
+                    path: userRef.path,
+                    operation: 'create',
+                    requestResourceData: userData,
+                  });
+                  errorEmitter.emit('permission-error', permissionError);
+                }
+              );
+            }
+          } catch (e) {
+             const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'get',
+              });
+              errorEmitter.emit('permission-error', permissionError);
           }
         }
       } else {
