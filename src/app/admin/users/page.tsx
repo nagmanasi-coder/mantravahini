@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, doc } from 'firebase/firestore';
-import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -19,6 +19,21 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User as UserIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
 
 interface UserProfile {
   uid: string;
@@ -28,12 +43,19 @@ interface UserProfile {
   isPremium?: boolean;
 }
 
+const addUserFormSchema = z.object({
+  uid: z.string().min(1, 'UID is required.'),
+  displayName: z.string().min(1, 'Display Name is required.'),
+  email: z.string().email('Please enter a valid email.'),
+});
+
 export default function AdminUsersPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
 
   const [isDeveloper, setIsDeveloper] = useState(false);
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   
   useEffect(() => {
     if (!userLoading) {
@@ -58,6 +80,39 @@ export default function AdminUsersPage() {
     updateDocumentNonBlocking(userDocRef, { isPremium });
   };
 
+  const form = useForm<z.infer<typeof addUserFormSchema>>({
+    resolver: zodResolver(addUserFormSchema),
+    defaultValues: {
+      uid: '',
+      displayName: '',
+      email: '',
+    },
+  });
+
+  const handleAddUser = (values: z.infer<typeof addUserFormSchema>) => {
+    if (!firestore) return;
+    const userDocRef = doc(firestore, 'users', values.uid);
+    const newUserProfile = {
+      ...values,
+      photoURL: '',
+      isPremium: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    setDoc(userDocRef, newUserProfile)
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: userDocRef.path,
+          operation: 'create',
+          requestResourceData: newUserProfile,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
+    
+    form.reset();
+    setIsAddUserDialogOpen(false);
+  };
+
   if (userLoading || !isDeveloper) {
     return (
       <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -80,9 +135,67 @@ export default function AdminUsersPage() {
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
+      <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>
+              Create a Firestore profile for a user. The UID must match an existing Firebase Authentication user.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleAddUser)} className="grid gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="uid"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User ID (UID)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Firebase User ID" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="displayName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Jane Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="user@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit">Create User</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>User Management</CardTitle>
+          <Button onClick={() => setIsAddUserDialogOpen(true)}>Add New User</Button>
         </CardHeader>
         <CardContent>
           <Table>
