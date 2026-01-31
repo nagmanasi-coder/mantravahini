@@ -1,122 +1,66 @@
 {
   "entities": {
-    "Mantra": {
+    "MantraTrack": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Mantra",
+      "title": "MantraTrack",
       "type": "object",
-      "description": "Represents a mantra track in the application.",
+      "description": "Represents a single mantra track in the Mantravaahini app.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Mantra entity."
+          "description": "Unique identifier for the MantraTrack entity."
         },
-        "title": {
+        "titleKannada": {
           "type": "string",
-          "description": "Title of the mantra track."
+          "description": "The title of the mantra track in Kannada."
         },
-        "filePath": {
+        "audioUrl": {
           "type": "string",
-          "description": "File path or URL to the mantra audio file."
+          "description": "URL of the MP3 audio file for the mantra track."
         },
         "duration": {
           "type": "number",
           "description": "Duration of the mantra track in seconds."
         },
-        "language": {
-          "type": "string",
-          "description": "Language of the mantra (e.g., Kannada)."
+        "order": {
+          "type": "number",
+          "description": "The order in which the track appears in the tracklist."
         }
       },
       "required": [
         "id",
-        "title",
-        "filePath",
+        "titleKannada",
+        "audioUrl",
         "duration",
-        "language"
-      ]
-    },
-    "UserProfile": {
-      "title": "User Profile",
-      "type": "object",
-      "description": "Represents a user's public profile.",
-      "properties": {
-        "uid": {
-          "type": "string",
-          "description": "The user's unique ID."
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "description": "The user's email address."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name."
-        },
-        "photoURL": {
-          "type": "string",
-          "format": "uri",
-          "description": "URL of the user's profile picture."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "The timestamp when the user profile was created."
-        },
-        "isPremium": {
-          "type": "boolean",
-          "description": "Indicates if the user has a premium subscription."
-        }
-      },
-      "required": [
-        "uid",
-        "email",
-        "createdAt"
+        "order"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
     "structure": [
       {
-        "path": "/mantras/{mantraId}",
+        "path": "/mantra_tracks/{trackId}",
         "definition": {
-          "entityName": "Mantra",
+          "entityName": "MantraTrack",
           "schema": {
-            "$ref": "#/backend/entities/Mantra"
+            "$ref": "#/backend/entities/MantraTrack"
           },
-          "description": "Stores metadata for mantra tracks. No specific access control is required.",
+          "description": "Stores the details of each mantra track, including title, audio URL, duration, and order.",
           "params": [
             {
-              "name": "mantraId",
+              "name": "trackId",
               "description": "Unique identifier for the mantra track."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile information. Users can only read and write their own profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The user's unique ID."
             }
           ]
         }
       }
     ],
-    "reasoning": "The Firestore data structure is designed for simplicity and read optimization. We'll store mantra track metadata in a single public collection. User profiles will be stored in a separate `users` collection, with security rules ensuring that users can only access and modify their own data. This approach supports the freemium model while maintaining data privacy and security."
+    "reasoning": "Given the app's primary function is playing pre-loaded mantra tracks, and there are no user-generated content or user-specific settings, a simple, flat structure is sufficient. A single collection, `/mantra_tracks`, will store all the track data. This approach avoids unnecessary complexity and optimizes read performance for track playback. The structure ensures all documents share the same security requirements, fulfilling the homogeneous security posture requirement.\n\nThis design inherently supports Authorization Independence as there is no hierarchical relationship or user-specific data requiring complex rules. The QAP (Rules are not Filters) requirement is trivially satisfied since listing all tracks is the primary use case, and no user-specific filtering is required."
   }
 }

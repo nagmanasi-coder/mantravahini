@@ -1,54 +1,58 @@
 /**
  * Core Philosophy:
- * This ruleset establishes a secure model for the application's data.
- * The primary goal is to serve a curated, public collection of mantra tracks to all
- * users, while ensuring that user-specific data is private and can only be
- * modified by the owner.
+ * This ruleset establishes a secure, read-only data model for the Mantravaahini
+ * app. The primary goal is to serve pre-loaded, static content (mantra tracks)
+ * to all users, including those who are not signed in. The security posture is
+ * to allow universal read access while completely prohibiting any client-side
+ * write operations (create, update, delete) to protect the integrity of the
+ * curated content.
  *
  * Data Structure:
- * - /mantras: Stores public metadata for each mantra track.
- * - /users: Stores private user profile information.
+ * The data is organized in a single, flat top-level collection:
+ * - /mantra_tracks: Stores all mantra track documents.
+ *
+ * This simple structure is highly performant for the app's core function, which
+ * is fetching and listing all available tracks.
  *
  * Key Security Decisions:
- * - Public Read Access for Mantras: All documents in the /mantras collection are publicly
- *   readable by any client, authenticated or not.
- * - No Client-Side Writes to Mantras: All write operations from the client are disabled
- *   for the /mantras collection to protect the integrity of the curated content.
- * - User-Owned Profiles: Users can create, read, and update their own document in the
- *   /users collection. They cannot access or modify anyone else's data.
+ * - Public Read Access: All mantra tracks are publicly readable. Any user,
+ *   authenticated or anonymous, can fetch a single track or list all tracks.
+ * - No Client Writes: To protect the pre-loaded content, all write operations
+ *   from client applications are explicitly denied. Data is expected to be
+ *   managed out-of-band by administrators (e.g., via the Firebase Console or
+ *   the Admin SDK).
+ * - No User Data: There are no user-specific collections or documents, simplifying
+ *   the rules and eliminating the need for user-based ownership checks.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description
-     * Rules for the 'mantras' collection, which stores publicly accessible mantra tracks.
-     * All users, including anonymous ones, can read this data, but no one can write
-     * to it from the client, ensuring the integrity of this curated collection.
-     * @path
-     * /mantras/{mantraId}
+     * @description Allows public read-only access to all mantra tracks. All write operations are denied.
+     * @path        /mantra_tracks/{trackId}
+     * @allow       Any user, authenticated or not, retrieving a track document: `(get) /mantra_tracks/some_track_id`
+     * @deny        Any user attempting to create a new track: `(create) /mantra_tracks/new_track with { ... }`
+     * @principle   Secures pre-loaded, static content by making it publicly readable but non-modifiable by clients.
      */
-    match /mantras/{mantraId} {
-      allow get, list: if true;
-      allow write: if false;
+    match /mantra_tracks/{trackId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
+
+    // =====================================================================
+    // Helper Functions
+    // =====================================================================
 
     /**
-     * @description
-     * Rules for the 'users' collection. Each user has their own document, identified
-     * by their UID. Users can create their own profile and can read or update it.
-     * They cannot read or write to any other user's profile.
-     * @path
-     * /users/{userId}
+     * isSignedIn
+     * Checks if the user making the request is authenticated.
      */
-    match /users/{userId} {
-      // User self-access rules
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
-
-      // Developer admin rules
-      allow list, get, update: if request.auth != null && request.auth.uid == 'FaGAe1gQAdayrSd09khGJbVMeZI3';
-    }
+    // function isSignedIn() {
+    //   return request.auth != null;
+    // }
   }
 }
