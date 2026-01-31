@@ -1,3 +1,4 @@
+
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -127,6 +128,7 @@ export const translations = {
     featureUnlimitedPlays: "ಅನಿಯಮಿತ ಪ್ಲೇಗಳು",
     featureNewMantras: "ಹೊಸ ಮಂತ್ರಗಳು ನಿಯಮಿತವಾಗಿ ಸೇರಿಸಲ್ಪಡುತ್ತವೆ",
     featureOfflineAccess: "ಆಫ್‌ಲೈನ್ ಪ್ರವೇಶ (ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ)",
+    featureAiChatbot: "AI ಚಾಟ್‌ಬಾಟ್ (ಸಂದರ್ಭಕ್ಕೆ ತಕ್ಕಂತೆ, ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ)",
     upgradeButton: "ಈಗಲೇ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ",
     currentPlan: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ",
     contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ"
@@ -259,6 +261,7 @@ export const translations = {
     featureUnlimitedPlays: "Unlimited Plays",
     featureNewMantras: "New Mantras Added Regularly",
     featureOfflineAccess: "Offline Access (Coming Soon)",
+    featureAiChatbot: "AI Chatbot (context-aware, coming soon)",
     upgradeButton: "Upgrade Now",
     currentPlan: "Your Current Plan",
     contactToActivate: "Contact to activate"
