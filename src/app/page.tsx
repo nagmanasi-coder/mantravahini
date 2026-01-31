@@ -8,7 +8,6 @@ import { MantraPlayer } from "@/app/components/mantra-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Heart, Share2, Users, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,17 +35,25 @@ export default function Home() {
   const kaliMantraImage = PlaceHolderImages.find(img => img.id === 'kali-mantra-infographic');
   const chakshuMantraImage = PlaceHolderImages.find(img => img.id === 'chakshu-mantra-infographic');
 
-  const handleTabChange = (value: string) => {
-    if (value === 'pain-relief') {
-      const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
-      if (kaliMantraIndex !== -1) {
-        setCurrentTrackIndex(kaliMantraIndex);
-      }
-    } else if (value === 'eye-problems') {
-      const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
-      if (chakshuMantraIndex !== -1) {
-        setCurrentTrackIndex(chakshuMantraIndex);
-      }
+  const handlePainReliefSelect = () => {
+    const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
+    if (kaliMantraIndex !== -1) {
+      setCurrentTrackIndex(kaliMantraIndex);
+      toast({
+        title: "ನೋವು ನಿವಾರಣೆ ಮಂತ್ರ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
+        description: "ಈಗ ನೀವು ಪ್ಲೇಯರ್‌ನಲ್ಲಿ ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು.",
+      });
+    }
+  };
+
+  const handleEyeProblemsSelect = () => {
+    const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
+    if (chakshuMantraIndex !== -1) {
+      setCurrentTrackIndex(chakshuMantraIndex);
+       toast({
+        title: "ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳ ಮಂತ್ರ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
+        description: "ಈಗ ನೀವು ಪ್ಲೇಯರ್‌ನಲ್ಲಿ ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು.",
+      });
     }
   };
 
@@ -116,17 +123,10 @@ export default function Home() {
           </Card>
           
           <div className="flex flex-col gap-8">
-            <div className={cn(cardAnimation)} style={{ animationDelay: "0.6s" }}>
-              <Tabs defaultValue="pain-relief" onValueChange={handleTabChange}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="pain-relief">ನೋವು ನಿವಾರಣೆ</TabsTrigger>
-                  <TabsTrigger value="eye-problems">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</TabsTrigger>
-                  <TabsTrigger value="service">ಸೇವೆ</TabsTrigger>
-                </TabsList>
-                <TabsContent value="pain-relief">
-                  <Card className="mt-4 overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ animationDelay: "0.6s" }}>
+                <Card onClick={handlePainReliefSelect} className={cn("cursor-pointer overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)}>
                     <CardHeader>
-                      <CardTitle className="font-headline text-center text-2xl">ಕಾಳಿ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
+                      <CardTitle className="font-headline text-center text-2xl">ನೋವು ನಿವಾರಣೆ</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="relative aspect-auto w-full">
@@ -139,21 +139,18 @@ export default function Home() {
                           data-ai-hint={kaliMantraImage.imageHint}
                         />}
                       </div>
-                      <div className="mt-4 space-y-2 text-center text-muted-foreground">
+                      <div className="mt-4 space-y-2 text-center text-muted-foreground text-sm">
                         <p>1. ಒಂದು ಲೋಟ ಶುದ್ಧ ಕುಡಿಯುವ ನೀರನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ.</p>
                         <p>2. ಚಿತ್ರದಲ್ಲಿ ತೋರಿಸಿರುವಂತೆ ಮೊಬೈಲ್ ಹಿಡಿದುಕೊಳ್ಳಿ. ಲೌಡ್ ಸ್ಪೀಕರ್ ಆನ್ ಮಾಡಿ, ಸ್ಪೀಕರ್ ನೀರಿನ ಕಡೆಗೆ ಇರುವಂತೆ ನೋಡಿಕೊಳ್ಳಿ.</p>
                         <p>3. ಮ್ಯೂಸಿಕ್ ಪ್ಲೇಯರ್ ಅನ್ನು ರನ್ ಮಾಡಿ, ಮಂತ್ರದ ಅಂತ್ಯದವರೆಗೆ ಕಾಯಿರಿ.</p>
                         <p>4. ಈ ಮಂತ್ರ ತುಂಬಿದ ನೀರನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಕುಡಿಯಿರಿ.</p>
-                        <p>5. ಇದು ದೇಹ ಅಥವಾ ಕೀಲುಗಳಲ್ಲಿನ ನೋವನ್ನು ತಕ್ಷಣವೇ ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.</p>
-                        <p className="font-semibold text-foreground">Observe the pain subsides instantly.. continue with full faith and trust till heal.</p>
+                        <p className="font-semibold text-foreground">ನೋವು ತಕ್ಷಣವೇ ಕಡಿಮೆಯಾಗುವುದನ್ನು ಗಮನಿಸಿ. ಗುಣವಾಗುವವರೆಗೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆಯಿಂದ ಮುಂದುವರಿಸಿ.</p>
                       </div>
                     </CardContent>
                   </Card>
-                </TabsContent>
-                <TabsContent value="eye-problems">
-                    <Card className="mt-4 overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+                  <Card onClick={handleEyeProblemsSelect} className={cn("cursor-pointer overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)}>
                       <CardHeader>
-                        <CardTitle className="font-headline text-center text-2xl">ಚಾಕ್ಷುಸ ಮಂತ್ರ ಪ್ರಯೋಗ ವಿಧಾನ</CardTitle>
+                        <CardTitle className="font-headline text-center text-2xl">ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು</CardTitle>
                       </CardHeader>
                       <CardContent>
                          <div className="relative mx-auto aspect-auto w-full max-w-md">
@@ -166,84 +163,16 @@ export default function Home() {
                             data-ai-hint={chakshuMantraImage.imageHint}
                           />}
                         </div>
-                        <div className="mt-4 space-y-4 text-center">
+                        <div className="mt-4 space-y-4 text-center text-sm">
                            <p className="text-muted-foreground">
-                            ಈ ಮಂತ್ರವು ಸೂರ್ಯ ದೇವರಿಗೆ ಮತ್ತು ಮಾನವಕುಲದ ಸೇವೆಗೆ ಸಂಬಂಧಿಸಿದೆ.
-                          </p>
-                          <p className="text-muted-foreground">
-                            ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ.
-                          </p>
-                           <p className="text-muted-foreground">
-                            ಕೆಲವೇ ದಿನಗಳಲ್ಲಿ ಯಾವುದೇ ಕಣ್ಣಿನ ಸಮಸ್ಯೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ, ಎಲ್ಲಾ ರೋಗಲಕ್ಷಣಗಳು ಗುಣವಾಗುವವರೆಗೆ ಮುಂದುವರಿಸಿ.
+                            ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ. ಕೆಲವೇ ದಿನಗಳಲ್ಲಿ ಯಾವುದೇ ಕಣ್ಣಿನ ಸಮಸ್ಯೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ, ಎಲ್ಲಾ ರೋಗಲಕ್ಷಣಗಳು ಗುಣವಾಗುವವರೆಗೆ ಮುಂದುವರಿಸಿ.
                           </p>
                           <p className="font-semibold text-primary">
-                            ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ. ಆದ್ದರಿಂದ, 7 ಜನರಿಗೆ ಸೇವೆ ಸಲ್ಲಿಸುವ ಉದ್ದೇಶ ನಿಮಗಿದ್ದರೆ, ಈ ಮಂತ್ರವು ಸಂಪೂರ್ಣವಾಗಿ ಫಲ ನೀಡುವುದು ಖಚಿತ.
+                            ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ.
                           </p>
                         </div>
                       </CardContent>
                     </Card>
-                </TabsContent>
-                <TabsContent value="service">
-                  <Card className="mt-4">
-                    <CardContent className="p-6 text-center space-y-4">
-                      <p className="font-semibold text-foreground text-lg">
-                        ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
-                      </p>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button>
-                            <Heart className="mr-2 h-4 w-4" />
-                            Donate
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Donate for the Cause</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              PhonePe/WhatsApp: 7022070287. Please send a screenshot to this number after payment.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogAction>OK</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                       <p className="text-sm text-muted-foreground">
-                        Contact us to contribute to our cause.
-                      </p>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline">
-                            <Users className="mr-2 h-4 w-4" />
-                            Join divine Group
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Join our Divine Entity Group / ನಮ್ಮ ದೈವಿಕ ಘಟಕದ ಗುಂಪಿಗೆ ಸೇರಿ</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              To spread the power of mantras to everyone, join our group of divine entities.
-                              <br />
-                              ಮಂತ್ರಗಳ ಶಕ್ತಿಯನ್ನು ಎಲ್ಲರಿಗೂ ತಲುಪಿಸಲು, ನಮ್ಮ ದೈವಿಕ ಘಟಕಗಳ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogAction>OK</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-
-                      <div className="border-t border-border pt-4">
-                        <Button onClick={handleShare}>
-                          <Share2 className="mr-2 h-4 w-4" />
-                          Share app to serve mankind
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
             </div>
             
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
@@ -259,6 +188,61 @@ export default function Home() {
               </div>
             </div>
 
+            <Card className={cn("mt-4", cardAnimation)} style={{ animationDelay: "0.7s" }}>
+                <CardContent className="p-6 text-center space-y-4">
+                  <p className="font-semibold text-foreground text-lg">
+                    ಮಾನವ ಸೇವೆಯೇ ದೇವರ ಸೇವೆ
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button>
+                          <Heart className="mr-2 h-4 w-4" />
+                          Donate
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Donate for the Cause</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            PhonePe/WhatsApp: 7022070287. Please send a screenshot to this number after payment.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>OK</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline">
+                          <Users className="mr-2 h-4 w-4" />
+                          Join divine Group
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Join our Divine Entity Group / ನಮ್ಮ ದೈವಿಕ ಘಟಕದ ಗುಂಪಿಗೆ ಸೇರಿ</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            To spread the power of mantras to everyone, join our group of divine entities.
+                            <br />
+                            ಮಂತ್ರಗಳ ಶಕ್ತಿಯನ್ನು ಎಲ್ಲರಿಗೂ ತಲುಪಿಸಲು, ನಮ್ಮ ದೈವಿಕ ಘಟಕಗಳ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>OK</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    <Button onClick={handleShare}>
+                      <Share2 className="mr-2 h-4 w-4" />
+                      Share app to serve
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
           </div>
 
 
@@ -290,4 +274,5 @@ export default function Home() {
       <BannerAd />
     </div>
   );
-}
+
+    
