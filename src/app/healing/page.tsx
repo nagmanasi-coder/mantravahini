@@ -60,6 +60,34 @@ export default function HealingPage() {
                    {t('hanumanDohaMeaning')}
                  </p>
               </div>
+
+              {/* Fee Information Card */}
+              <Card className="bg-secondary/50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-center text-primary">{t('hanumanTherapyFee')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-center text-muted-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                </CardContent>
+              </Card>
+
+              {/* Free Healing Conditions Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl text-center">{t('freeHealingTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="flex items-start text-sm text-muted-foreground">
+                    <span className="mr-2 mt-1">1.</span>
+                    <span>{t('freeHealingCondition1')}</span>
+                  </p>
+                  <p className="flex items-start text-sm text-muted-foreground">
+                    <span className="mr-2 mt-1">2.</span>
+                    <span>{t('freeHealingCondition2')}</span>
+                  </p>
+                </CardContent>
+              </Card>
+
               <div className="text-center">
                  <p className="mt-2 font-semibold text-foreground">{t('healingContact')}</p>
               </div>
