@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -32,6 +33,7 @@ export default function UpgradePage() {
     t('featureNewMantras'),
     t('featureOfflineAccess'),
     t('featureAiChatbot'),
+    t('featureGuruDiksha'),
   ];
 
   return (
