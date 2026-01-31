@@ -71,7 +71,7 @@ export const translations = {
     hanumanDohaMeaning: "\"ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ.\" ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.",
     healingContact: "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     hanumanTherapyFee: "ಶುಲ್ಕ: ₹5500 ರಿಂದ ಪ್ರಾರಂಭ",
-    hanumanTherapyFeeDetails: "ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+    hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
     freeHealingTitle: "ಉಚಿತ ಚಿಕಿತ್ಸೆ (ಷರತ್ತುಗಳು ಅನ್ವಯ)",
     freeHealingCondition1: "ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
     freeHealingCondition2: "ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
@@ -213,7 +213,7 @@ export const translations = {
     hanumanDohaMeaning: "\"All diseases and pains are removed by continuously chanting the heroic name of Hanuman.\" This couplet is known for its healing powers, and when recited with faith, it provides relief from all kinds of physical and mental afflictions. This couplet holds the formula to cure all kinds of diseases if practiced with proper activation according to age, disease, and severity.",
     healingContact: "For more information and to receive treatment, please contact us.",
     hanumanTherapyFee: "Fee: Starting from ₹5500",
-    hanumanTherapyFeeDetails: "Contact us for activation and procedure.",
+    hanumanTherapyFeeDetails: "based on the disease, its severity, and the patient's age. Contact us for activation and procedure. For Free 👇",
     freeHealingTitle: "Free Healing (Conditions Apply)",
     freeHealingCondition1: "Must be a premium member of Mantravaahini.",
     freeHealingCondition2: "Must be dedicated to serving the Guru and humanity with honesty.",
@@ -281,7 +281,9 @@ export const translations = {
     upgradeButton: "Upgrade Now",
     currentPlan: "Your Current Plan",
     contactToActivate: "Contact to activate",
-    free: "Free",
+    free: "ಉಚಿತ",
     manageUsers: "Manage Users",
   }
 };
+
+    
