@@ -7,9 +7,42 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
+import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+);
+
+const HealingPageSkeleton = () => (
+  <div className="relative flex min-h-screen flex-col">
+    <main className="flex-1">
+      <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+        <header className="mb-8 text-center">
+          <Skeleton className="h-10 w-3/4 mx-auto" />
+          <Skeleton className="h-5 w-1/2 mx-auto mt-4" />
+        </header>
+        <Card className="overflow-hidden shadow-xl">
+          <CardHeader>
+            <Skeleton className="h-8 w-2/3 mx-auto" />
+            <Skeleton className="h-4 w-full mt-2" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+             <Skeleton className="aspect-[1080/1350] w-full max-w-md mx-auto" />
+             <div className="space-y-2 pt-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+             </div>
+          </CardContent>
+          <CardFooter>
+            <div className="w-full flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
+              <Skeleton className="h-10 w-48" />
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+    </main>
+  </div>
 );
 
 
@@ -18,6 +51,16 @@ export default function HealingPage() {
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const healingImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return <HealingPageSkeleton />;
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col">
