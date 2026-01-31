@@ -5,13 +5,82 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
 import { Sparkles, Footprints, Check } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const GuruDikshaPageSkeleton = () => (
+  <div className="relative flex min-h-screen flex-col">
+    <main className="flex-1">
+      <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+        <header className="mb-8 text-center">
+          <Skeleton className="h-10 w-3/4 mx-auto" />
+          <Skeleton className="h-5 w-1/2 mx-auto mt-4" />
+        </header>
+        <div className="space-y-8">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="flex justify-center items-center h-48">
+                  <Skeleton className="h-24 w-24 rounded-full" />
+              </div>
+              <Skeleton className="h-5 w-1/3 mx-auto mt-8" />
+            </CardContent>
+          </Card>
+          <Separator />
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/2 mx-auto" />
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+              <Skeleton className="h-8 w-1/4 mx-auto" />
+              <Skeleton className="h-4 w-1/3 mx-auto" />
+              <div className="pt-4">
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Separator />
+          <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-1/3 mx-auto" />
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-5 w-5/6 mx-auto" />
+            </CardContent>
+          </Card>
+           <Separator />
+          <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-2/3 mx-auto" />
+            </CardHeader>
+            <CardContent className="text-center">
+              <Skeleton className="h-16 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </main>
+  </div>
+);
+
 
 export default function GuruDikshaPage() {
   const { t } = useLanguage();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
   const freeConditions = [
     t('guruDikshaFreeCondition1'),
     t('guruDikshaFreeCondition2'),
   ];
+
+  if (!isMounted) {
+    return <GuruDikshaPageSkeleton />;
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
