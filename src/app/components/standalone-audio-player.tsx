@@ -27,7 +27,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const { user } = useUser();
 
   // NOTE: Replace this with your own Firebase User ID to enable developer mode
-  const isDeveloper = user?.uid === "CHANGE_ME_TO_YOUR_FIREBASE_UID";
+  const isDeveloper = user?.uid === "FaGAe1gQAdayrSd09khGJbVMeZI3";
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
