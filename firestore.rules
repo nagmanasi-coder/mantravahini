@@ -1,10 +1,59 @@
+/**
+ * Core Philosophy:
+ * This ruleset establishes a secure, read-only model for the application's data.
+ * The primary goal is to serve a curated, public collection of mantra tracks to all
+ * users, including those who are not signed in. All client-side write operations
+ * (create, update, delete) are strictly forbidden to protect the integrity of the
+ * pre-loaded content. Data management is expected to be handled through the
+ * Firebase Console or a trusted server-side environment.
+ *
+ * Data Structure:
+ * The data is organized into a single top-level collection:
+ * - /mantras: Stores metadata for each mantra track.
+ *
+ * Key Security Decisions:
+ * - Public Read Access: All documents in the /mantras collection are publicly
+ *   readable by any client, authenticated or not. This supports the core feature
+ *   of allowing anyone to browse and play mantras.
+ * - No Client-Side Writes: To prevent unauthorized modification or deletion of
+ *   the curated mantra list, all write operations from the client are disabled.
+ * - Anonymous Access: The rules are designed to work seamlessly with anonymous
+ *   authentication, ensuring that even non-registered users can access the
+ *   public content.
+ *
+ * Denormalization for Authorization:
+ * This ruleset does not require denormalization as the access model is simple and
+ * not dependent on user roles or ownership.
+ *
+ * Structural Segregation:
+ * Not applicable. All data is public, so there is no need to segregate public and
+ * private content into different collections.
+ */
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+
+    /**
+     * @description
+     * Rules for the 'mantras' collection, which stores publicly accessible mantra tracks.
+     * All users, including anonymous ones, can read this data, but no one can write
+     * to it from the client, ensuring the integrity of this curated collection.
+     * @path
+     * /mantras/{mantraId}
+     * @allow
+     * An anonymous user listing all available mantras. (list)
+     * @deny
+     * Any user, signed-in or not, attempting to add a new mantra. (create)
+     * @principle
+     * Provides public read-only access to a global, curated dataset. Client-side
+     * writes are prohibited to maintain data integrity.
+     */
+    match /mantras/{mantraId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }
