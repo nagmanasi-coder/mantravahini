@@ -9,7 +9,7 @@ import { useLanguage } from "@/context/language-context";
 
 export function SplashScreen() {
   const { t } = useLanguage();
-  const beejaMantras = t('beejaMantras').split(' ');
+  const beejaMantrasString = t('beejaMantras');
   const [isVisible, setIsVisible] = useState(true);
   const [mantraStyles, setMantraStyles] = useState<{ transform: string; animationDelay: string }[]>([]);
   const splashImage = PlaceHolderImages.find(img => img.id === 'founder-portrait');
@@ -19,6 +19,7 @@ export function SplashScreen() {
       setIsVisible(false);
     }, 4000); // Show splash screen for 4 seconds
 
+    const beejaMantras = beejaMantrasString.split(' ');
     const styles = beejaMantras.map((mantra, index) => {
         const angle = (index / beejaMantras.length) * 2 * Math.PI;
         const radius = 160; // in pixels
@@ -32,7 +33,7 @@ export function SplashScreen() {
     setMantraStyles(styles);
 
     return () => clearTimeout(timer);
-  }, [beejaMantras]);
+  }, [beejaMantrasString]);
 
   return (
     <div
@@ -52,10 +53,10 @@ export function SplashScreen() {
             data-ai-hint={splashImage.imageHint}
           />}
         </div>
-        {mantraStyles.length > 0 && beejaMantras.map((mantra, index) => {
+        {mantraStyles.length > 0 && beejaMantrasString.split(' ').map((mantra, index) => {
           return (
             <span
-              key={mantra}
+              key={`${mantra}-${index}`}
               className="absolute left-1/2 top-1/2 text-primary font-headline text-2xl animate-fade-in"
               style={mantraStyles[index]}
             >
