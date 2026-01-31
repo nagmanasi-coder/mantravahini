@@ -1,28 +1,21 @@
 /**
  * Core Philosophy:
- * This ruleset establishes a secure, read-only data model for the Mantravaahini
- * app. The primary goal is to serve pre-loaded, static content (mantra tracks)
- * to all users, including those who are not signed in. The security posture is
- * to allow universal read access while completely prohibiting any client-side
- * write operations (create, update, delete) to protect the integrity of the
- * curated content.
+ * This ruleset establishes a secure data model for the Mantravaahini app. It serves
+ * public content (mantras) while protecting user-specific data.
  *
  * Data Structure:
- * The data is organized in a single, flat top-level collection:
- * - /mantra_tracks: Stores all mantra track documents.
- *
- * This simple structure is highly performant for the app's core function, which
- * is fetching and listing all available tracks.
+ * The data is organized into two main collections:
+ * - /mantra_tracks: Stores all mantra track documents, which are public.
+ * - /users: Stores user profile information, including premium status, which is protected.
  *
  * Key Security Decisions:
- * - Public Read Access: All mantra tracks are publicly readable. Any user,
- *   authenticated or anonymous, can fetch a single track or list all tracks.
- * - No Client Writes: To protect the pre-loaded content, all write operations
- *   from client applications are explicitly denied. Data is expected to be
- *   managed out-of-band by administrators (e.g., via the Firebase Console or
- *   the Admin SDK).
- * - No User Data: There are no user-specific collections or documents, simplifying
- *   the rules and eliminating the need for user-based ownership checks.
+ * - Public Read Access for Mantras: All mantra tracks are publicly readable.
+ * - User Data Ownership: Users can read and create their own profile data but are
+ *   prevented from elevating their own privileges (e.g., setting `isPremium`).
+ * - Admin Privileges: A designated developer/admin user has full access to manage
+ *   user data for administrative purposes, such as granting premium access.
+ * - No Client Writes on Mantras: To protect the pre-loaded content, all write operations
+ *   from client applications are explicitly denied.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -31,16 +24,32 @@ service cloud.firestore {
     /**
      * @description Allows public read-only access to all mantra tracks. All write operations are denied.
      * @path        /mantra_tracks/{trackId}
-     * @allow       Any user, authenticated or not, retrieving a track document: `(get) /mantra_tracks/some_track_id`
-     * @deny        Any user attempting to create a new track: `(create) /mantra_tracks/new_track with { ... }`
      * @principle   Secures pre-loaded, static content by making it publicly readable but non-modifiable by clients.
      */
     match /mantra_tracks/{trackId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow get, list: if true;
+      allow write: if false;
+    }
+
+    /**
+     * @description Defines access control for user profiles.
+     * @path        /users/{userId}
+     * @principle   Users own their data, but an admin role is required for privileged operations.
+     */
+    match /users/{userId} {
+      // The admin can read any document and list all documents.
+      // A regular user can only read their own document.
+      allow read, list: if isDeveloper();
+      allow read: if isOwner(userId);
+
+      // A user can create their own profile, but cannot grant themselves premium access.
+      allow create: if isOwner(userId) && request.resource.data.isPremium == false;
+      
+      // A user can update their profile, but cannot change their premium status.
+      allow update: if isOwner(userId) && request.resource.data.isPremium == resource.data.isPremium;
+
+      // The developer has full write access for administrative tasks (e.g., granting premium).
+      allow write: if isDeveloper();
     }
 
     // =====================================================================
@@ -48,11 +57,17 @@ service cloud.firestore {
     // =====================================================================
 
     /**
-     * isSignedIn
-     * Checks if the user making the request is authenticated.
+     * Checks if the requesting user is the owner of the document.
      */
-    // function isSignedIn() {
-    //   return request.auth != null;
-    // }
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the requesting user is the designated developer/admin.
+     */
+    function isDeveloper() {
+      return request.auth != null && request.auth.uid == 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+    }
   }
 }
