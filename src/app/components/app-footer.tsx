@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { Youtube, Info } from "lucide-react";
+import { Youtube, Info, BookUser } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 
 export function AppFooter() {
@@ -13,6 +13,10 @@ export function AppFooter() {
                     <Link href="/practical-videos" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Youtube className="h-4 w-4" />
                         <span>{t('practicalVideos')}</span>
+                    </Link>
+                    <Link href="/guru-diksha" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                        <BookUser className="h-4 w-4" />
+                        <span>{t('guruDiksha')}</span>
                     </Link>
                     <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Info className="h-4 w-4" />

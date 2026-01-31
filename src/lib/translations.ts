@@ -141,6 +141,10 @@ export const translations = {
     contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ",
     free: "ಉಚಿತ",
     manageUsers: "ಬಳಕೆದಾರರನ್ನು ನಿರ್ವಹಿಸಿ",
+    guruDiksha: "ಗುರು ದೀಕ್ಷೆ",
+    guruDikshaTitle: "ಗುರು ದೀಕ್ಷೆ",
+    guruDikshaSubtitle: "ಆಧ್ಯಾತ್ಮಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ದೀಕ್ಷೆ",
+    guruDikshaComingSoon: "ವಿವರಗಳನ್ನು ಶೀಘ್ರದಲ್ಲೇ ನವೀಕರಿಸಲಾಗುತ್ತದೆ... ನಿರೀಕ್ಷಿಸಿರಿ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -283,6 +287,10 @@ export const translations = {
     contactToActivate: "Contact to activate",
     free: "Free",
     manageUsers: "Manage Users",
+    guruDiksha: "Guru Diksha",
+    guruDikshaTitle: "Guru Diksha",
+    guruDikshaSubtitle: "Spiritual Guidance and Initiation",
+    guruDikshaComingSoon: "Details will be updated soon... stay tuned.",
   }
 };
 
