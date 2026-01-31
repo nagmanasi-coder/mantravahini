@@ -114,7 +114,11 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ animationDelay: "0.6s" }}>
                 {painMantra && (
                   <div className={cn(cardAnimation)}>
-                     <StandaloneAudioPlayer mantra={painMantra} onUpgradeRequest={handleUpgradeRequest} />
+                     <StandaloneAudioPlayer 
+                        mantra={painMantra} 
+                        onUpgradeRequest={handleUpgradeRequest}
+                        imageId="kali-mantra-infographic"
+                      />
                       <Card className="mt-4">
                           <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-sm">
                             <p>{t('painReliefStep1')}</p>
@@ -128,7 +132,11 @@ export default function Home() {
                 )}
                 {eyeMantra && (
                   <div className={cn(cardAnimation)}>
-                    <StandaloneAudioPlayer mantra={eyeMantra} onUpgradeRequest={handleUpgradeRequest} />
+                    <StandaloneAudioPlayer 
+                      mantra={eyeMantra} 
+                      onUpgradeRequest={handleUpgradeRequest}
+                      imageId="chakshu-mantra-infographic"
+                    />
                       <Card className="mt-4">
                           <CardContent className="p-4 space-y-4 text-center text-sm">
                               <p className="text-muted-foreground">

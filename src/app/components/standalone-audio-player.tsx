@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, type MouseEvent } from "react";
+import Image from "next/image";
 import { Play, Pause } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
@@ -10,13 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 import { isToday, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
   onUpgradeRequest: (title: string, description: string) => void;
+  imageId?: string;
 }
 
-export function StandaloneAudioPlayer({ mantra, onUpgradeRequest }: StandaloneAudioPlayerProps) {
+export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: StandaloneAudioPlayerProps) {
   const { language, t } = useLanguage();
   const { toast } = useToast();
   
@@ -28,6 +31,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest }: StandaloneAu
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isTrialActive, setIsTrialActive] = useState(true);
+
+  const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
   useEffect(() => {
     const trialStartDateStr = localStorage.getItem("trialStartDate");
@@ -147,6 +152,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest }: StandaloneAu
           <CardTitle className="font-headline text-2xl text-center">{language === 'kn' ? mantra?.name : mantra?.name_en}</CardTitle>
         </CardHeader>
         <CardContent>
+          {mantraImage && (
+            <div className="relative aspect-video w-full mb-4">
+              <Image
+                src={mantraImage.imageUrl}
+                alt={mantraImage.description}
+                fill
+                className="rounded-md object-cover"
+                data-ai-hint={mantraImage.imageHint}
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <div onClick={handleProgressClick} className="cursor-pointer">
               <Progress value={progress} aria-label="Mantra progress" />
