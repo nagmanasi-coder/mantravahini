@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -15,28 +16,27 @@ export default function SpecialProductsPage() {
     {
       name: "ಹೇರ್ ಆಯಿಲ್",
       description: "ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು  ಮಂತ್ರಗಳಿಂದ ತಯಾರಿಸಲ್ಪಟ್ಟಿದೆ. ಬೆಲೆ - 299 ರೂ. 100 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
-      image: "/Hair oil.png",
-      aiHint: "hair oil natural",
+      imageId: "hair-oil-product",
     },
     {
       name: "ನೋವು ನಿವಾರಕ ತೈಲ",
       description: "ನೋವು ನಿವಾರಣೆಗಾಗಿ ವಿಶೇಷ ಸಸ್ಯಗಳಿಂದ, ಮಂತ್ರಗಳಿಂದ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ಬೆಲೆ - 299 ರೂ. 50 ಮಿ.ಲೀ, ಕನಿಷ್ಠ 2 ಕ್ವಾಂಟಿಟಿ ಆರ್ಡರ್ ಮಾಡಬೇಕು.",
-      image: "/pain oil.png",
-      aiHint: "pain relief oil",
+      imageId: "pain-oil-product",
     },
     {
       name: "ಚರ್ಮದ ಸಮಸ್ಯೆಗೆ ಕನಕ ತೈಲ",
       description: "ಸೋರಿಯಾಸಿಸ್ ಇತ್ಯಾದಿ ಜಿಗುಟಾದ ಚರ್ಮದ ಸಮಸ್ಯೆಗಳಿಗೆ ವಿಶಿಷ್ಟ ವನಸ್ಪತಿಗಳು ಮತ್ತು ಮಂತ್ರಗಳಿಂದ ತಯಾರಾದ ತೈಲ. ಬೆಲೆ - 499 ರೂ. 50 ಮಿ.ಲೀ.",
-      image: "/skin oil.png",
-      aiHint: "skin oil natural",
+      imageId: "skin-oil-product",
     },
     {
       name: "ಲೈಂಗಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆಗೆ ಕನಕಧಾರಾ ತೈಲ",
       description: "ಲೈಂಗಿಕ ದೌर्ಬಲ್ಯವನ್ನು ನಿವಾರಿಸಿ ನವಯೌವನವನ್ನು ನೀಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಮಲಗುವಾಗ ಅಂಗಾಲಿಗೆ ಹಚ್ಚುವುದು. ಬೆಲೆ - 999 ರೂ. 50 ಮಿ.ಲೀ.",
-      image: "/sexual power.png",
-      aiHint: "wellness oil natural",
+      imageId: "sexual-power-oil-product",
     },
   ];
+  
+  const akshayaBoxImage1 = PlaceHolderImages.find(img => img.id === 'akshaya-cash-box-1');
+  const akshayaBoxImage2 = PlaceHolderImages.find(img => img.id === 'akshaya-cash-box-2');
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -61,22 +61,22 @@ export default function SpecialProductsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="relative aspect-square w-full">
-                  <Image
-                    src="/akshaya-cash-box-1.png"
-                    alt="Akshaya Cash Box"
+                  {akshayaBoxImage1 && <Image
+                    src={akshayaBoxImage1.imageUrl}
+                    alt={akshayaBoxImage1.description}
                     fill
                     className="rounded-md object-cover"
-                    data-ai-hint="ornate box"
-                  />
+                    data-ai-hint={akshayaBoxImage1.imageHint}
+                  />}
                 </div>
                 <div className="relative aspect-square w-full">
-                  <Image
-                    src="/akshaya-cash-box-2.png"
-                    alt="Akshaya Cash Box alternate view"
+                  {akshayaBoxImage2 && <Image
+                    src={akshayaBoxImage2.imageUrl}
+                    alt={akshayaBoxImage2.description}
                     fill
                     className="rounded-md object-cover"
-                    data-ai-hint="ornate box"
-                  />
+                    data-ai-hint={akshayaBoxImage2.imageHint}
+                  />}
                 </div>
               </div>
                <div className="text-center text-muted-foreground">
@@ -108,25 +108,27 @@ export default function SpecialProductsPage() {
                 </CardHeader>
               </Card>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {products.map((product) => (
+              {products.map((product) => {
+                const productImage = PlaceHolderImages.find(p => p.id === product.imageId);
+                return (
                 <Card key={product.name} className="overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
                   <CardHeader>
                     <CardTitle className="font-headline text-xl">{product.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="relative aspect-video w-full">
-                      <Image
-                        src={product.image}
+                      {productImage && <Image
+                        src={productImage.imageUrl}
                         alt={product.name}
                         fill
                         className="rounded-md object-cover"
-                        data-ai-hint={product.aiHint}
-                      />
+                        data-ai-hint={productImage.imageHint}
+                      />}
                     </div>
                     <p className="mt-4 text-sm text-muted-foreground">{product.description}</p>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
 
             <Card className="mt-8">
@@ -144,13 +146,6 @@ export default function SpecialProductsPage() {
               </CardFooter>
             </Card>
           </div>
-        <Card className="mt-8">
-            <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">
-                Special products will be updated soon.
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

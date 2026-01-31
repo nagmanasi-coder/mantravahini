@@ -7,9 +7,11 @@ import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function AboutUsPage() {
   const cardAnimation = "animate-fade-in-up";
+  const founderImage = PlaceHolderImages.find(img => img.id === 'founder-portrait');
 
   const sections = [
     {
@@ -60,13 +62,13 @@ export default function AboutUsPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <div className={cn("md:col-span-1 flex flex-col items-center text-center space-y-4", cardAnimation)} style={{ animationDelay: "0.3s" }}>
                    <div className="relative h-48 w-48 overflow-hidden rounded-full border-4 border-primary/50 shadow-lg">
-                    <Image
-                      src="/mine.jpeg"
-                      alt="Founder"
+                    {founderImage && <Image
+                      src={founderImage.imageUrl}
+                      alt={founderImage.description}
                       fill
                       className="object-cover"
-                      data-ai-hint="portrait man"
-                    />
+                      data-ai-hint={founderImage.imageHint}
+                    />}
                   </div>
                   <div className="space-y-1">
                     <h2 className="text-2xl font-bold font-headline text-primary">Nagaraja D</h2>

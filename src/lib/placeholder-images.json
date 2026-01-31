@@ -5,6 +5,84 @@
       "description": "Placeholder for an interstitial advertisement",
       "imageUrl": "/images/interstitial-ad.jpg",
       "imageHint": "abstract colorful"
+    },
+    {
+      "id": "founder-portrait",
+      "description": "Portrait of the founder, Nagaraja D",
+      "imageUrl": "/mine.jpeg",
+      "imageHint": "portrait man"
+    },
+    {
+      "id": "trishul-icon",
+      "description": "Icon for Tantra Vigyan app",
+      "imageUrl": "/Trishul.png",
+      "imageHint": "abstract spiritual science"
+    },
+    {
+      "id": "mantravaahini-icon",
+      "description": "Icon for Mantravaahini app",
+      "imageUrl": "/mine.jpeg",
+      "imageHint": "meditation app icon"
+    },
+    {
+      "id": "coming-soon-app-icon",
+      "description": "Placeholder icon for a future app",
+      "imageUrl": "https://images.unsplash.com/photo-1760693052640-518d91169a7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHNwaXJpdHVhbCUyMGNvbmNlcHR8ZW58MHx8fHwxNzY5ODUyMjExfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract spiritual concept"
+    },
+    {
+      "id": "hanuman-healing",
+      "description": "Image for Hanuman Chalisa Healing Method",
+      "imageUrl": "/hanuman.png",
+      "imageHint": "ancient manuscript ritual"
+    },
+    {
+      "id": "kali-mantra-infographic",
+      "description": "Infographic for Kali Mantra for pain relief",
+      "imageUrl": "/kali-mantra-pain.png",
+      "imageHint": "infographic ritual"
+    },
+    {
+      "id": "chakshu-mantra-infographic",
+      "description": "Infographic for Chakshu Mantra for eye problems",
+      "imageUrl": "/chaksu-mantra.png",
+      "imageHint": "infographic ritual"
+    },
+    {
+      "id": "hair-oil-product",
+      "description": "Product image for hair oil",
+      "imageUrl": "/Hair oil.png",
+      "imageHint": "hair oil natural"
+    },
+    {
+      "id": "pain-oil-product",
+      "description": "Product image for pain relief oil",
+      "imageUrl": "/pain oil.png",
+      "imageHint": "pain relief oil"
+    },
+    {
+      "id": "skin-oil-product",
+      "description": "Product image for Kanaka oil for skin problems",
+      "imageUrl": "/skin oil.png",
+      "imageHint": "skin oil natural"
+    },
+    {
+      "id": "sexual-power-oil-product",
+      "description": "Product image for Kanakadhara oil for sexual wellness",
+      "imageUrl": "/sexual power.png",
+      "imageHint": "wellness oil natural"
+    },
+    {
+      "id": "akshaya-cash-box-1",
+      "description": "Image of Akshaya Cash Box",
+      "imageUrl": "/akshaya-cash-box-1.png",
+      "imageHint": "ornate box"
+    },
+    {
+      "id": "akshaya-cash-box-2",
+      "description": "Alternate view of Akshaya Cash Box",
+      "imageUrl": "/akshaya-cash-box-2.png",
+      "imageHint": "ornate box"
     }
   ]
 }

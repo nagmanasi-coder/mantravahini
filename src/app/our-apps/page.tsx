@@ -4,29 +4,27 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function OurAppsPage() {
   const apps = [
     {
       name: "ತಂತ್ರ ವಿಜ್ಞಾನ",
       description: "Explore the science of Tantra.",
-      icon: "/Trishul.png",
+      iconId: "trishul-icon",
       href: "https://tantra-vigyan.vercel.app/",
-      aiHint: "abstract spiritual science",
     },
     {
       name: "ಮಂತ್ರವಾಹಿನಿ",
       description: "ನೋವು, ರೋಗ, ದುಃಖರಹಿತ ಜೀವನಕ್ಕಾಗಿ",
-      icon: "/mine.jpeg",
+      iconId: "mantravaahini-icon",
       href: "/",
-      aiHint: "meditation app icon",
     },
     {
       name: "Coming Soon",
       description: "We are working on a new app to help you on your spiritual journey.",
-      icon: "https://picsum.photos/seed/app2/400/400",
+      iconId: "coming-soon-app-icon",
       href: "#",
-      aiHint: "abstract spiritual concept",
     },
   ];
 
@@ -44,17 +42,19 @@ export default function OurAppsPage() {
           </header>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {apps.map((app) => (
+            {apps.map((app) => {
+              const appIcon = PlaceHolderImages.find(img => img.id === app.iconId);
+              return (
               <Card key={app.name} className="flex flex-col overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
                 <CardHeader className="flex-row items-center gap-4">
                   <div className="relative h-16 w-16 shrink-0">
-                    <Image
-                      src={app.icon}
+                    {appIcon && <Image
+                      src={appIcon.imageUrl}
                       alt={`${app.name} icon`}
                       fill
                       className="rounded-lg object-cover"
-                      data-ai-hint={app.aiHint}
-                    />
+                      data-ai-hint={appIcon.imageHint}
+                    />}
                   </div>
                   <div>
                     <CardTitle className="font-headline text-xl">{app.name}</CardTitle>
@@ -70,7 +70,7 @@ export default function OurAppsPage() {
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
+            )})}
           </div>
         </div>
       </main>

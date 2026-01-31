@@ -4,12 +4,14 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const beejaMantras = ["ಹ್ರೀಂ", "ಕ್ಲೀಂ", "ಐಂ", "ಶ್ರೀಂ", "ಹ್ರೌಂ", "ಗ್ಲೌಂ", "ಗಂ", "ನಮಃ"];
 
 export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [mantraStyles, setMantraStyles] = useState<{ transform: string; animationDelay: string }[]>([]);
+  const splashImage = PlaceHolderImages.find(img => img.id === 'founder-portrait');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,13 +42,14 @@ export function SplashScreen() {
     >
       <div className="relative h-64 w-64">
         <div className="relative h-64 w-64 overflow-hidden rounded-full animate-fade-in">
-          <Image
-            src="/mine.jpeg"
-            alt="Splash Screen"
+          {splashImage && <Image
+            src={splashImage.imageUrl}
+            alt={splashImage.description}
             fill
             className="object-cover"
             priority
-          />
+            data-ai-hint={splashImage.imageHint}
+          />}
         </div>
         {mantraStyles.length > 0 && beejaMantras.map((mantra, index) => {
           return (
