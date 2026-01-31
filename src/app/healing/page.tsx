@@ -1,10 +1,12 @@
 
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useLanguage } from "@/context/language-context";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -12,6 +14,7 @@ const WhatsAppIcon = () => (
 
 
 export default function HealingPage() {
+  const { t } = useLanguage();
   const whatsAppUrl = "https://wa.me/917022070287";
   const healingImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
 
@@ -21,19 +24,18 @@ export default function HealingPage() {
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-              ಮಂತ್ರ ಚಿಕಿತ್ಸೆ - 
-              ಹನುಮನಿದ್ದಲ್ಲಿ ರೋಗಕ್ಕೆ ಜಾಗವೆಲ್ಲಿ?
+              {t('healingTitle')}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              ಹನುಮಾನ್ ಚಾಲೀಸಾದ ತಾಂತ್ರಿಕ ವಿಧಾನದಿಂದ ದೀರ್ಘಕಾಲದ ರೋಗಗಳ ನಿವಾರಣೆ
+             {t('healingSubtitle')}
             </p>
           </header>
 
           <Card className="overflow-hidden shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl text-center">ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ</CardTitle>
+              <CardTitle className="font-headline text-3xl text-center">{t('hanumanTherapyTitle')}</CardTitle>
               <CardDescription className="text-center">
-                ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಗೆ ಮತ್ತು ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ.
+                {t('hanumanTherapyDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -48,28 +50,28 @@ export default function HealingPage() {
                 />}
               </div>
               <div className="text-center text-muted-foreground space-y-2">
-                <p>ಈ ವಿಧಾನವು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಶಕ್ತಿಯನ್ನು ಬಳಸಿ, ದೀರ್ಘಕಾಲದ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಗುಣಪಡಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</p>
-                <p>ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ,  ಇದು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತ ಮನುಕುಲಕ್ಕೆ ನೀಡಿರುವ ವಚನ.</p>
+                <p>{t('healingInfo1')}</p>
+                <p>{t('healingInfo2')}</p>
               </div>
               <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
-                 <p className="font-headline text-xl font-bold text-primary">ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ</p>
+                 <p className="font-headline text-xl font-bold text-primary">{t('hanumanDoha')}</p>
                  <p className="mt-2 text-sm text-foreground">
-                   "ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ." ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.
+                   {t('hanumanDohaMeaning')}
                  </p>
               </div>
               <div className="text-center">
-                 <p className="mt-2 font-semibold text-foreground">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.</p>
+                 <p className="mt-2 font-semibold text-foreground">{t('healingContact')}</p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
               <div className="text-center">
-                <p>ಸಂಪರ್ಕಿಸಿ:</p>
-                <p className="font-bold text-lg text-primary">7022070287, ಹೊಸದುರ್ಗ</p>
+                <p>{t('contact')}:</p>
+                <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
               </div>
               <Button asChild>
                 <Link href={whatsAppUrl} target="_blank">
                   <WhatsAppIcon />
-                  WhatsApp ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ
+                  {t('contactOnWhatsApp')}
                 </Link>
               </Button>
             </CardFooter>
@@ -79,7 +81,7 @@ export default function HealingPage() {
             <Button asChild variant="outline">
                 <Link href="/">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    ಹಿಂದಕ್ಕೆ
+                    {t('backButton')}
                 </Link>
             </Button>
           </div>

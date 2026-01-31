@@ -5,10 +5,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-
-const beejaMantras = ["ಹ್ರೀಂ", "ಕ್ಲೀಂ", "ಐಂ", "ಶ್ರೀಂ", "ಹ್ರೌಂ", "ಗ್ಲೌಂ", "ಗಂ", "ನಮಃ"];
+import { useLanguage } from "@/context/language-context";
 
 export function SplashScreen() {
+  const { t } = useLanguage();
+  const beejaMantras = t('beejaMantras').split(' ');
   const [isVisible, setIsVisible] = useState(true);
   const [mantraStyles, setMantraStyles] = useState<{ transform: string; animationDelay: string }[]>([]);
   const splashImage = PlaceHolderImages.find(img => img.id === 'founder-portrait');
@@ -31,7 +32,7 @@ export function SplashScreen() {
     setMantraStyles(styles);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [beejaMantras]);
 
   return (
     <div

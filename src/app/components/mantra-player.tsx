@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/language-context";
 
 interface MantraPlayerProps {
   mantras: Mantra[];
@@ -43,6 +44,7 @@ export function MantraPlayer({
   onProgressClick
 }: MantraPlayerProps) {
 
+  const { language, t } = useLanguage();
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const currentMantra = mantras[currentTrackIndex];
@@ -68,7 +70,7 @@ export function MantraPlayer({
     <div className="space-y-8">
       <Card className={cn("overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl")}>
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{currentMantra?.name}</CardTitle>
+          <CardTitle className="font-headline text-3xl">{language === 'kn' ? currentMantra?.name : currentMantra?.name_en}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -82,17 +84,17 @@ export function MantraPlayer({
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-          <Button onClick={handlePrev} variant="ghost" size="icon" aria-label="ಹಿಂದಿನದು">
+          <Button onClick={handlePrev} variant="ghost" size="icon" aria-label={t('previousButton')}>
             <SkipBack className="h-6 w-6" />
           </Button>
-          <Button onClick={onPlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? 'ವಿರಾಮ' : 'ಪ್ಲೇ'}>
+          <Button onClick={onPlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')}>
             {isPlaying ? (
               <Pause className="h-8 w-8" />
             ) : (
               <Play className="h-8 w-8" />
             )}
           </Button>
-          <Button onClick={handleNext} variant="ghost" size="icon" aria-label="ಮುಂದೆ">
+          <Button onClick={handleNext} variant="ghost" size="icon" aria-label={t('nextButton')}>
             <SkipForward className="h-6 w-6" />
           </Button>
         </CardFooter>

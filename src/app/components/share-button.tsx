@@ -3,14 +3,16 @@
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/language-context";
 
 export function ShareButton() {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleShare = async () => {
     const shareData = {
-      title: "ಮಂತ್ರವಾಹಿನಿ",
-      text: "Share power of mantras to reach everyone",
+      title: t('appTitle'),
+      text: t('shareText'),
       url: window.location.href,
     };
 

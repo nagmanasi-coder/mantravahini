@@ -1,10 +1,11 @@
 import type {Metadata} from 'next';
-import Link from 'next/link';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { Home, ShoppingBag, AppWindow, Youtube, Info } from 'lucide-react';
-import { ShareButton } from './components/share-button';
 import { SplashScreen } from './components/splash-screen';
+import { LanguageProvider } from '@/context/language-context';
+import { AppHeader } from './components/app-header';
+import { AppFooter } from './components/app-footer';
+
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -28,42 +29,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#FF8C42" />
       </head>
       <body className="font-body antialiased">
-        <SplashScreen />
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 max-w-2xl items-center justify-between">
-            <nav className="flex items-center space-x-4 lg:space-x-6">
-              <Link href="/" className="flex items-center space-x-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
-                <Home className="h-4 w-4" />
-                <span>Home</span>
-              </Link>
-              <Link href="/special-products" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                <ShoppingBag className="h-4 w-4" />
-                <span>Special Products</span>
-              </Link>
-              <Link href="/our-apps" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                <AppWindow className="h-4 w-4" />
-                <span>Our Apps</span>
-              </Link>
-            </nav>
-            <ShareButton />
-          </div>
-        </header>
-        <div className="pb-16">{children}</div>
-        <footer className="fixed bottom-0 z-40 w-full border-t bg-background">
-            <div className="container flex h-14 max-w-2xl items-center justify-center">
-                 <nav className="flex items-center space-x-4 lg:space-x-6">
-                    <Link href="/practical-videos" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <Youtube className="h-4 w-4" />
-                        <span>Practical Videos</span>
-                    </Link>
-                    <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <Info className="h-4 w-4" />
-                        <span>About Us</span>
-                    </Link>
-                </nav>
-            </div>
-        </footer>
-        <Toaster />
+        <LanguageProvider>
+          <SplashScreen />
+          <AppHeader />
+          <div className="pb-16">{children}</div>
+          <AppFooter />
+          <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );
