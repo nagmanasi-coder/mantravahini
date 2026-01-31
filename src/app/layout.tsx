@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { Home, Sparkles, ShoppingBag, AppWindow, Youtube, Info } from 'lucide-react';
+import { Home, ShoppingBag, AppWindow, Youtube, Info } from 'lucide-react';
 import { ShareButton } from './components/share-button';
 import { SplashScreen } from './components/splash-screen';
 
@@ -35,10 +35,6 @@ export default function RootLayout({
               <Link href="/" className="flex items-center space-x-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
                 <Home className="h-4 w-4" />
                 <span>Home</span>
-              </Link>
-              <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                <Sparkles className="h-4 w-4" />
-                <span>Mantra Corner</span>
               </Link>
               <Link href="/special-products" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                 <ShoppingBag className="h-4 w-4" />
