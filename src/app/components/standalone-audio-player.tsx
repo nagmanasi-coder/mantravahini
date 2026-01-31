@@ -13,8 +13,9 @@ import { isToday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { useUser } from "@/firebase";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
+import { doc } from "firebase/firestore";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -26,6 +27,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const { language, t } = useLanguage();
   const { toast } = useToast();
   const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, "users", user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc(userDocRef);
+  const isPremiumUser = userProfile?.isPremium;
 
   const [isDeveloper, setIsDeveloper] = useState(false);
   
@@ -93,7 +103,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
-    if (isDeveloper) {
+    if (isDeveloper || isPremiumUser) {
       setIsPlaying(true);
       return;
     }

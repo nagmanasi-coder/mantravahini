@@ -14,7 +14,7 @@ import { useUser } from '@/firebase';
 import { useAuth } from '@/firebase/provider';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 
@@ -85,10 +85,18 @@ export function UserProfile() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {isActualDeveloper && (
-          <DropdownMenuItem onClick={toggleDeveloperMode}>
-            <Code className="mr-2 h-4 w-4" />
-            <span>{isDevMode ? "Disable Dev Mode" : "Enable Dev Mode"}</span>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/users">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>{t('manageUsers')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggleDeveloperMode}>
+              <Code className="mr-2 h-4 w-4" />
+              <span>{isDevMode ? "Disable Dev Mode" : "Enable Dev Mode"}</span>
+            </DropdownMenuItem>
+          </>
         )}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />

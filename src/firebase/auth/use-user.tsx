@@ -34,6 +34,7 @@ export function useUser() {
                 displayName: userAuth.displayName,
                 photoURL: userAuth.photoURL,
                 createdAt: new Date().toISOString(),
+                isPremium: false,
               };
               setDoc(userRef, userData, { merge: true }).catch(
                 (serverError) => {

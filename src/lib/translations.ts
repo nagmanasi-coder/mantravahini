@@ -135,6 +135,7 @@ export const translations = {
     currentPlan: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ",
     contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ",
     free: "ಉಚಿತ",
+    manageUsers: "ಬಳಕೆದಾರರನ್ನು ನಿರ್ವಹಿಸಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -271,5 +272,6 @@ export const translations = {
     currentPlan: "Your Current Plan",
     contactToActivate: "Contact to activate",
     free: "Free",
+    manageUsers: "Manage Users",
   }
 };

@@ -62,6 +62,10 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the user profile was created."
+        },
+        "isPremium": {
+          "type": "boolean",
+          "description": "Indicates if the user has a premium subscription."
         }
       },
       "required": [
