@@ -71,7 +71,7 @@ export const translations = {
     hanumanDohaMeaning: "\"ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ.\" ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.",
     healingContact: "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಮಂತ್ರ ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     hanumanTherapyFee: "ಶುಲ್ಕ: ₹5500 ರಿಂದ ಪ್ರಾರಂಭ",
-    hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
+    hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಮತ್ತು ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
     freeHealingTitle: "ಉಚಿತ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ",
     freeHealingCondition1: "ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
     freeHealingCondition2: "ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
@@ -294,8 +294,10 @@ export const translations = {
     guruDikshaSubtitle: "Spiritual Guidance and Initiation",
     guruDikshaComingSoon: "Details will be updated soon... stay tuned.",
     guruDikshaNathaTitle: "The Importance of the Guru in the Natha Tradition",
-    guruDikshaNathaContent: "In the Natha tradition, the Guru holds the highest position, even above the gods. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
+    guruDikshaNathaContent: "In the Natha tradition, the Guru holds the highest position. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
   }
 };
+
+    
 
     
