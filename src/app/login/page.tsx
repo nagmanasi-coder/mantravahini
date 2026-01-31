@@ -14,6 +14,7 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -29,6 +30,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const GoogleIcon = () => (
   <svg
@@ -54,6 +56,7 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,6 +67,25 @@ export default function LoginPage() {
       password: '',
     },
   });
+
+  const handlePasswordReset = async () => {
+    setError(null);
+    const email = form.getValues('email');
+    const isEmailValid = await form.trigger('email'); // Manually trigger validation
+    if (!isEmailValid) {
+        return; // Don't proceed if email is invalid
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        toast({
+            title: 'Password Reset Email Sent',
+            description: `A password reset link has been sent to ${email}.`,
+        });
+    } catch (err: any) {
+        setError(getFirebaseErrorMessage(err.code));
+    }
+  };
 
   const handleEmailAuth = async (values: z.infer<typeof loginSchema>) => {
     setError(null);
@@ -102,6 +124,8 @@ export default function LoginPage() {
         return 'This email is already in use. Please sign in instead.';
       case 'auth/weak-password':
         return 'The password is too weak. Please use at least 6 characters.';
+      case 'auth/invalid-email':
+          return 'Please enter a valid email to reset your password.';
       default:
         return 'An unexpected error occurred. Please try again.';
     }
@@ -148,7 +172,19 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                     <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        {!isSigningUp && (
+                            <Button
+                                type="button"
+                                variant="link"
+                                className="p-0 h-auto text-sm font-normal"
+                                onClick={handlePasswordReset}
+                            >
+                                Forgot Password?
+                            </Button>
+                        )}
+                    </div>
                     <FormControl>
                       <Input
                         type="password"
