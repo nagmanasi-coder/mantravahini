@@ -5,6 +5,7 @@ import { Home, ShoppingBag, AppWindow } from "lucide-react";
 import { ShareButton } from "./share-button";
 import { useLanguage } from "@/context/language-context";
 import { Button } from "@/components/ui/button";
+import { UserProfile } from "./auth/UserProfile";
 
 export function AppHeader() {
     const { t, toggleLanguage, language } = useLanguage();
@@ -27,6 +28,7 @@ export function AppHeader() {
             </nav>
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" onClick={toggleLanguage}>{t('language')}</Button>
+                <UserProfile />
                 <ShareButton />
             </div>
           </div>

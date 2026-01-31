@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useState, useEffect, type MouseEvent } from "react";
@@ -8,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { isToday, differenceInDays } from "date-fns";
+import { isToday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useUser } from "@/firebase";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -22,6 +24,10 @@ interface StandaloneAudioPlayerProps {
 export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: StandaloneAudioPlayerProps) {
   const { language, t } = useLanguage();
   const { toast } = useToast();
+  const { user } = useUser();
+
+  // NOTE: Replace this with your own Firebase User ID to enable developer mode
+  const isDeveloper = user?.uid === "CHANGE_ME_TO_YOUR_FIREBASE_UID";
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -30,23 +36,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [isTrialActive, setIsTrialActive] = useState(true);
-
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
-
-  useEffect(() => {
-    const trialStartDateStr = localStorage.getItem("trialStartDate");
-    if (!trialStartDateStr) {
-      localStorage.setItem("trialStartDate", new Date().toISOString());
-      setIsTrialActive(true);
-    } else {
-      const trialStartDate = new Date(trialStartDateStr);
-      const daysSinceStart = differenceInDays(new Date(), trialStartDate);
-      if (daysSinceStart > 7) {
-        setIsTrialActive(false);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -95,6 +85,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
+    if (isDeveloper) {
+      setIsPlaying(true);
+      return;
+    }
+
     switch(mantra.tier) {
         case 'free':
             const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
@@ -111,14 +106,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
             localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
             break;
         
-        case 'trial':
-            if (isTrialActive) {
-                setIsPlaying(true);
-            } else {
-                onUpgradeRequest(t('toastTrialEndedTitle'), t('toastTrialEndedDescription'));
-            }
-            break;
-
         case 'paid':
             onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
             break;

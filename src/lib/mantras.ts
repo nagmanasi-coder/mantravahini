@@ -5,7 +5,7 @@ export type Mantra = {
   url: string;
   description?: string;
   description_en?: string;
-  tier: "free" | "trial" | "paid";
+  tier: "free" | "paid";
 };
 
 export const mantras: Mantra[] = [
@@ -21,7 +21,7 @@ export const mantras: Mantra[] = [
     name: 'ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಶಕ್ತಿಶಾಲಿ ಚಾಕ್ಷುಷ ಮಂತ್ರ',
     name_en: 'Powerful Chakshu Mantra for Eye Problems',
     url: '/chakshu-mantra.mp3',
-    tier: "trial",
+    tier: "paid",
   },
   { 
     id: 9, 

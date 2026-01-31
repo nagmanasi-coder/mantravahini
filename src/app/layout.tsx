@@ -5,7 +5,8 @@ import { SplashScreen } from './components/splash-screen';
 import { LanguageProvider } from '@/context/language-context';
 import { AppHeader } from './components/app-header';
 import { AppFooter } from './components/app-footer';
-
+import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -30,11 +31,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <LanguageProvider>
-          <SplashScreen />
-          <AppHeader />
-          <div className="pb-16">{children}</div>
-          <AppFooter />
-          <Toaster />
+          <FirebaseClientProvider>
+            <SplashScreen />
+            <AppHeader />
+            <div className="pb-16">{children}</div>
+            <AppFooter />
+            <Toaster />
+            <FirebaseErrorListener />
+          </FirebaseClientProvider>
         </LanguageProvider>
       </body>
     </html>
