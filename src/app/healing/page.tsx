@@ -15,7 +15,8 @@ const WhatsAppIcon = () => (
 
 export default function HealingPage() {
   const { t } = useLanguage();
-  const whatsAppUrl = "https://wa.me/917022070287";
+  const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
+  const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const healingImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
 
   return (

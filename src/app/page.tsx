@@ -35,7 +35,8 @@ export default function Home() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
 
-  const whatsAppUrl = "https://wa.me/917022070287";
+  const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
+  const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
 
   const painMantra = mantras.find(m => m.id === 1);
   const eyeMantra = mantras.find(m => m.id === 2);
