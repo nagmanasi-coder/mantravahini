@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -31,12 +34,25 @@ const WhatsAppIcon = () => (
 export default function Home() {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useUser();
+  const firestore = useFirestore();
   
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
+  const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, "users", user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc(userDocRef);
+  const isPremiumUser = userProfile?.isPremium;
 
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
+  const whatsAppGroupUrl = `https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE`; // Placeholder for your group invite
 
   const painMantra = mantras.find(m => m.id === 1);
   const eyeMantra = mantras.find(m => m.id === 2);
@@ -84,6 +100,11 @@ export default function Home() {
   };
 
   const cardAnimation = "animate-fade-in-up";
+  
+  const handleUpgradeFromDialog = () => {
+    setShowJoinGroupDialog(false);
+    router.push('/upgrade');
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -189,25 +210,35 @@ export default function Home() {
                       </AlertDialogContent>
                     </AlertDialog>
                     
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline">
-                          <Users className="mr-2 h-4 w-4" />
-                          {t('joinGroupButton')}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t('joinGroupTitle')}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                           {t('joinGroupDescription')}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogAction>OK</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    {isPremiumUser ? (
+                       <Button asChild variant="outline">
+                         <Link href={whatsAppGroupUrl} target="_blank">
+                           <Users className="mr-2 h-4 w-4" />
+                           {t('joinGroupButton')}
+                         </Link>
+                       </Button>
+                     ) : (
+                       <AlertDialog open={showJoinGroupDialog} onOpenChange={setShowJoinGroupDialog}>
+                         <AlertDialogTrigger asChild>
+                           <Button variant="outline">
+                             <Users className="mr-2 h-4 w-4" />
+                             {t('joinGroupButton')}
+                           </Button>
+                         </AlertDialogTrigger>
+                         <AlertDialogContent>
+                           <AlertDialogHeader>
+                             <AlertDialogTitle>{t('joinGroupTitle')}</AlertDialogTitle>
+                             <AlertDialogDescription>
+                               {t('joinGroupDescription')}
+                             </AlertDialogDescription>
+                           </AlertDialogHeader>
+                           <AlertDialogFooter>
+                              <Button onClick={handleUpgradeFromDialog}>{t('upgradeButton')}</Button>
+                              <AlertDialogAction>{t('closeButton')}</AlertDialogAction>
+                           </AlertDialogFooter>
+                         </AlertDialogContent>
+                       </AlertDialog>
+                     )}
 
                     <Button onClick={handleShare}>
                       <Share2 className="mr-2 h-4 w-4" />
