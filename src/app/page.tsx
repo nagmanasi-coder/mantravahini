@@ -1,10 +1,9 @@
 
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef, type MouseEvent } from "react";
-import { MantraPlayer } from "@/app/components/mantra-player";
+import { useState } from "react";
+import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -22,9 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
-import { differenceInDays, isToday } from "date-fns";
 import { useLanguage } from "@/context/language-context";
 
 const WhatsAppIcon = () => (
@@ -32,191 +29,21 @@ const WhatsAppIcon = () => (
 );
 
 export default function Home() {
-  const { t, language } = useLanguage();
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { t } = useLanguage();
   const { toast } = useToast();
   
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
-  const [isTrialActive, setIsTrialActive] = useState(true);
-  const [painMantraPlayedToday, setPainMantraPlayedToday] = useState(false);
 
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-
-  const audioRef = useRef<HTMLAudioElement>(null);
   const whatsAppUrl = "https://wa.me/917022070287";
-  const kaliMantraImage = PlaceHolderImages.find(img => img.id === 'kali-mantra-infographic');
-  const chakshuMantraImage = PlaceHolderImages.find(img => img.id === 'chakshu-mantra-infographic');
 
-  useEffect(() => {
-    // Trial period logic
-    const trialStartDateStr = localStorage.getItem("trialStartDate");
-    if (!trialStartDateStr) {
-      localStorage.setItem("trialStartDate", new Date().toISOString());
-      setIsTrialActive(true);
-    } else {
-      const trialStartDate = new Date(trialStartDateStr);
-      const daysSinceStart = differenceInDays(new Date(), trialStartDate);
-      if (daysSinceStart > 7) {
-        setIsTrialActive(false);
-      }
-    }
-
-    // Daily play limit for pain mantra
-    const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
-    if (lastPlayDateStr) {
-      const lastPlayDate = new Date(lastPlayDateStr);
-      if (isToday(lastPlayDate)) {
-        setPainMantraPlayedToday(true);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (isPlaying) {
-      audio.play().catch(e => console.error("Playback failed", e));
-    } else {
-      audio.pause();
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-     const audio = audioRef.current;
-     const currentMantra = mantras[currentTrackIndex];
-     if (audio && currentMantra) {
-        const newSrc = currentMantra.url.startsWith('http') ? currentMantra.url : `${window.location.origin}${currentMantra.url}`;
-         if(audio.src !== newSrc) {
-            audio.src = newSrc;
-            audio.load();
-            setIsPlaying(false);
-            setProgress(0);
-            setCurrentTime(0);
-            setDuration(0);
-         }
-     }
-  }, [currentTrackIndex]);
-
-   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const setAudioData = () => {
-      setDuration(audio.duration);
-      setCurrentTime(audio.currentTime);
-    };
-
-    const setAudioTime = () => {
-      const newTime = audio.currentTime;
-      setCurrentTime(newTime);
-      setProgress((newTime / audio.duration) * 100);
-    };
-
-    audio.addEventListener("loadeddata", setAudioData);
-    audio.addEventListener("timeupdate", setAudioTime);
-    audio.addEventListener("ended", () => setIsPlaying(false));
-
-    return () => {
-      audio.removeEventListener("loadeddata", setAudioData);
-      audio.removeEventListener("timeupdate", setAudioTime);
-      audio.removeEventListener("ended", () => setIsPlaying(false));
-    };
-  }, []);
-
-  const handlePlayPause = () => {
-    const currentMantra = mantras[currentTrackIndex];
-    if (!currentMantra) return;
-
-    if (isPlaying) {
-        setIsPlaying(false);
-        return;
-    }
-
-    switch(currentMantra.tier) {
-        case 'free':
-            if (painMantraPlayedToday) {
-                toast({
-                    variant: "destructive",
-                    title: t('toastDailyLimitTitle'),
-                    description: t('toastDailyLimitDescription'),
-                });
-            } else {
-                setIsPlaying(true);
-                localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
-                setPainMantraPlayedToday(true);
-            }
-            break;
-        
-        case 'trial':
-            if (isTrialActive) {
-                setIsPlaying(true);
-            } else {
-                setUpgradeDialogContent({
-                    title: t('toastTrialEndedTitle'),
-                    description: t('toastTrialEndedDescription'),
-                });
-                setShowUpgradeDialog(true);
-            }
-            break;
-
-        case 'paid':
-            setUpgradeDialogContent({
-                title: t('toastUpgradeRequiredTitle'),
-                description: t('toastUpgradeRequiredDescription'),
-            });
-            setShowUpgradeDialog(true);
-            break;
-    }
-  }
-
-  const handlePainReliefSelect = () => {
-    const kaliMantraIndex = mantras.findIndex(m => m.id === 1);
-    if (kaliMantraIndex !== -1) {
-      setCurrentTrackIndex(kaliMantraIndex);
-      toast({
-        title: t('toastPainMantraSelectedTitle'),
-        description: t('toastPainMantraSelectedDescription'),
-      });
-    }
+  const painMantra = mantras.find(m => m.id === 1);
+  const eyeMantra = mantras.find(m => m.id === 2);
+  
+  const handleUpgradeRequest = (title: string, description: string) => {
+    setUpgradeDialogContent({ title, description });
+    setShowUpgradeDialog(true);
   };
-
-  const handleEyeProblemsSelect = () => {
-    if (!isTrialActive) {
-        setUpgradeDialogContent({
-            title: t('toastTrialEndedTitle'),
-            description: t('toastTrialEndedDescription'),
-        });
-        setShowUpgradeDialog(true);
-        return;
-    }
-    const chakshuMantraIndex = mantras.findIndex(m => m.id === 2);
-    if (chakshuMantraIndex !== -1) {
-      setCurrentTrackIndex(chakshuMantraIndex);
-       toast({
-        title: t('toastEyeMantraSelectedTitle'),
-        description: t('toastEyeMantraSelectedDescription'),
-      });
-    }
-  };
-
-  const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
-    const audio = audioRef.current;
-    if (!audio || !e.currentTarget) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const newTime = (clickX / width) * duration;
-    
-    if (isFinite(newTime)) {
-      audio.currentTime = newTime;
-    }
-  };
-
 
   const handleShare = async () => {
     const shareData = {
@@ -285,70 +112,38 @@ export default function Home() {
           
           <div className="flex flex-col gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ animationDelay: "0.6s" }}>
-                <Card onClick={handlePainReliefSelect} className={cn("cursor-pointer overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)}>
-                    <CardHeader>
-                      <CardTitle className="font-headline text-center text-2xl">{t('painReliefTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="relative aspect-auto w-full">
-                        {kaliMantraImage && <Image
-                          src={kaliMantraImage.imageUrl}
-                          alt={kaliMantraImage.description}
-                          width={1080}
-                          height={1350}
-                          className="object-contain rounded-md"
-                          data-ai-hint={kaliMantraImage.imageHint}
-                        />}
-                      </div>
-                      <div className="mt-4 space-y-2 text-center text-muted-foreground text-sm">
-                        <p>{t('painReliefStep1')}</p>
-                        <p>{t('painReliefStep2')}</p>
-                        <p>{t('painReliefStep3')}</p>
-                        <p>{t('painReliefStep4')}</p>
-                        <p className="font-semibold text-foreground">{t('painReliefNote')}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card onClick={handleEyeProblemsSelect} className={cn("cursor-pointer overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)}>
-                      <CardHeader>
-                        <CardTitle className="font-headline text-center text-2xl">{t('eyeProblemsTitle')}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                         <div className="relative mx-auto aspect-auto w-full max-w-md">
-                          {chakshuMantraImage && <Image
-                            src={chakshuMantraImage.imageUrl}
-                            alt={chakshuMantraImage.description}
-                            width={1080}
-                            height={1350}
-                            className="object-contain rounded-md"
-                            data-ai-hint={chakshuMantraImage.imageHint}
-                          />}
-                        </div>
-                        <div className="mt-4 space-y-4 text-center text-sm">
-                           <p className="text-muted-foreground">
-                            {t('eyeProblemsInstruction')}
-                          </p>
-                          <p className="font-semibold text-primary">
-                            {t('eyeProblemsNote')}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                {painMantra && (
+                  <div className={cn(cardAnimation)}>
+                     <StandaloneAudioPlayer mantra={painMantra} onUpgradeRequest={handleUpgradeRequest} />
+                      <Card className="mt-4">
+                          <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-sm">
+                            <p>{t('painReliefStep1')}</p>
+                            <p>{t('painReliefStep2')}</p>
+                            <p>{t('painReliefStep3')}</p>
+                            <p>{t('painReliefStep4')}</p>
+                            <p className="font-semibold text-foreground">{t('painReliefNote')}</p>
+                          </CardContent>
+                      </Card>
+                  </div>
+                )}
+                {eyeMantra && (
+                  <div className={cn(cardAnimation)}>
+                    <StandaloneAudioPlayer mantra={eyeMantra} onUpgradeRequest={handleUpgradeRequest} />
+                      <Card className="mt-4">
+                          <CardContent className="p-4 space-y-4 text-center text-sm">
+                              <p className="text-muted-foreground">
+                                {t('eyeProblemsInstruction')}
+                              </p>
+                              <p className="font-semibold text-primary">
+                                {t('eyeProblemsNote')}
+                              </p>
+                          </CardContent>
+                      </Card>
+                  </div>
+                )}
             </div>
             
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
-              <MantraPlayer 
-                mantras={mantras} 
-                currentTrackIndex={currentTrackIndex} 
-                onTrackChange={setCurrentTrackIndex}
-                isPlaying={isPlaying}
-                onPlayPause={handlePlayPause}
-                progress={progress}
-                duration={duration}
-                currentTime={currentTime}
-                onProgressClick={handleProgressClick}
-              />
-
               <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
                 <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
                   <Link href="/healing">
@@ -440,7 +235,7 @@ export default function Home() {
 
         </div>
       </main>
-      <audio ref={audioRef} />
+      
       <UpgradeDialog 
         open={showUpgradeDialog} 
         onOpenChange={setShowUpgradeDialog}
@@ -450,3 +245,4 @@ export default function Home() {
       <BannerAd />
     </div>
   );
+}
