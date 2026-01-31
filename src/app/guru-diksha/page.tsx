@@ -18,31 +18,8 @@ const GuruDikshaPageSkeleton = () => (
         </header>
         <div className="space-y-8">
           <Card>
-            <CardContent className="p-6 text-center">
-              <div className="flex justify-center items-center h-48">
-                  <Skeleton className="h-24 w-24 rounded-full" />
-              </div>
-              <Skeleton className="h-5 w-1/3 mx-auto mt-8" />
-            </CardContent>
-          </Card>
-          <Separator />
-          <Card>
             <CardHeader>
-              <Skeleton className="h-6 w-1/2 mx-auto" />
-            </CardHeader>
-            <CardContent className="space-y-4 text-center">
-              <Skeleton className="h-8 w-1/4 mx-auto" />
-              <Skeleton className="h-4 w-1/3 mx-auto" />
-              <div className="pt-4">
-                <Skeleton className="h-32 w-full" />
-              </div>
-            </CardContent>
-          </Card>
-          <Separator />
-           <Card>
-            <CardHeader>
-                <Skeleton className="h-6 w-2/3 mx-auto" />
-                <Skeleton className="h-4 w-1/3 mx-auto mt-2" />
+                <Skeleton className="h-8 w-2/3 mx-auto" />
             </CardHeader>
             <CardContent className="text-center">
               <Skeleton className="h-16 w-full" />
@@ -59,12 +36,35 @@ const GuruDikshaPageSkeleton = () => (
             </CardContent>
           </Card>
            <Separator />
-          <Card>
+           <Card>
             <CardHeader>
-                <Skeleton className="h-8 w-2/3 mx-auto" />
+                <Skeleton className="h-6 w-2/3 mx-auto" />
+                <Skeleton className="h-4 w-1/3 mx-auto mt-2" />
             </CardHeader>
             <CardContent className="text-center">
               <Skeleton className="h-16 w-full" />
+            </CardContent>
+          </Card>
+          <Separator />
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/2 mx-auto" />
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+              <Skeleton className="h-8 w-1/4 mx-auto" />
+              <Skeleton className="h-4 w-1/3 mx-auto" />
+              <div className="pt-4">
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Separator />
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="flex justify-center items-center h-48">
+                  <Skeleton className="h-24 w-24 rounded-full" />
+              </div>
+              <Skeleton className="h-5 w-1/3 mx-auto mt-8" />
             </CardContent>
           </Card>
         </div>
@@ -105,25 +105,44 @@ export default function GuruDikshaPage() {
           </header>
 
           <div className="space-y-8">
+            <Card className="bg-secondary/50">
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
+                  <Footprints className="h-6 w-6 text-primary" />
+                  {t('guruDikshaNathaTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-foreground">
+                <p>{t('guruDikshaNathaContent')}</p>
+              </CardContent>
+            </Card>
+            
+            <Separator />
+
             <Card>
-              <CardContent className="p-6 text-center">
-                <div className="flex justify-center items-center h-48">
-                    <div className="relative w-24 h-24">
-                        <div className="absolute inset-0 rounded-full bg-primary animate-ping"></div>
-                        <div className="relative flex items-center justify-center rounded-full bg-primary h-24 w-24 shadow-lg">
-                            <Sparkles className="h-12 w-12 text-primary-foreground" />
-                        </div>
-                    </div>
-                </div>
-                <p className="mt-8 font-semibold text-foreground">
-                  {t('guruDikshaComingSoon')}
-                </p>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl text-center">{t('guruMantraTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="font-headline text-xl whitespace-pre-line text-primary">{t('guruMantra')}</p>
+                <p className="text-muted-foreground">{t('guruMantraMeaning')}</p>
               </CardContent>
             </Card>
 
             <Separator />
             
-            {/* Fee Information Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl text-center">{t('shishyaDutiesTitle')}</CardTitle>
+                <CardDescription className="text-center">{t('shishyaDutiesSubtitle')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">{t('shishyaDutiesContent')}</p>
+              </CardContent>
+            </Card>
+            
+            <Separator />
+
             <Card className="border-primary border-2 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-xl text-center text-primary">{t('guruDikshaFeeTitle')}</CardTitle>
@@ -149,40 +168,19 @@ export default function GuruDikshaPage() {
 
             <Separator />
 
-            {/* Duties of a Disciple Card */}
             <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-2xl text-center">{t('shishyaDutiesTitle')}</CardTitle>
-                <CardDescription className="text-center">{t('shishyaDutiesSubtitle')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center text-muted-foreground">{t('shishyaDutiesContent')}</p>
-              </CardContent>
-            </Card>
-
-            <Separator />
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-2xl text-center">{t('guruMantraTitle')}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <p className="font-headline text-xl whitespace-pre-line text-primary">{t('guruMantra')}</p>
-                <p className="text-muted-foreground">{t('guruMantraMeaning')}</p>
-              </CardContent>
-            </Card>
-
-            <Separator />
-
-            <Card className="bg-secondary/50">
-              <CardHeader>
-                <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
-                  <Footprints className="h-6 w-6 text-primary" />
-                  {t('guruDikshaNathaTitle')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center text-foreground">
-                <p>{t('guruDikshaNathaContent')}</p>
+              <CardContent className="p-6 text-center">
+                <div className="flex justify-center items-center h-48">
+                    <div className="relative w-24 h-24">
+                        <div className="absolute inset-0 rounded-full bg-primary animate-ping"></div>
+                        <div className="relative flex items-center justify-center rounded-full bg-primary h-24 w-24 shadow-lg">
+                            <Sparkles className="h-12 w-12 text-primary-foreground" />
+                        </div>
+                    </div>
+                </div>
+                <p className="mt-8 font-semibold text-foreground">
+                  {t('guruDikshaComingSoon')}
+                </p>
               </CardContent>
             </Card>
 
