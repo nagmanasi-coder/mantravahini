@@ -26,8 +26,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const { toast } = useToast();
   const { user } = useUser();
 
-  // NOTE: Replace this with your own Firebase User ID to enable developer mode
-  const isDeveloper = user?.uid === "FaGAe1gQAdayrSd09khGJbVMeZI3";
+  const [isDeveloper, setIsDeveloper] = useState(false);
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -37,6 +36,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
+
+  useEffect(() => {
+    // This check runs on the client-side after hydration
+    const isActualDeveloper = user?.uid === "FaGAe1gQAdayrSd09khGJbVMeZI3";
+    const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+    setIsDeveloper(isActualDeveloper && devModeEnabled);
+  }, [user]); // Re-check when user object changes
+
 
   useEffect(() => {
     const audio = audioRef.current;

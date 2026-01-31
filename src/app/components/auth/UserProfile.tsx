@@ -14,16 +14,36 @@ import { useUser } from '@/firebase';
 import { useAuth } from '@/firebase/provider';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
+import { useState, useEffect } from 'react';
 
 export function UserProfile() {
   const { user, loading } = useUser();
   const auth = useAuth();
   const { t } = useLanguage();
+  const [isDevMode, setIsDevMode] = useState(false);
+
+  const isActualDeveloper = user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+
+  useEffect(() => {
+    // This effect runs on the client-side
+    if (isActualDeveloper) {
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDevMode(devModeEnabled);
+    }
+  }, [isActualDeveloper]);
+
 
   const handleSignOut = async () => {
     await signOut(auth);
+  };
+
+  const toggleDeveloperMode = () => {
+    const newDevMode = !isDevMode;
+    localStorage.setItem('developerMode', String(newDevMode));
+    setIsDevMode(newDevMode);
+    window.location.reload(); // Reload to apply changes app-wide
   };
 
   if (loading) {
@@ -64,6 +84,12 @@ export function UserProfile() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isActualDeveloper && (
+          <DropdownMenuItem onClick={toggleDeveloperMode}>
+            <Code className="mr-2 h-4 w-4" />
+            <span>{isDevMode ? "Disable Dev Mode" : "Enable Dev Mode"}</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>
