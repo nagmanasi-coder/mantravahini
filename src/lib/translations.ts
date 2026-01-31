@@ -130,6 +130,7 @@ export const translations = {
     featureOfflineAccess: "ಆಫ್‌ಲೈನ್ ಪ್ರವೇಶ",
     featureAiChatbot: "AI ಚಾಟ್‌ಬಾಟ್ (ಸಂದರ್ಭಕ್ಕೆ ತಕ್ಕಂತೆ, ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ)",
     featureGuruDiksha: "ಗುರು ದೀಕ್ಷೆ ಮತ್ತು ಮಂತ್ರ ದೀಕ್ಷೆಗೆ ಉಚಿತವಾಗಿ ಅರ್ಹರು*",
+    featureDivineGroup: "ದೈವಿಕ ಗುಂಪಿಗೆ ಪ್ರವೇಶ*",
     upgradeButton: "ಈಗಲೇ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ",
     currentPlan: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ",
     contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ"
@@ -264,6 +265,7 @@ export const translations = {
     featureOfflineAccess: "Offline Access",
     featureAiChatbot: "AI Chatbot (context-aware, coming soon)",
     featureGuruDiksha: "Eligible for Guru Diksha and Mantra Diksha for free*",
+    featureDivineGroup: "Access to Divine Group*",
     upgradeButton: "Upgrade Now",
     currentPlan: "Your Current Plan",
     contactToActivate: "Contact to activate"

@@ -33,6 +33,7 @@ export default function UpgradePage() {
     t('featureNewMantras'),
     t('featureOfflineAccess'),
     t('featureAiChatbot'),
+    t('featureDivineGroup'),
     t('featureGuruDiksha'),
   ];
 
