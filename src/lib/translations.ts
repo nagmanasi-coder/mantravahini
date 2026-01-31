@@ -155,7 +155,7 @@ export const translations = {
     guruDikshaMode: "ವಿಧಾನ: ದೂರಸ್ಥ ಗುರು ದೀಕ್ಷಾ ಪ್ರಕ್ರಿಯೆ",
     guruDikshaFreeConditionsTitle: "ಉಚಿತ ದೀಕ್ಷೆ (ಷರತ್ತುಗಳು ಅನ್ವಯ)",
     guruDikshaFreeCondition1: "1. ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
-    guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
+    guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -228,7 +228,7 @@ export const translations = {
     hanumanDohaMeaning: "\"All diseases and pains are removed by continuously chanting the heroic name of Hanuman.\" This couplet is known for its healing powers, and when recited with faith, it provides relief from all kinds of physical and mental afflictions. This couplet holds the formula to cure all kinds of diseases if practiced with proper activation according to age, disease, and severity.",
     healingContact: "For more information and to receive Mantra Therapy, please contact us.",
     hanumanTherapyFee: "Fee: Starting from ₹5500",
-    hanumanTherapyFeeDetails: "Contact us for activation and procedure based on the disease, its severity, and the patient's age. For Free 👇",
+    hanumanTherapyFeeDetails: "Fee varies based on the disease, its severity, and the patient's age. Contact us for activation and procedure. For Free 👇",
     freeHealingTitle: "Free Mantra Therapy",
     freeHealingCondition1: "Must be a premium member of Mantravaahini.",
     freeHealingCondition2: "Must be dedicated to serving the Guru and humanity with honesty.",
@@ -312,6 +312,6 @@ export const translations = {
     guruDikshaMode: "Mode: Distance Guru Diksha Process",
     guruDikshaFreeConditionsTitle: "Free Diksha (Conditions Apply)",
     guruDikshaFreeCondition1: "1. Must be a premium member of Mantravaahini.",
-    guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru and humanity with honesty.",
+    guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru, the Guru Tradition, and humanity with honesty.",
   }
 };
