@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { Home, ShoppingBag, AppWindow } from "lucide-react";
+import { Home, ShoppingBag, AppWindow, Star } from "lucide-react";
 import { ShareButton } from "./share-button";
 import { useLanguage } from "@/context/language-context";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,10 @@ export function AppHeader() {
               <Link href="/our-apps" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                 <AppWindow className="h-4 w-4" />
                 <span>{t('ourApps')}</span>
+              </Link>
+              <Link href="/upgrade" className="flex items-center space-x-2 text-sm font-medium text-amber-500 transition-colors hover:text-amber-400">
+                <Star className="h-4 w-4" />
+                <span>{t('headerUpgrade')}</span>
               </Link>
             </nav>
             <div className="flex items-center gap-2">
