@@ -4,6 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
 import { Sparkles, Footprints } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export default function GuruDikshaPage() {
   const { t } = useLanguage();
@@ -36,6 +37,20 @@ export default function GuruDikshaPage() {
                 </p>
               </CardContent>
             </Card>
+
+            <Separator />
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl text-center">{t('guruMantraTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="font-headline text-xl whitespace-pre-line text-primary">{t('guruMantra')}</p>
+                <p className="text-muted-foreground">{t('guruMantraMeaning')}</p>
+              </CardContent>
+            </Card>
+
+            <Separator />
 
             <Card className="bg-secondary/50">
               <CardHeader>

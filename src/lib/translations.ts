@@ -146,7 +146,10 @@ export const translations = {
     guruDikshaSubtitle: "ಆಧ್ಯಾತ್ಮಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ದೀಕ್ಷೆ",
     guruDikshaComingSoon: "ವಿವರಗಳನ್ನು ಶೀಘ್ರದಲ್ಲೇ ನವೀಕರಿಸಲಾಗುತ್ತದೆ... ನಿರೀಕ್ಷಿಸಿರಿ.",
     guruDikshaNathaTitle: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ ಗುರುವಿನ ಮಹತ್ವ",
-    guruDikshaNathaContent: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ, ಗುರುವಿಗೆ ದೇವರಿಗಿಂತಲೂ ಉನ್ನತ ಸ್ಥಾನವಿದೆ. ಗುರು ತೋರಿಸಿದ ಮಾರ್ಗ ಮತ್ತು ಪರಂಪರೆಯೇ ಸರ್ವಶ್ರೇಷ್ಠವೆಂದು ಪರಿಗಣಿಸಲಾಗಿದೆ. ಗುರುವು ಸಂಪ್ರದಾಯದ ಜೀವಂತ ಸ್ವರೂಪ ಮತ್ತು ದೈವಿಕ ಜ್ಞಾನಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ. ಗುರುವಿನ ಕೃಪೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶನವಿಲ್ಲದೆ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಗತಿ ಅಸಾಧ್ಯವೆಂದು ನಂಬಲಾಗಿದೆ. ಈ ಸಂಪ್ರದಾಯವು ಗುರುವಿನ ಮಾತೇ ಅಂತಿಮ ಶಾಸನ ಮತ್ತು ಅವರ ಮಾರ್ಗದರ್ಶನವೇ ಜ್ಞಾನೋದಯಕ್ಕೆ ಏಕೈಕ ನಿಜವಾದ ಮಾರ್ಗವೆಂದು ಒತ್ತಿಹೇಳುತ್ತದೆ.",
+    guruDikshaNathaContent: "ನಾಥ ಸಂಪ್ರದಾಯದಲ್ಲಿ, ಗುರುವಿಗೆ ಉನ್ನತ ಸ್ಥಾನವಿದೆ. ಗುರು ತೋರಿಸಿದ ಮಾರ್ಗ ಮತ್ತು ಪರಂಪರೆಯೇ ಸರ್ವಶ್ರೇಷ್ಠವೆಂದು ಪರಿಗಣಿಸಲಾಗಿದೆ. ಗುರುವು ಸಂಪ್ರದಾಯದ ಜೀವಂತ ಸ್ವರೂಪ ಮತ್ತು ದೈವಿಕ ಜ್ಞಾನಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ. ಗುರುವಿನ ಕೃಪೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶನವಿಲ್ಲದೆ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಗತಿ ಅಸಾಧ್ಯವೆಂದು ನಂಬಲಾಗಿದೆ. ಈ ಸಂಪ್ರದಾಯವು ಗುರುವಿನ ಮಾತೇ ಅಂತಿಮ ಶಾಸನ ಮತ್ತು ಅವರ ಮಾರ್ಗದರ್ಶನವೇ ಜ್ಞಾನೋದಯಕ್ಕೆ ಏಕೈಕ ನಿಜವಾದ ಮಾರ್ಗವೆಂದು ಒತ್ತಿಹೇಳುತ್ತದೆ.",
+    guruMantraTitle: "ಗುರು ಮಂತ್ರ",
+    guruMantra: "ಗುರುರ್ಬ್ರಹ್ಮಾ ಗುರುರ್ವಿಷ್ಣುಃ ಗುರುರ್ದೇವೋ ಮಹೇಶ್ವರಃ |\nಗುರುಃ ಸಾಕ್ಷಾತ್ ಪರಬ್ರಹ್ಮ ತಸ್ಮೈ ಶ್ರೀ ಗುರವೇ ನಮಃ ||",
+    guruMantraMeaning: "ಗುರು ಬ್ರಹ್ಮ (ಸೃಷ್ಟಿಕರ್ತ), ಗುರು ವಿಷ್ಣು (ಪಾಲಕ), ಮತ್ತು ಗುರು ದೇವೋ ಮಹೇಶ್ವರ (ನಾಶಕ). ಗುರು ಸಾಕ್ಷಾತ್ ಪರಬ್ರಹ್ಮ (ಪರಮ ಸತ್ಯ). ಅಂತಹ ಗುರುವಿಗೆ ನಾನು ನಮಸ್ಕರಿಸುತ್ತೇನೆ."
   },
   en: {
     appTitle: "Mantravaahini",
@@ -294,10 +297,9 @@ export const translations = {
     guruDikshaSubtitle: "Spiritual Guidance and Initiation",
     guruDikshaComingSoon: "Details will be updated soon... stay tuned.",
     guruDikshaNathaTitle: "The Importance of the Guru in the Natha Tradition",
-    guruDikshaNathaContent: "In the Natha tradition, the Guru holds the highest position. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
+    guruDikshaNathaContent: "In the Natha tradition, the Guru holds a high position. The lineage and the path laid down by the Guru are considered supreme. The Guru is the living embodiment of the tradition and the direct link to divine knowledge. Without the Guru's grace and guidance, spiritual progress is considered impossible. This tradition emphasizes that the Guru's word is the ultimate law and their guidance is the only true path to enlightenment.",
+    guruMantraTitle: "Guru Mantra",
+    guruMantra: "GururBrahma GururVishnu GururDevo Maheshwaraha |\nGuru Saakshaat ParaBrahma Tasmai Sri Gurave Namaha ||",
+    guruMantraMeaning: "The Guru is Brahma (the Creator), the Guru is Vishnu (the Preserver), and the Guru is Lord Maheshwara (the Destroyer). The Guru is the absolute reality. I bow to that Guru."
   }
 };
-
-    
-
-    
