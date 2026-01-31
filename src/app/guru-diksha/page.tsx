@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
+import { Sparkles } from "lucide-react";
 
 export default function GuruDikshaPage() {
   const { t } = useLanguage();
@@ -21,7 +22,15 @@ export default function GuruDikshaPage() {
           <div className="space-y-8">
             <Card>
               <CardContent className="p-6 text-center">
-                <p className="font-semibold text-foreground">
+                <div className="flex justify-center items-center h-48">
+                    <div className="relative w-24 h-24">
+                        <div className="absolute inset-0 rounded-full bg-primary animate-ping"></div>
+                        <div className="relative flex items-center justify-center rounded-full bg-primary h-24 w-24 shadow-lg">
+                            <Sparkles className="h-12 w-12 text-primary-foreground" />
+                        </div>
+                    </div>
+                </div>
+                <p className="mt-8 font-semibold text-foreground">
                   {t('guruDikshaComingSoon')}
                 </p>
               </CardContent>
