@@ -65,7 +65,7 @@ export default function Home() {
   const handleShare = async () => {
     const baseUrl = window.location.origin;
     const referralCode = userProfile?.referralCode;
-    const shareUrl = referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+    const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
 
     const shareData = {
       title: t('appTitle'),

@@ -18,12 +18,12 @@ export function ShareButton() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ referralCode?: string; isPremium?: boolean }>(userDocRef);
 
   const handleShare = async () => {
     const baseUrl = window.location.origin;
     const referralCode = userProfile?.referralCode;
-    const shareUrl = referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+    const shareUrl = userProfile?.isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
     
     const shareData = {
       title: t('appTitle'),
