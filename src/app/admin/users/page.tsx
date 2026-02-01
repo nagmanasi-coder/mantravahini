@@ -41,6 +41,7 @@ interface UserProfile {
   email: string;
   photoURL: string;
   isPremium?: boolean;
+  referredBy?: string;
 }
 
 const addUserFormSchema = z.object({
@@ -73,6 +74,12 @@ export default function AdminUsersPage() {
   }, [firestore, isDeveloper]);
 
   const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersCollection);
+
+  const getUserDisplayName = (uid: string) => {
+    if (!users) return uid;
+    const referrer = users.find(user => user.uid === uid);
+    return referrer ? referrer.displayName : 'Unknown';
+  };
 
   const handleSubscriptionChange = (userToUpdate: UserProfile, isPremium: boolean) => {
     if (!firestore) return;
@@ -115,7 +122,7 @@ export default function AdminUsersPage() {
 
   if (userLoading || !isDeveloper) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-8">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         <Card>
           <CardHeader>
             <CardTitle>User Management</CardTitle>
@@ -134,7 +141,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <div className="container mx-auto max-w-6xl px-4 py-8">
       <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -203,6 +210,7 @@ export default function AdminUsersPage() {
               <TableRow>
                 <TableHead>User</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Referred By</TableHead>
                 <TableHead>Subscription</TableHead>
                 <TableHead className="text-right">Premium</TableHead>
               </TableRow>
@@ -215,8 +223,10 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
@@ -236,6 +246,9 @@ export default function AdminUsersPage() {
                     </div>
                   </TableCell>
                   <TableCell>{u.email}</TableCell>
+                  <TableCell>
+                    {u.referredBy ? getUserDisplayName(u.referredBy) : '-'}
+                  </TableCell>
                   <TableCell>
                     {u.isPremium ? (
                       <Badge>Premium</Badge>
