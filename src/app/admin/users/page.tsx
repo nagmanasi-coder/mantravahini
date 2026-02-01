@@ -33,6 +33,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
 
 
 interface UserProfile {
@@ -42,6 +43,7 @@ interface UserProfile {
   photoURL: string;
   isPremium?: boolean;
   referredBy?: string;
+  referralCommissionRate?: number;
 }
 
 const addUserFormSchema = z.object({
@@ -54,6 +56,7 @@ export default function AdminUsersPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const [isDeveloper, setIsDeveloper] = useState(false);
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
@@ -85,6 +88,24 @@ export default function AdminUsersPage() {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
     updateDocumentNonBlocking(userDocRef, { isPremium });
+  };
+  
+  const handleCommissionChange = (userToUpdate: UserProfile, commissionRate: number) => {
+    if (!firestore) return;
+    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
+    if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+        toast({
+            variant: "destructive",
+            title: "Invalid Rate",
+            description: "Commission rate must be a number between 0 and 100.",
+        });
+        return;
+    }
+    updateDocumentNonBlocking(userDocRef, { referralCommissionRate: commissionRate });
+    toast({
+        title: "Commission Rate Updated",
+        description: `${userToUpdate.displayName}'s commission rate has been set to ${commissionRate}%.`,
+    });
   };
 
   const form = useForm<z.infer<typeof addUserFormSchema>>({
@@ -211,6 +232,7 @@ export default function AdminUsersPage() {
                 <TableHead>User</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Referred By</TableHead>
+                <TableHead>Commission Rate (%)</TableHead>
                 <TableHead>Subscription</TableHead>
                 <TableHead className="text-right">Premium</TableHead>
               </TableRow>
@@ -224,8 +246,10 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
@@ -248,6 +272,17 @@ export default function AdminUsersPage() {
                   <TableCell>{u.email}</TableCell>
                   <TableCell>
                     {u.referredBy ? getUserDisplayName(u.referredBy) : '-'}
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      defaultValue={u.referralCommissionRate ?? 0}
+                      onBlur={(e) => handleCommissionChange(u, parseFloat(e.target.value))}
+                      className="w-24"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                    />
                   </TableCell>
                   <TableCell>
                     {u.isPremium ? (

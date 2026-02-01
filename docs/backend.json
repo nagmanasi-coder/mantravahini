@@ -75,6 +75,10 @@
         "referralCode": {
           "type": "string",
           "description": "A unique code for this user to refer others."
+        },
+        "referralCommissionRate": {
+          "type": "number",
+          "description": "The commission percentage this user receives for successful referrals."
         }
       },
       "required": [
