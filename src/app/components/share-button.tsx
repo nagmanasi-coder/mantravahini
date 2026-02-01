@@ -4,16 +4,31 @@ import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
 
 export function ShareButton() {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc<{ referralCode?: string }>(userDocRef);
 
   const handleShare = async () => {
+    const baseUrl = window.location.origin;
+    const referralCode = userProfile?.referralCode;
+    const shareUrl = referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+    
     const shareData = {
       title: t('appTitle'),
       text: t('shareText'),
-      url: window.location.href,
+      url: shareUrl,
     };
 
     if (navigator.share) {

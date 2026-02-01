@@ -47,7 +47,7 @@ export default function Home() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc(userDocRef);
+  const { data: userProfile } = useDoc<{ referralCode?: string, isPremium?: boolean }>(userDocRef);
   const isPremiumUser = userProfile?.isPremium;
 
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
@@ -63,10 +63,14 @@ export default function Home() {
   };
 
   const handleShare = async () => {
+    const baseUrl = window.location.origin;
+    const referralCode = userProfile?.referralCode;
+    const shareUrl = referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+
     const shareData = {
       title: t('appTitle'),
       text: t('shareText'),
-      url: window.location.href,
+      url: shareUrl,
     };
 
     if (navigator.share) {

@@ -7,15 +7,6 @@
  * The data is organized into two main collections:
  * - /mantra_tracks: Stores all mantra track documents, which are public.
  * - /users: Stores user profile information, including premium status, which is protected.
- *
- * Key Security Decisions:
- * - Public Read Access for Mantras: All mantra tracks are publicly readable.
- * - User Data Ownership: Users can read and create their own profile data but are
- *   prevented from elevating their own privileges (e.g., setting `isPremium`).
- * - Admin Privileges: A designated developer/admin user has full access to manage
- *   user data for administrative purposes, such as granting premium access.
- * - No Client Writes on Mantras: To protect the pre-loaded content, all write operations
- *   from client applications are explicitly denied.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -50,6 +41,22 @@ service cloud.firestore {
 
       // The developer has full write access for administrative tasks (e.g., granting premium).
       allow write: if isDeveloper();
+    }
+
+    /**
+     * @description Manages referral code mappings for the referral system.
+     * @path        /referralCodes/{code}
+     * @principle   Enables referral tracking by allowing users to create their own code mapping and letting any authenticated user look up a referrer.
+     */
+    match /referralCodes/{code} {
+      // Allow any authenticated user to look up a referrer's UID from a code.
+      allow get: if request.auth != null;
+      
+      // Allow a user to create their own referral code mapping.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // Disallow modification or deletion of referral codes to ensure integrity.
+      allow update, delete: if false;
     }
 
     // =====================================================================
