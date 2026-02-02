@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
     if (!userLoading) {
       const isActualDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
       setIsDeveloper(isActualDeveloper);
-      if (!isActualDeveloper) {
+      if (!user?.uid || !isActualDeveloper) {
         router.push('/');
       }
     }
