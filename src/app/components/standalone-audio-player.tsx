@@ -50,7 +50,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
   useEffect(() => {
     // This check runs on the client-side after hydration
-    const isActualDeveloper = user?.uid === "FaGAe1gQAdayrSd09khGJbVMeZI3";
+    const isActualDeveloper = user?.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
     const devModeEnabled = localStorage.getItem('developerMode') === 'true';
     setIsDeveloper(isActualDeveloper && devModeEnabled);
   }, [user]); // Re-check when user object changes
@@ -159,7 +159,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     <Card className={cn("overflow-hidden shadow-xl relative")}>
         {mantra.tier === 'paid' && !isPaidUser && (
            <Badge variant="default" className="absolute top-4 right-4 z-10">
-            Premium
+            {t('headerUpgrade')}
           </Badge>
         )}
         {mantra.tier === 'free' && (
