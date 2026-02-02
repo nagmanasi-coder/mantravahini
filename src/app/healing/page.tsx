@@ -84,14 +84,14 @@ export default function HealingPage() {
           </header>
 
           <div className="space-y-8">
-            <Card className="overflow-hidden shadow-xl">
+            <Card className="overflow-hidden shadow-xl border-2 border-primary">
               <CardHeader>
                 <CardTitle className="font-headline text-3xl text-center">{t('hanumanTherapyTitle')}</CardTitle>
                 <CardDescription className="text-center">
                   {t('hanumanTherapyDescription')}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="relative aspect-auto w-full max-w-md mx-auto">
                   {healingImage && <Image
                     src={healingImage.imageUrl}
@@ -112,16 +112,6 @@ export default function HealingPage() {
                      {t('hanumanDohaMeaning')}
                    </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden shadow-xl border-2 border-primary">
-              <CardHeader>
-                <CardTitle className="font-headline text-3xl text-center">{t('hanumanPranaTherapyTitle')}</CardTitle>
-                <CardDescription className="text-center">{t('untimelyDeathTitle')}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
 
                 <Card className="bg-secondary/50">
                   <CardHeader>
@@ -164,6 +154,16 @@ export default function HealingPage() {
                   </Link>
                 </Button>
               </CardFooter>
+            </Card>
+
+            <Card className="overflow-hidden shadow-xl">
+              <CardHeader>
+                <CardTitle className="font-headline text-3xl text-center">{t('hanumanPranaTherapyTitle')}</CardTitle>
+                <CardDescription className="text-center">{t('untimelyDeathTitle')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
+              </CardContent>
             </Card>
           </div>
           
