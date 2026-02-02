@@ -170,6 +170,7 @@ export const translations = {
     untimelyDeathTitle: "ಹನುಮನಿದ್ದಲ್ಲಿ ಅಕಾಲಿಕ ಮರಣದ ಮಾತೆಲ್ಲಿ?",
     untimelyDeathContent: "ಹನುಮಂತನು 'ಪ್ರಾಣದೇವರು' ಎಂದು ಪ್ರಸಿದ್ಧ. ಆತನು ಕೇವಲ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವುದಲ್ಲದೆ, ಅಕಾಲಿಕ ಮರಣದಿಂದಲೂ ರಕ್ಷಿಸುತ್ತಾನೆ. ಅವರ ಉಪಾಸನೆಯು ಆಯುಷ್ಯವನ್ನು ವೃದ್ಧಿಸುತ್ತದೆ ಮತ್ತು ಜೀವನಕ್ಕೆ ರಕ್ಷಣೆ ನೀಡುತ್ತದೆ. ಆತನನ್ನು ಶ್ರದ್ಧೆಯಿಂದ ಪೂಜಿಸುವವರಿಗೆ, ಆತನು ಎಲ್ಲಾ ಭಯಗಳಿಂದ ಮುಕ್ತಿ ನೀಡಿ, ದೀರ್ಘ ಮತ್ತು ಆರೋಗ್ಯಕರ ಜೀವನವನ್ನು ಅನುಗ್ರಹಿಸುತ್ತಾನೆ.",
     hanumanPranaTherapyTitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆ",
+    hanumanPranaContact: "ಹನುಮಾನ್ ಪ್ರಾಣ ಮಂತ್ರ ಮತ್ತು ಪವಿತ್ರ ವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -341,5 +342,6 @@ export const translations = {
     untimelyDeathTitle: "Where Hanuman is, can there be talk of untimely death?",
     untimelyDeathContent: "Hanuman is famously known as 'Praanadeva' (the God of Life Force). He not only cures diseases but also protects from untimely death. His worship enhances longevity and provides protection to life. For those who worship him with devotion, he grants freedom from all fears and blesses them with a long and healthy life.",
     hanumanPranaTherapyTitle: "Hanuman Prana Therapy",
+    hanumanPranaContact: "Contact us for the Hanuman Prana mantra and sacred method.",
   }
 };

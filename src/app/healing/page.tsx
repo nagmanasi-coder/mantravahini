@@ -161,8 +161,9 @@ export default function HealingPage() {
                 <CardTitle className="font-headline text-3xl text-center">{t('hanumanPranaTherapyTitle')}</CardTitle>
                 <CardDescription className="text-center">{t('untimelyDeathTitle')}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
+              <CardContent className="space-y-4 text-center">
+                <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
+                <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
               </CardContent>
             </Card>
           </div>
