@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { useCollection, useFirestore, useUser, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
@@ -14,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User as UserIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,6 +34,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 interface UserProfile {
@@ -41,7 +42,7 @@ interface UserProfile {
   displayName: string;
   email: string;
   photoURL: string;
-  isPremium?: boolean;
+  subscriptionTier?: 'free' | 'basic' | 'premium';
   premiumCycleStartDate?: string | null;
   referredBy?: string;
   referralCommissionRate?: number;
@@ -85,16 +86,19 @@ export default function AdminUsersPage() {
     return referrer ? referrer.displayName : 'Unknown';
   };
 
-  const handleSubscriptionChange = (userToUpdate: UserProfile, isPremium: boolean) => {
+  const handleSubscriptionChange = (userToUpdate: UserProfile, tier: 'free' | 'basic' | 'premium') => {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
     
-    const updateData: { isPremium: boolean; premiumCycleStartDate?: string | null } = {
-      isPremium,
+    const updateData: { subscriptionTier: string; premiumCycleStartDate?: string | null } = {
+      subscriptionTier: tier,
     };
 
-    if (isPremium) {
-      updateData.premiumCycleStartDate = new Date().toISOString();
+    if (tier === 'basic' || tier === 'premium') {
+      // only update date if it's a new activation or re-activation
+      if (userToUpdate.subscriptionTier !== tier) {
+        updateData.premiumCycleStartDate = new Date().toISOString();
+      }
     } else {
       updateData.premiumCycleStartDate = null;
     }
@@ -135,7 +139,7 @@ export default function AdminUsersPage() {
     const newUserProfile = {
       ...values,
       photoURL: '',
-      isPremium: false,
+      subscriptionTier: 'free',
       createdAt: new Date().toISOString(),
     };
 
@@ -186,7 +190,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
+    <div className="container mx-auto max-w-7xl px-4 py-8">
       <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -260,36 +264,29 @@ export default function AdminUsersPage() {
                 <TableHead>Subscription</TableHead>
                 <TableHead>Cycle Start Date</TableHead>
                 <TableHead>Days Left</TableHead>
-                <TableHead className="text-right">Premium</TableHead>
+                <TableHead className="text-right">Change Tier</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {usersLoading && (
                 <>
-                  <TableRow>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                  </TableRow>
+                  {[...Array(3)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    </TableRow>
+                  ))}
                 </>
               )}
               {users && users.map((u) => {
-                const daysLeft = u.isPremium ? calculateRemainingDays(u.premiumCycleStartDate) : null;
+                const isPaidUser = u.subscriptionTier === 'basic' || u.subscriptionTier === 'premium';
+                const daysLeft = isPaidUser ? calculateRemainingDays(u.premiumCycleStartDate) : null;
                 return (
                   <TableRow key={u.uid}>
                     <TableCell>
@@ -298,7 +295,7 @@ export default function AdminUsersPage() {
                           <AvatarImage src={u.photoURL} alt={u.displayName} />
                           <AvatarFallback><UserIcon size={16} /></AvatarFallback>
                         </Avatar>
-                        <span>{u.displayName}</span>
+                        <span className="font-medium">{u.displayName}</span>
                       </div>
                     </TableCell>
                     <TableCell>{u.email}</TableCell>
@@ -317,11 +314,9 @@ export default function AdminUsersPage() {
                       />
                     </TableCell>
                     <TableCell>
-                      {u.isPremium ? (
-                        <Badge>Premium</Badge>
-                      ) : (
-                        <Badge variant="secondary">Free</Badge>
-                      )}
+                       <Badge variant={u.subscriptionTier === 'premium' ? 'default' : u.subscriptionTier === 'basic' ? 'secondary' : 'outline'} className="capitalize">
+                        {u.subscriptionTier || 'free'}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {u.premiumCycleStartDate
@@ -332,10 +327,19 @@ export default function AdminUsersPage() {
                       {daysLeft !== null ? `${daysLeft} days` : '-'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Switch
-                        checked={!!u.isPremium}
-                        onCheckedChange={(checked) => handleSubscriptionChange(u, checked)}
-                      />
+                       <Select
+                          value={u.subscriptionTier || 'free'}
+                          onValueChange={(value) => handleSubscriptionChange(u, value as any)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Select tier" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="free">Free</SelectItem>
+                            <SelectItem value="basic">Basic</SelectItem>
+                            <SelectItem value="premium">Premium</SelectItem>
+                          </SelectContent>
+                        </Select>
                     </TableCell>
                   </TableRow>
                 )

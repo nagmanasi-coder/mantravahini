@@ -1,3 +1,4 @@
+
 /**
  * Core Philosophy:
  * This ruleset establishes a secure data model for the Mantravaahini app. It serves
@@ -6,7 +7,7 @@
  * Data Structure:
  * The data is organized into two main collections:
  * - /mantra_tracks: Stores all mantra track documents, which are public.
- * - /users: Stores user profile information, including premium status, which is protected.
+ * - /users: Stores user profile information, including subscription tier, which is protected.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -33,13 +34,13 @@ service cloud.firestore {
       allow read, list: if isDeveloper();
       allow read: if isOwner(userId);
 
-      // A user can create their own profile, but cannot grant themselves premium access.
-      allow create: if isOwner(userId) && request.resource.data.isPremium == false;
+      // A user can create their own profile, but must start with the 'free' tier.
+      allow create: if isOwner(userId) && request.resource.data.subscriptionTier == 'free';
       
-      // A user can update their profile, but cannot change their premium status.
-      allow update: if isOwner(userId) && request.resource.data.isPremium == resource.data.isPremium;
+      // A user can update their profile, but cannot change their own subscription tier.
+      allow update: if isOwner(userId) && request.resource.data.subscriptionTier == resource.data.subscriptionTier;
 
-      // The developer has full write access for administrative tasks (e.g., granting premium).
+      // The developer has full write access for administrative tasks (e.g., granting subscriptions).
       allow write: if isDeveloper();
     }
 

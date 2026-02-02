@@ -47,8 +47,8 @@ export default function Home() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string, isPremium?: boolean }>(userDocRef);
-  const isPremiumUser = userProfile?.isPremium;
+  const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const isPremiumUser = userProfile?.subscriptionTier === 'premium';
 
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;

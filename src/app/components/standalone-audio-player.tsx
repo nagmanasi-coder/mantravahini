@@ -34,8 +34,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc(userDocRef);
-  const isPremiumUser = userProfile?.isPremium;
+  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
 
   const [isDeveloper, setIsDeveloper] = useState(false);
   
@@ -103,7 +103,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
-    if (isDeveloper || isPremiumUser) {
+    if (isDeveloper) {
       setIsPlaying(true);
       return;
     }
@@ -125,7 +125,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
             break;
         
         case 'paid':
-            onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
+            if (isPaidUser) {
+              setIsPlaying(true);
+            } else {
+              onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
+            }
             break;
     }
   };
@@ -153,6 +157,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
+        {mantra.tier === 'paid' && !isPaidUser && (
+           <Badge variant="default" className="absolute top-4 right-4 z-10">
+            Premium
+          </Badge>
+        )}
         {mantra.tier === 'free' && (
           <Badge variant="secondary" className="absolute top-4 right-4 z-10">
             {t('free')}

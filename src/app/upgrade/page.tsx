@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, Star } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -22,26 +23,33 @@ export default function UpgradePage() {
     setIsMounted(true);
   }, []);
 
-
   const freeFeatures = [
     t('featurePainMantra'),
     t('featureLimitedPlays'),
   ];
   
-  const premiumFeatures = [
-    t('featureAllMantras'),
-    t('featureUnlimitedPlays'),
+  const basicFeatures = [
+    t('featureAllAudio'),
+    t('featureUnlimitedAudioPlays'),
     t('featureNewMantras'),
+  ];
+
+  const premiumFeatures = [
+    t('featureAllBasic'),
     t('featureOfflineAccess'),
     t('featureAiChatbot'),
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
   ];
 
+  if (!isMounted) {
+    return null; // or a skeleton loader
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
-        <div className="container mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center animate-fade-in">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
               {t('upgradeTitle')}
@@ -51,18 +59,18 @@ export default function UpgradePage() {
             </p>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             {/* Free Plan */}
-            <Card className="animate-fade-in-up">
+            <Card className="animate-fade-in-up flex flex-col h-full">
               <CardHeader>
                 <CardTitle className="font-headline text-2xl">{t('freePlanTitle')}</CardTitle>
                 <CardDescription>{t('freePlanDescription')}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-grow">
                 <ul className="space-y-2">
-                  {isMounted && freeFeatures.map((feature, index) => (
+                  {freeFeatures.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-500" />
+                      <Check className="h-5 w-5 text-muted-foreground/50" />
                       <span className="text-muted-foreground">{feature}</span>
                     </li>
                   ))}
@@ -73,19 +81,51 @@ export default function UpgradePage() {
               </CardFooter>
             </Card>
 
+            {/* Basic Plan */}
+            <Card className="border-secondary border-2 shadow-lg animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.2s'}}>
+              <CardHeader className="text-center">
+                 <CardTitle className="font-headline text-3xl text-secondary-foreground">{t('basicPlanTitle')}</CardTitle>
+                 <CardDescription className="text-xl font-bold">
+                   <span className="text-muted-foreground line-through mr-2">₹199</span>
+                   {t('basicPlanPrice')}
+                 </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 flex-grow">
+                <ul className="space-y-2">
+                  {basicFeatures.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-green-500" />
+                      <span className="text-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter className="flex-col gap-2">
+                <Button asChild className="w-full" size="lg" variant="secondary">
+                    <Link href={whatsAppUrl} target="_blank">
+                        <WhatsAppIcon />
+                        <span>{t('upgradeButton')}</span>
+                    </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+            
             {/* Premium Plan */}
-            <Card className="border-primary border-2 shadow-xl animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+            <Card className="border-primary border-2 shadow-xl animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.4s'}}>
               <CardHeader className="text-center">
                 <div className="flex justify-center items-center gap-2">
                     <Star className="h-6 w-6 text-yellow-500" />
                     <CardTitle className="font-headline text-3xl text-primary">{t('premiumPlanTitle')}</CardTitle>
                     <Star className="h-6 w-6 text-yellow-500" />
                 </div>
-                <CardDescription className="text-xl font-bold text-accent">{t('premiumPlanPrice')}</CardDescription>
+                <CardDescription className="text-xl font-bold text-accent">
+                   <span className="text-muted-foreground line-through mr-2">₹499</span>
+                   {t('premiumPlanPriceUpdated')}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-grow">
                 <ul className="space-y-2">
-                  {isMounted && premiumFeatures.map((feature, index) => (
+                  {premiumFeatures.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <Check className="h-5 w-5 text-primary" />
                       <span className="text-foreground font-medium">{feature}</span>

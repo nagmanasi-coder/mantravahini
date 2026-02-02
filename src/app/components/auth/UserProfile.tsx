@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -18,6 +19,11 @@ import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 
+type UserProfileType = {
+  subscriptionTier?: 'free' | 'basic' | 'premium';
+  premiumCycleStartDate?: string | null;
+};
+
 export function UserProfile() {
   const { user, isUserLoading: loading } = useUser();
   const auth = useAuth();
@@ -26,16 +32,16 @@ export function UserProfile() {
   const [isDevMode, setIsDevMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ isPremium?: boolean; premiumCycleStartDate?: string | null }>(userDocRef);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const { data: userProfile } = useDoc<UserProfileType>(userDocRef);
 
   useEffect(() => {
     if (user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53') {
@@ -68,16 +74,13 @@ export function UserProfile() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
-  const remainingDays = userProfile?.isPremium ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
+  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+  const remainingDays = isPaidUser ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
 
-  if (!isMounted) {
+  if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
   
-  if (loading) {
-     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
-  }
-
   if (!user) {
     return (
       <Button asChild variant="ghost" size="icon">
@@ -111,7 +114,7 @@ export function UserProfile() {
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
-            {userProfile?.isPremium && remainingDays !== null && (
+            {isPaidUser && remainingDays !== null && (
                 <p className="text-xs font-semibold leading-none text-primary/80 mt-1">
                 {remainingDays} days left
                 </p>

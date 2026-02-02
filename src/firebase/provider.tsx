@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -90,10 +91,10 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
               const userData: any = {
                 uid: userAuth.uid,
                 email: userAuth.email,
-                displayName: userAuth.displayName,
+                displayName: userAuth.displayName || userAuth.email?.split('@')[0],
                 photoURL: userAuth.photoURL,
                 createdAt: new Date().toISOString(),
-                isPremium: false,
+                subscriptionTier: 'free',
                 referralCode: referralCode,
                 referralCommissionRate: 0,
               };

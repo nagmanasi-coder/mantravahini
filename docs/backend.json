@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "MantraTrack": {
@@ -64,14 +65,15 @@
           "format": "date-time",
           "description": "The timestamp when the user profile was created."
         },
-        "isPremium": {
-          "type": "boolean",
-          "description": "Indicates if the user has a premium subscription."
+        "subscriptionTier": {
+          "type": "string",
+          "enum": ["free", "basic", "premium"],
+          "description": "The subscription tier of the user."
         },
         "premiumCycleStartDate": {
           "type": "string",
           "format": "date-time",
-          "description": "The timestamp when the user's current premium subscription cycle started. This is updated with each payment."
+          "description": "The timestamp when the user's current paid subscription cycle started. This is updated with each payment."
         },
         "referredBy": {
           "type": "string",
@@ -90,7 +92,7 @@
         "uid",
         "email",
         "createdAt",
-        "isPremium",
+        "subscriptionTier",
         "referralCode"
       ]
     },
