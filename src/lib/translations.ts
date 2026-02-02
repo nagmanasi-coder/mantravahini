@@ -169,6 +169,7 @@ export const translations = {
     shishyaDutiesContent: "ಗುರು ದೀಕ್ಷೆ ಪಡೆದ ನಂತರ, ಶಿಷ್ಯನಿಗೆ ಕೆಲವು ಜವಾಬ್ದಾರಿಗಳಿರುತ್ತವೆ. ಎರಡನೇ ಷರತ್ತಿನಲ್ಲಿ ತಿಳಿಸಿದಂತೆ, ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಗೆ ನಿಷ್ಠೆಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವುದು ಶಿಷ್ಯನ ಪ್ರಮುಖ ಕರ್ತವ್ಯ. ಇದು ಕೇವಲ ಒಂದು ಷರತ್ತಲ್ಲ, ಬದಲಿಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣದ ಒಂದು ಅವಿಭಾಜ್ಯ ಅಂಗ. ಈ ಸೇವಾ ಮನೋಭಾವದಿಂದ ಮಾತ್ರ ಶಿಷ್ಯನು ಗುರುವಿನ ಸಂಪೂರ್ಣ ಕೃಪೆಗೆ ಪಾತ್ರನಾಗುತ್ತಾನೆ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕವಾಗಿ ಬೆಳೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.",
     untimelyDeathTitle: "ಹನುಮನಿದ್ದಲ್ಲಿ ಅಕಾಲಿಕ ಮರಣದ ಮಾತೆಲ್ಲಿ?",
     untimelyDeathContent: "ಹನುಮಂತನು 'ಪ್ರಾಣದೇವರು' ಎಂದು ಪ್ರಸಿದ್ಧ. ಆತನು ಕೇವಲ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವುದಲ್ಲದೆ, ಅಕಾಲಿಕ ಮರಣದಿಂದಲೂ ರಕ್ಷಿಸುತ್ತಾನೆ. ಅವರ ಉಪಾಸನೆಯು ಆಯುಷ್ಯವನ್ನು ವೃದ್ಧಿಸುತ್ತದೆ ಮತ್ತು ಜೀವನಕ್ಕೆ ರಕ್ಷಣೆ ನೀಡುತ್ತದೆ. ಆತನನ್ನು ಶ್ರದ್ಧೆಯಿಂದ ಪೂಜಿಸುವವರಿಗೆ, ಆತನು ಎಲ್ಲಾ ಭಯಗಳಿಂದ ಮುಕ್ತಿ ನೀಡಿ, ದೀರ್ಘ ಮತ್ತು ಆರೋಗ್ಯಕರ ಜೀವನವನ್ನು ಅನುಗ್ರಹಿಸುತ್ತಾನೆ.",
+    hanumanPranaTherapyTitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -339,5 +340,6 @@ export const translations = {
     shishyaDutiesContent: "After receiving Guru Diksha, a disciple has certain responsibilities. As mentioned in the second condition, it is the foremost duty of the disciple to serve the Guru, the Guru tradition, and humanity with loyalty and honesty. This is not just a condition, but an integral part of the spiritual journey. Only with this attitude of service can the disciple receive the Guru's full grace and grow spiritually.",
     untimelyDeathTitle: "Where Hanuman is, can there be talk of untimely death?",
     untimelyDeathContent: "Hanuman is famously known as 'Praanadeva' (the God of Life Force). He not only cures diseases but also protects from untimely death. His worship enhances longevity and provides protection to life. For those who worship him with devotion, he grants freedom from all fears and blesses them with a long and healthy life.",
+    hanumanPranaTherapyTitle: "Hanuman Prana Therapy",
   }
 };

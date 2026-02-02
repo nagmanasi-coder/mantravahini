@@ -22,24 +22,32 @@ const HealingPageSkeleton = () => (
           <Skeleton className="h-10 w-3/4 mx-auto" />
           <Skeleton className="h-5 w-1/2 mx-auto mt-4" />
         </header>
-        <Card className="overflow-hidden shadow-xl">
-          <CardHeader>
-            <Skeleton className="h-8 w-2/3 mx-auto" />
-            <Skeleton className="h-4 w-full mt-2" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-             <Skeleton className="aspect-[1080/1350] w-full max-w-md mx-auto" />
-             <div className="space-y-2 pt-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-             </div>
-          </CardContent>
-          <CardFooter>
-            <div className="w-full flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
-              <Skeleton className="h-10 w-48" />
-            </div>
-          </CardFooter>
-        </Card>
+        <div className="space-y-8">
+          <Card className="overflow-hidden shadow-xl">
+            <CardHeader>
+              <Skeleton className="h-8 w-2/3 mx-auto" />
+              <Skeleton className="h-4 w-full mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="aspect-[1080/1350] w-full max-w-md mx-auto" />
+              <div className="space-y-2 pt-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-8 w-1/2 mx-auto" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-40 w-full" />
+            </CardContent>
+            <CardFooter>
+              <Skeleton className="h-16 w-full" />
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </main>
   </div>
@@ -75,89 +83,89 @@ export default function HealingPage() {
             </p>
           </header>
 
-          <Card className="overflow-hidden shadow-xl">
-            <CardHeader>
-              <CardTitle className="font-headline text-3xl text-center">{t('hanumanTherapyTitle')}</CardTitle>
-              <CardDescription className="text-center">
-                {t('hanumanTherapyDescription')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative aspect-auto w-full max-w-md mx-auto">
-                {healingImage && <Image
-                  src={healingImage.imageUrl}
-                  alt={healingImage.description}
-                  width={1080}
-                  height={1350}
-                  className="rounded-md object-cover"
-                  data-ai-hint={healingImage.imageHint}
-                />}
-              </div>
-              <div className="text-center text-muted-foreground space-y-2">
-                <p>{t('healingInfo1')}</p>
-                <p>{t('healingInfo2')}</p>
-              </div>
-              <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
-                 <p className="font-headline text-xl font-bold text-primary">{t('hanumanDoha')}</p>
-                 <p className="mt-2 text-sm text-foreground">
-                   {t('hanumanDohaMeaning')}
-                 </p>
-              </div>
+          <div className="space-y-8">
+            <Card className="overflow-hidden shadow-xl">
+              <CardHeader>
+                <CardTitle className="font-headline text-3xl text-center">{t('hanumanTherapyTitle')}</CardTitle>
+                <CardDescription className="text-center">
+                  {t('hanumanTherapyDescription')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="relative aspect-auto w-full max-w-md mx-auto">
+                  {healingImage && <Image
+                    src={healingImage.imageUrl}
+                    alt={healingImage.description}
+                    width={1080}
+                    height={1350}
+                    className="rounded-md object-cover"
+                    data-ai-hint={healingImage.imageHint}
+                  />}
+                </div>
+                <div className="text-center text-muted-foreground space-y-2">
+                  <p>{t('healingInfo1')}</p>
+                  <p>{t('healingInfo2')}</p>
+                </div>
+                <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-4 text-center">
+                   <p className="font-headline text-xl font-bold text-primary">{t('hanumanDoha')}</p>
+                   <p className="mt-2 text-sm text-foreground">
+                     {t('hanumanDohaMeaning')}
+                   </p>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Praana God Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl text-center">{t('untimelyDeathTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
-                </CardContent>
-              </Card>
+            <Card className="overflow-hidden shadow-xl border-2 border-primary">
+              <CardHeader>
+                <CardTitle className="font-headline text-3xl text-center">{t('hanumanPranaTherapyTitle')}</CardTitle>
+                <CardDescription className="text-center">{t('untimelyDeathTitle')}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
 
-              {/* Fee Information Card */}
-              <Card className="bg-secondary/50 mt-4">
-                <CardHeader>
-                  <CardTitle className="text-xl text-center text-primary">{t('hanumanTherapyFee')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-center text-muted-foreground">{t('hanumanTherapyFeeDetails')}</p>
-                </CardContent>
-              </Card>
+                <Card className="bg-secondary/50">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-center text-primary">{t('hanumanTherapyFee')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-center text-muted-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                  </CardContent>
+                </Card>
 
-              {/* Free Healing Conditions Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl text-center">{t('freeHealingTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <p className="flex items-start text-sm text-muted-foreground">
-                    <span className="mr-2 mt-1">1.</span>
-                    <span>{t('freeHealingCondition1')}</span>
-                  </p>
-                  <p className="flex items-start text-sm text-muted-foreground">
-                    <span className="mr-2 mt-1">2.</span>
-                    <span>{t('freeHealingCondition2')}</span>
-                  </p>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl text-center">{t('freeHealingTitle')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <p className="flex items-start text-sm text-muted-foreground">
+                      <span className="mr-2 mt-1">1.</span>
+                      <span>{t('freeHealingCondition1')}</span>
+                    </p>
+                    <p className="flex items-start text-sm text-muted-foreground">
+                      <span className="mr-2 mt-1">2.</span>
+                      <span>{t('freeHealingCondition2')}</span>
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <div className="text-center">
-                 <p className="mt-2 font-semibold text-foreground">{t('healingContact')}</p>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
-              <div className="text-center">
-                <p>{t('contact')}:</p>
-                <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
-              </div>
-              <Button asChild>
-                <Link href={whatsAppUrl} target="_blank">
-                  <WhatsAppIcon />
-                  {t('contactOnWhatsApp')}
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
+                <div className="text-center">
+                   <p className="font-semibold text-foreground">{t('healingContact')}</p>
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
+                <div className="text-center">
+                  <p>{t('contact')}:</p>
+                  <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
+                </div>
+                <Button asChild>
+                  <Link href={whatsAppUrl} target="_blank">
+                    <WhatsAppIcon />
+                    {t('contactOnWhatsApp')}
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
           
           <div className="mt-8 text-center">
             <Button asChild variant="outline">
