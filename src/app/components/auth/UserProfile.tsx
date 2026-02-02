@@ -25,20 +25,24 @@ export function UserProfile() {
   const [isDevMode, setIsDevMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  const isActualDeveloper = user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+  useEffect(() => {
+    // This effect runs only on the client, after the component has mounted.
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
-    setIsMounted(true);
-    // This effect runs on the client-side
-    if (isActualDeveloper) {
+    // This effect handles logic that depends on the user object, which is client-side.
+    if (user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
       setIsDevMode(devModeEnabled);
     }
-  }, [isActualDeveloper, user]);
+  }, [user]); // It runs when the user object changes.
 
 
   const handleSignOut = async () => {
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
   };
 
   const toggleDeveloperMode = () => {
@@ -48,10 +52,18 @@ export function UserProfile() {
     window.location.reload(); // Reload to apply changes app-wide
   };
 
-  if (loading || !isMounted) {
+  // On the server, and on the initial client render, `isMounted` will be false.
+  // This ensures the server and client render the same thing initially.
+  if (!isMounted) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
+  
+  // After mounting, we can check the loading state from Firebase Auth.
+  if (loading) {
+     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
+  }
 
+  // After loading, we can check if there is a user.
   if (!user) {
     return (
       <Button asChild variant="ghost" size="icon">
@@ -61,6 +73,9 @@ export function UserProfile() {
       </Button>
     );
   }
+
+  // If we have a user, we can render the full component.
+  const isActualDeveloper = user.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
 
   return (
     <DropdownMenu>
