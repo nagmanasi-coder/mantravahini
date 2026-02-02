@@ -40,6 +40,7 @@ export default function UpgradePage() {
     t('featureAiChatbot'),
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
+    t('featureMantraChikitse'),
   ];
 
   if (!isMounted) {
