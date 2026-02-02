@@ -1,21 +1,23 @@
 {
-  "name": "ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)",
+  "name": "Mantravaahini",
   "short_name": "Mantravaahini",
   "description": "A serene mantra playback experience",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F3EC",
-  "theme_color": "#FF8C42",
+  "background_color": "#fdfaf6",
+  "theme_color": "#f97316",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
