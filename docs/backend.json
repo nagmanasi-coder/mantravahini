@@ -68,10 +68,10 @@
           "type": "boolean",
           "description": "Indicates if the user has a premium subscription."
         },
-        "premiumActivatedAt": {
+        "premiumCycleStartDate": {
           "type": "string",
           "format": "date-time",
-          "description": "The timestamp when the user's premium subscription was activated."
+          "description": "The timestamp when the user's current premium subscription cycle started. This is updated with each payment."
         },
         "referredBy": {
           "type": "string",

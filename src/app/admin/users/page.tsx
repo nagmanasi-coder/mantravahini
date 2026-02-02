@@ -42,7 +42,7 @@ interface UserProfile {
   email: string;
   photoURL: string;
   isPremium?: boolean;
-  premiumActivatedAt?: string | null;
+  premiumCycleStartDate?: string | null;
   referredBy?: string;
   referralCommissionRate?: number;
 }
@@ -89,16 +89,16 @@ export default function AdminUsersPage() {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
     
-    const updateData: { isPremium: boolean; premiumActivatedAt?: string | null } = {
+    const updateData: { isPremium: boolean; premiumCycleStartDate?: string | null } = {
       isPremium,
     };
 
     if (isPremium) {
       // Set the activation date when upgrading to premium
-      updateData.premiumActivatedAt = new Date().toISOString();
+      updateData.premiumCycleStartDate = new Date().toISOString();
     } else {
       // Clear the activation date when downgrading
-      updateData.premiumActivatedAt = null;
+      updateData.premiumCycleStartDate = null;
     }
     
     updateDocumentNonBlocking(userDocRef, updateData);
@@ -248,7 +248,7 @@ export default function AdminUsersPage() {
                 <TableHead>Referred By</TableHead>
                 <TableHead>Commission Rate (%)</TableHead>
                 <TableHead>Subscription</TableHead>
-                <TableHead>Premium Since</TableHead>
+                <TableHead>Cycle Start Date</TableHead>
                 <TableHead className="text-right">Premium</TableHead>
               </TableRow>
             </TableHeader>
@@ -309,8 +309,8 @@ export default function AdminUsersPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    {u.premiumActivatedAt
-                      ? new Date(u.premiumActivatedAt).toLocaleDateString()
+                    {u.premiumCycleStartDate
+                      ? new Date(u.premiumCycleStartDate).toLocaleDateString()
                       : '-'}
                   </TableCell>
                   <TableCell className="text-right">
