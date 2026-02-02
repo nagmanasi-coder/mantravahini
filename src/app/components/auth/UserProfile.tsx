@@ -10,8 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/firebase';
-import { useAuth } from '@/firebase/provider';
+import { useUser, useAuth } from '@/firebase/provider';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { LogIn, User as UserIcon, LogOut, Code, Shield } from 'lucide-react';
@@ -19,7 +18,7 @@ import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 
 export function UserProfile() {
-  const { user, loading } = useUser();
+  const { user, isUserLoading: loading } = useUser();
   const auth = useAuth();
   const { t } = useLanguage();
   const [isDevMode, setIsDevMode] = useState(false);
@@ -97,6 +96,9 @@ export function UserProfile() {
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
+            </p>
+            <p className="pt-2 font-mono text-xs leading-none text-muted-foreground">
+              UID: {user.uid}
             </p>
           </div>
         </DropdownMenuLabel>
