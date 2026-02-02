@@ -2,7 +2,7 @@
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore, doc, getDoc, setDoc, writeBatch } from 'firebase/firestore';
+import { Firestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
 import { errorEmitter } from './error-emitter';
@@ -86,8 +86,6 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
             const userSnap = await getDoc(userRef);
             if (!userSnap.exists()) {
               // This is a new user, create their profile document.
-              const batch = writeBatch(firestore);
-
               const referralCode = userAuth.uid.slice(0, 8);
               const userData: any = {
                 uid: userAuth.uid,
@@ -109,18 +107,26 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
                 }
                 localStorage.removeItem('referralCode');
               }
-
-              batch.set(userRef, userData);
-              const newReferralCodeRef = doc(firestore, 'referralCodes', referralCode);
-              batch.set(newReferralCodeRef, { userId: userAuth.uid });
-
-              await batch.commit().catch((serverError) => {
+              
+              // Set the user document
+              setDoc(userRef, userData).catch((serverError) => {
                 const permissionError = new FirestorePermissionError({
                   path: userRef.path,
                   operation: 'create',
                   requestResourceData: userData,
                 });
                 errorEmitter.emit('permission-error', permissionError);
+              });
+              
+              // Set the referral code document
+              const newReferralCodeRef = doc(firestore, 'referralCodes', referralCode);
+              setDoc(newReferralCodeRef, { userId: userAuth.uid }).catch((serverError) => {
+                  const permissionError = new FirestorePermissionError({
+                      path: newReferralCodeRef.path,
+                      operation: 'create',
+                      requestResourceData: { userId: userAuth.uid },
+                  });
+                  errorEmitter.emit('permission-error', permissionError);
               });
             }
           } catch (e) {
@@ -226,7 +232,7 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
  * This provides the User object, loading status, and any auth errors.
  * @returns {UserHookResult} Object with user, isUserLoading, userError.
  */
-export const useUser = (): UserHookResult => { // Renamed from useAuthUser
+export const useUser = (): UserHookResult => {
   const { user, isUserLoading, userError } = useFirebase(); // Leverages the main hook
   return { user, isUserLoading, userError };
 };
