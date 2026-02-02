@@ -23,16 +23,18 @@ export function UserProfile() {
   const auth = useAuth();
   const { t } = useLanguage();
   const [isDevMode, setIsDevMode] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const isActualDeveloper = user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
 
   useEffect(() => {
+    setIsMounted(true);
     // This effect runs on the client-side
     if (isActualDeveloper) {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
       setIsDevMode(devModeEnabled);
     }
-  }, [isActualDeveloper]);
+  }, [isActualDeveloper, user]);
 
 
   const handleSignOut = async () => {
@@ -46,7 +48,7 @@ export function UserProfile() {
     window.location.reload(); // Reload to apply changes app-wide
   };
 
-  if (loading) {
+  if (loading || !isMounted) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
 
