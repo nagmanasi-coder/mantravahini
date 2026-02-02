@@ -42,6 +42,7 @@ interface UserProfile {
   email: string;
   photoURL: string;
   isPremium?: boolean;
+  premiumActivatedAt?: string | null;
   referredBy?: string;
   referralCommissionRate?: number;
 }
@@ -87,7 +88,20 @@ export default function AdminUsersPage() {
   const handleSubscriptionChange = (userToUpdate: UserProfile, isPremium: boolean) => {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
-    updateDocumentNonBlocking(userDocRef, { isPremium });
+    
+    const updateData: { isPremium: boolean; premiumActivatedAt?: string | null } = {
+      isPremium,
+    };
+
+    if (isPremium) {
+      // Set the activation date when upgrading to premium
+      updateData.premiumActivatedAt = new Date().toISOString();
+    } else {
+      // Clear the activation date when downgrading
+      updateData.premiumActivatedAt = null;
+    }
+    
+    updateDocumentNonBlocking(userDocRef, updateData);
   };
   
   const handleCommissionChange = (userToUpdate: UserProfile, commissionRate: number) => {
@@ -234,6 +248,7 @@ export default function AdminUsersPage() {
                 <TableHead>Referred By</TableHead>
                 <TableHead>Commission Rate (%)</TableHead>
                 <TableHead>Subscription</TableHead>
+                <TableHead>Premium Since</TableHead>
                 <TableHead className="text-right">Premium</TableHead>
               </TableRow>
             </TableHeader>
@@ -247,8 +262,10 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
@@ -290,6 +307,11 @@ export default function AdminUsersPage() {
                     ) : (
                       <Badge variant="secondary">Free</Badge>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    {u.premiumActivatedAt
+                      ? new Date(u.premiumActivatedAt).toLocaleDateString()
+                      : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     <Switch

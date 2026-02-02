@@ -68,6 +68,11 @@
           "type": "boolean",
           "description": "Indicates if the user has a premium subscription."
         },
+        "premiumActivatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user's premium subscription was activated."
+        },
         "referredBy": {
           "type": "string",
           "description": "The UID of the user who referred this user."
@@ -107,8 +112,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
