@@ -12,7 +12,6 @@ import { HandleReferral } from './components/handle-referral';
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
   description: 'A serene mantra playback experience',
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -28,7 +27,6 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&display=swap" rel="stylesheet" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
-        <meta name="theme-color" content="#FF8C42" />
       </head>
       <body className="font-body antialiased">
         <LanguageProvider>
