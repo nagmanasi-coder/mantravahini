@@ -11,8 +11,8 @@ export function AppHeader() {
     const { t, toggleLanguage, language } = useLanguage();
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 max-w-2xl items-center justify-between">
-            <nav className="flex items-center space-x-4 lg:space-x-6">
+          <div className="container mx-auto flex h-auto min-h-14 max-w-2xl flex-wrap items-center justify-between gap-4 p-2">
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 lg:gap-x-6">
               <Link href="/" className="flex items-center space-x-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
                 <Home className="h-4 w-4" />
                 <span>{t('home')}</span>

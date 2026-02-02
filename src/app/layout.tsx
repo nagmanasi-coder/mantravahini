@@ -36,7 +36,7 @@ export default function RootLayout({
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
-            <div className="pb-16">{children}</div>
+            <div className="pb-28">{children}</div>
             <AppFooter />
             <Toaster />
             <FirebaseErrorListener />

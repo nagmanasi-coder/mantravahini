@@ -8,8 +8,8 @@ export function AppFooter() {
     const { t } = useLanguage();
     return (
          <footer className="fixed bottom-0 z-40 w-full border-t bg-background">
-            <div className="container flex h-14 max-w-2xl items-center justify-center">
-                 <nav className="flex items-center space-x-4 lg:space-x-6">
+            <div className="container mx-auto flex h-auto min-h-14 max-w-2xl items-center justify-center p-2">
+                 <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:gap-x-6">
                     <Link href="/practical-videos" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Youtube className="h-4 w-4" />
                         <span>{t('practicalVideos')}</span>
