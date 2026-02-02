@@ -104,8 +104,18 @@ export default function HealingPage() {
                  </p>
               </div>
 
+              {/* Praana God Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl text-center">{t('untimelyDeathTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-center text-muted-foreground">{t('untimelyDeathContent')}</p>
+                </CardContent>
+              </Card>
+
               {/* Fee Information Card */}
-              <Card className="bg-secondary/50">
+              <Card className="bg-secondary/50 mt-4">
                 <CardHeader>
                   <CardTitle className="text-xl text-center text-primary">{t('hanumanTherapyFee')}</CardTitle>
                 </CardHeader>
