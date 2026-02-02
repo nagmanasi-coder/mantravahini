@@ -94,10 +94,8 @@ export default function AdminUsersPage() {
     };
 
     if (isPremium) {
-      // Set the activation date when upgrading to premium
       updateData.premiumCycleStartDate = new Date().toISOString();
     } else {
-      // Clear the activation date when downgrading
       updateData.premiumCycleStartDate = null;
     }
     
@@ -154,6 +152,18 @@ export default function AdminUsersPage() {
     form.reset();
     setIsAddUserDialogOpen(false);
   };
+  
+  const calculateRemainingDays = (startDateString?: string | null): number | null => {
+    if (!startDateString) return null;
+    const startDate = new Date(startDateString);
+    const expiryDate = new Date(startDate);
+    expiryDate.setDate(expiryDate.getDate() + 30);
+    const today = new Date();
+    const timeDiff = expiryDate.getTime() - today.getTime();
+    if (timeDiff < 0) return 0;
+    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+  };
+
 
   if (userLoading || !isDeveloper) {
     return (
@@ -249,6 +259,7 @@ export default function AdminUsersPage() {
                 <TableHead>Commission Rate (%)</TableHead>
                 <TableHead>Subscription</TableHead>
                 <TableHead>Cycle Start Date</TableHead>
+                <TableHead>Days Left</TableHead>
                 <TableHead className="text-right">Premium</TableHead>
               </TableRow>
             </TableHeader>
@@ -263,8 +274,10 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
@@ -275,52 +288,58 @@ export default function AdminUsersPage() {
                   </TableRow>
                 </>
               )}
-              {users && users.map((u) => (
-                <TableRow key={u.uid}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={u.photoURL} alt={u.displayName} />
-                        <AvatarFallback><UserIcon size={16} /></AvatarFallback>
-                      </Avatar>
-                      <span>{u.displayName}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{u.email}</TableCell>
-                  <TableCell>
-                    {u.referredBy ? getUserDisplayName(u.referredBy) : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      defaultValue={u.referralCommissionRate ?? 0}
-                      onBlur={(e) => handleCommissionChange(u, parseFloat(e.target.value))}
-                      className="w-24"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {u.isPremium ? (
-                      <Badge>Premium</Badge>
-                    ) : (
-                      <Badge variant="secondary">Free</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {u.premiumCycleStartDate
-                      ? new Date(u.premiumCycleStartDate).toLocaleDateString()
-                      : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Switch
-                      checked={!!u.isPremium}
-                      onCheckedChange={(checked) => handleSubscriptionChange(u, checked)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {users && users.map((u) => {
+                const daysLeft = u.isPremium ? calculateRemainingDays(u.premiumCycleStartDate) : null;
+                return (
+                  <TableRow key={u.uid}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={u.photoURL} alt={u.displayName} />
+                          <AvatarFallback><UserIcon size={16} /></AvatarFallback>
+                        </Avatar>
+                        <span>{u.displayName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{u.email}</TableCell>
+                    <TableCell>
+                      {u.referredBy ? getUserDisplayName(u.referredBy) : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        defaultValue={u.referralCommissionRate ?? 0}
+                        onBlur={(e) => handleCommissionChange(u, parseFloat(e.target.value))}
+                        className="w-24"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {u.isPremium ? (
+                        <Badge>Premium</Badge>
+                      ) : (
+                        <Badge variant="secondary">Free</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {u.premiumCycleStartDate
+                        ? new Date(u.premiumCycleStartDate).toLocaleDateString()
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {daysLeft !== null ? `${daysLeft} days` : '-'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Switch
+                        checked={!!u.isPremium}
+                        onCheckedChange={(checked) => handleSubscriptionChange(u, checked)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </CardContent>

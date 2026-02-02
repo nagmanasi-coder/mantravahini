@@ -10,33 +10,39 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useUser, useAuth } from '@/firebase/provider';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { LogIn, User as UserIcon, LogOut, Code, Shield } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
+import { doc } from 'firebase/firestore';
 
 export function UserProfile() {
   const { user, isUserLoading: loading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const { t } = useLanguage();
   const [isDevMode, setIsDevMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc<{ isPremium?: boolean; premiumCycleStartDate?: string | null }>(userDocRef);
+
   useEffect(() => {
-    // This effect runs only on the client, after the component has mounted.
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    // This effect handles logic that depends on the user object, which is client-side.
     if (user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
       setIsDevMode(devModeEnabled);
     }
-  }, [user]); // It runs when the user object changes.
-
+  }, [user]);
 
   const handleSignOut = async () => {
     if (auth) {
@@ -48,21 +54,30 @@ export function UserProfile() {
     const newDevMode = !isDevMode;
     localStorage.setItem('developerMode', String(newDevMode));
     setIsDevMode(newDevMode);
-    window.location.reload(); // Reload to apply changes app-wide
+    window.location.reload(); 
   };
 
-  // On the server, and on the initial client render, `isMounted` will be false.
-  // This ensures the server and client render the same thing initially.
+  const calculateRemainingDays = (startDateString?: string | null): number | null => {
+    if (!startDateString) return null;
+    const startDate = new Date(startDateString);
+    const expiryDate = new Date(startDate);
+    expiryDate.setDate(expiryDate.getDate() + 30);
+    const today = new Date();
+    const timeDiff = expiryDate.getTime() - today.getTime();
+    if (timeDiff < 0) return 0;
+    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+  };
+
+  const remainingDays = userProfile?.isPremium ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
+
   if (!isMounted) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
   
-  // After mounting, we can check the loading state from Firebase Auth.
   if (loading) {
      return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
 
-  // After loading, we can check if there is a user.
   if (!user) {
     return (
       <Button asChild variant="ghost" size="icon">
@@ -73,7 +88,6 @@ export function UserProfile() {
     );
   }
 
-  // If we have a user, we can render the full component.
   const isActualDeveloper = user.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
 
   return (
@@ -97,6 +111,11 @@ export function UserProfile() {
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
+            {userProfile?.isPremium && remainingDays !== null && (
+                <p className="text-xs font-semibold leading-none text-primary/80 mt-1">
+                {remainingDays} days left
+                </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
