@@ -74,7 +74,7 @@ service cloud.firestore {
      * Checks if the requesting user is the designated developer/admin.
      */
     function isDeveloper() {
-      return request.auth != null && request.auth.uid == 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+      return request.auth != null && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
   }
 }

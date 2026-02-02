@@ -53,7 +53,7 @@ const addUserFormSchema = z.object({
 });
 
 export default function AdminUsersPage() {
-  const { user, loading: userLoading } = useUser();
+  const { user, isUserLoading: userLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
   
   useEffect(() => {
     if (!userLoading) {
-      const isActualDeveloper = user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+      const isActualDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
       setIsDeveloper(isActualDeveloper);
       if (!isActualDeveloper) {
         router.push('/');

@@ -31,7 +31,7 @@ export function UserProfile() {
 
   useEffect(() => {
     // This effect handles logic that depends on the user object, which is client-side.
-    if (user?.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3') {
+    if (user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
       setIsDevMode(devModeEnabled);
     }
@@ -74,7 +74,7 @@ export function UserProfile() {
   }
 
   // If we have a user, we can render the full component.
-  const isActualDeveloper = user.uid === 'FaGAe1gQAdayrSd09khGJbVMeZI3';
+  const isActualDeveloper = user.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
 
   return (
     <DropdownMenu>
@@ -96,9 +96,6 @@ export function UserProfile() {
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
-            </p>
-            <p className="pt-2 font-mono text-xs leading-none text-muted-foreground">
-              UID: {user.uid}
             </p>
           </div>
         </DropdownMenuLabel>
