@@ -45,9 +45,10 @@ export function AppHeader() {
             </nav>
             <div className="flex items-center gap-2">
                 {canInstall && (
-                    <Button asChild variant="ghost" size="icon" aria-label={t('installApp')} title={t('installApp')}>
+                    <Button asChild variant="ghost" size="sm" title={t('installApp')}>
                         <Link href="/install">
                             <Download />
+                            <span>{t('installApp')}</span>
                         </Link>
                     </Button>
                 )}
