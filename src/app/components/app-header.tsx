@@ -1,14 +1,27 @@
 "use client"
 
 import Link from "next/link";
-import { Home, ShoppingBag, AppWindow, Star } from "lucide-react";
+import { Home, ShoppingBag, AppWindow, Star, Download } from "lucide-react";
 import { ShareButton } from "./share-button";
 import { useLanguage } from "@/context/language-context";
 import { Button } from "@/components/ui/button";
 import { UserProfile } from "./auth/UserProfile";
+import { useState, useEffect } from "react";
 
 export function AppHeader() {
-    const { t, toggleLanguage, language } = useLanguage();
+    const { t, toggleLanguage } = useLanguage();
+    const [canInstall, setCanInstall] = useState(false);
+
+    useEffect(() => {
+        // This check ensures we're on the client side
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        // A simple check if the app is not running in standalone mode.
+        // A more robust implementation might use the 'beforeinstallprompt' event.
+        if (!isStandalone) {
+          setCanInstall(true);
+        }
+    }, []);
+
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container mx-auto flex h-auto min-h-14 max-w-2xl flex-wrap items-center justify-between gap-4 p-2">
@@ -31,6 +44,13 @@ export function AppHeader() {
               </Link>
             </nav>
             <div className="flex items-center gap-2">
+                {canInstall && (
+                    <Button asChild variant="ghost" size="icon" aria-label={t('installApp')} title={t('installApp')}>
+                        <Link href="/install">
+                            <Download />
+                        </Link>
+                    </Button>
+                )}
                 <Button variant="ghost" size="sm" onClick={toggleLanguage}>{t('language')}</Button>
                 <UserProfile />
                 <ShareButton />

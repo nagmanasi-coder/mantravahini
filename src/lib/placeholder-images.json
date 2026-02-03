@@ -83,6 +83,24 @@
       "description": "Alternate view of Akshaya Cash Box",
       "imageUrl": "/akshaya-cash-box-2.png",
       "imageHint": "ornate box"
+    },
+    {
+      "id": "pwa-install-step-1",
+      "description": "Screenshot of PWA install step 1: Tapping the three dots menu in the browser.",
+      "imageUrl": "https://images.unsplash.com/photo-1762330463863-a6a399beb5ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBicm93c2VyJTIwbWVudXxlbnwwfHx8fDE3NzAxMTkwODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mobile browser menu"
+    },
+    {
+      "id": "pwa-install-step-2",
+      "description": "Screenshot of PWA install step 2: Selecting 'Add to Home Screen'.",
+      "imageUrl": "https://images.unsplash.com/photo-1702479744048-0351261e1ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bW9iaWxlJTIwYnJvd3NlciUyMG1lbnV8ZW58MHx8fHwxNzcwMTE5MDg4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mobile browser menu"
+    },
+    {
+      "id": "pwa-install-step-3",
+      "description": "Screenshot of PWA install step 3: Confirming the installation.",
+      "imageUrl": "https://images.unsplash.com/photo-1738640679960-58d445857945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBhcHAlMjBpbnN0YWxsfGVufDB8fHx8MTc3MDExOTA4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mobile app install"
     }
   ]
 }
