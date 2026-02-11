@@ -77,6 +77,49 @@ export default function UserManualPage() {
 
           <div ref={manualContentRef} className="space-y-8 p-4 bg-background">
             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
+                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualFreeMantrasTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle>{t('manualKaliMantraTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('manualKaliMantraDescription')}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader><CardTitle>{t('manualChakshuMantraTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('manualChakshuMantraDescription')}</p>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
+
+            <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-2xl">{t('manualIntroTitle')}</CardTitle>
               </CardHeader>
@@ -171,29 +214,7 @@ export default function UserManualPage() {
                     </Card>
                 </CardContent>
             </Card>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
-                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
+
           </div>
         </div>
       </main>

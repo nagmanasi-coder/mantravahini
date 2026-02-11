@@ -195,6 +195,11 @@ export const translations = {
     manualPremiumTierFeatures: "ಮೂಲ ಯೋಜನೆಯ ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳು|ಆಫ್‌ಲೈನ್ ಪ್ರವೇಶ (ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ)|AI ಚಾಟ್‌ಬಾಟ್ (ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ)|ಗುರು ದೀಕ್ಷೆಗೆ ಉಚಿತವಾಗಿ ಅರ್ಹರು*|ದೈವಿಕ ಗುಂಪಿಗೆ ಪ್ರವೇಶ*|ಉಚಿತ ಮಂತ್ರ ಚಿಕಿತ್ಸೆಗೆ ಅರ್ಹರು*",
     manualSpecialProductsTitle: "ವಿಶೇಷ ಆಧ್ಯಾತ್ಮಿಕ ಉತ್ಪನ್ನಗಳು",
     manualTherapiesTitle: "ಮಂತ್ರ ಚಿಕಿತ್ಸೆಗಳು",
+    manualFreeMantrasTitle: "ಉಚಿತ ಮಂತ್ರಗಳು ಮತ್ತು ಅವುಗಳ ಮಹತ್ವ",
+    manualKaliMantraTitle: "ನೋವು ನಿವಾರಣೆಗೆ ಶಕ್ತಿಶಾಲಿ ಕಾಳಿ ಮಂತ್ರ",
+    manualKaliMantraDescription: "ಒಂದು ಲೋಟ ಶುದ್ಧ ಕುಡಿಯುವ ನೀರನ್ನು ತೆಗೆದುಕೊಂಡು, ಚಿತ್ರದಲ್ಲಿ ತೋರಿಸಿರುವಂತೆ ಮೊಬೈಲ್ ಹಿಡಿದು ಲೌಡ್ ಸ್ಪೀಕರ್ ಆನ್ ಮಾಡಿ, ಸ್ಪೀಕರ್ ನೀರಿನ ಕಡೆಗೆ ಇರುವಂತೆ ಇಟ್ಟು ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಿ. ಮಂತ್ರ ತುಂಬಿದ ಈ ನೀರನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಕುಡಿಯಿರಿ. ನೋವು ತಕ್ಷಣವೇ ಕಡಿಮೆಯಾಗುವುದನ್ನು ಗಮನಿಸಬಹುದು. ಇದು ಗುಣವಾಗುವವರೆಗೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆಯಿಂದ ಮುಂದುವರಿಸಿ.",
+    manualChakshuMantraTitle: "ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳಿಗೆ ಶಕ್ತಿಶಾಲಿ ಚಾಕ್ಷುಷ ಮಂತ್ರ",
+    manualChakshuMantraDescription: "ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ. ಕೆಲವೇ ದಿನಗಳಲ್ಲಿ ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು ಸುಧಾರಿಸುತ್ತವೆ. ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -391,5 +396,10 @@ export const translations = {
     manualPremiumTierFeatures: "All features of Basic plan|Offline Access (Coming Soon)|AI Chatbot (context-aware, coming soon)|Eligible for Guru Diksha for free*|Access to Premium Divine Group*|Eligible for free Mantra Chikitse*",
     manualSpecialProductsTitle: "Special Spiritual Products",
     manualTherapiesTitle: "Mantra Therapies",
+    manualFreeMantrasTitle: "Free Mantras & Their Importance",
+    manualKaliMantraTitle: "Powerful Kali Mantra for Pain Relief",
+    manualKaliMantraDescription: "Take a glass of clean drinking water, hold the mobile with the loudspeaker on facing the water, and play the mantra. Drink this mantra-infused water twice a day. You will notice immediate pain reduction. Continue with full faith until healed.",
+    manualChakshuMantraTitle: "Powerful Chakshu Mantra for Eye Problems",
+    manualChakshuMantraDescription: "Listen to this mantra twice a day using headphones. Eye problems will improve within a few days. Important Note: This mantra is fully effective only when you share it with seven people.",
   }
 };
