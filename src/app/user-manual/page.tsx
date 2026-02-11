@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef } from 'react';
@@ -76,27 +77,14 @@ export default function UserManualPage() {
           </div>
 
           <div ref={manualContentRef} className="space-y-8 p-4 bg-background">
+            
             <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
-                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
-                        </CardContent>
-                    </Card>
-                </CardContent>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl">{t('manualIntroTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{t('manualIntroContent')}</p>
+              </CardContent>
             </Card>
 
             <Card>
@@ -120,14 +108,28 @@ export default function UserManualPage() {
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-2xl">{t('manualIntroTitle')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{t('manualIntroContent')}</p>
-              </CardContent>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
+                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
+                        </CardContent>
+                    </Card>
+                </CardContent>
             </Card>
-            
+
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline text-2xl text-primary">{t('manualFeaturesTitle')}</CardTitle>
@@ -221,3 +223,4 @@ export default function UserManualPage() {
     </div>
   );
 }
+
