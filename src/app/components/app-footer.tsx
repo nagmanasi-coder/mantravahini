@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { AppWindow, Info, BookUser } from "lucide-react";
+import { AppWindow, Info, BookUser, BookText } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 
 export function AppFooter() {
@@ -17,6 +17,10 @@ export function AppFooter() {
                     <Link href="/guru-diksha" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <BookUser className="h-4 w-4" />
                         <span>{t('guruDiksha')}</span>
+                    </Link>
+                     <Link href="/user-manual" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                        <BookText className="h-4 w-4" />
+                        <span>{t('userManual')}</span>
                     </Link>
                     <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Info className="h-4 w-4" />
