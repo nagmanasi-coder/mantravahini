@@ -5,7 +5,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
 import { Download, Check, Star } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -24,17 +23,17 @@ export default function UserManualPage() {
     const canvas = await html2canvas(input, {
       scale: 2, // Higher scale for better quality
       useCORS: true,
-      backgroundColor: null, // Use transparent background
+      backgroundColor: window.getComputedStyle(document.body).backgroundColor,
     });
     
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
     const ratio = imgWidth / pdfWidth;
     const scaledImgHeight = imgHeight / ratio;
-    const pageHeight = pdf.internal.pageSize.getHeight();
     
     let heightLeft = scaledImgHeight;
     let position = 0;
@@ -86,117 +85,115 @@ export default function UserManualPage() {
               </CardContent>
             </Card>
             
-            <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className="font-headline text-2xl text-primary">{t('manualFeaturesTitle')}</AccordionTrigger>
-                    <AccordionContent className="space-y-6 pt-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('freePlanTitle')}</CardTitle>
-                                <CardDescription>{t('freePlanDescription')}</CardDescription>
-                            </CardHeader>
-                             <CardContent>
-                                <ul className="space-y-2">
-                                    {freeFeatures.map((feature, index) => (
-                                        <li key={index} className="flex items-start gap-2">
-                                            <Check className="h-5 w-5 text-muted-foreground/50 mt-1 flex-shrink-0" />
-                                            <span className="text-muted-foreground">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-secondary border-2">
-                            <CardHeader>
-                                <CardTitle>{t('manualBasicTierTitle')}</CardTitle>
-                                <CardDescription>{t('basicPlanDescription')}</CardDescription>
-                            </CardHeader>
-                             <CardContent>
-                                <ul className="space-y-2">
-                                    {basicFeatures.map((feature, index) => (
-                                        <li key={index} className="flex items-start gap-2">
-                                            <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                                            <span className="text-foreground">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-                         <Card className="border-primary border-2">
-                            <CardHeader>
-                                 <CardTitle className="flex items-center gap-2">
-                                    <Star className="h-6 w-6 text-yellow-500" />
-                                    <span>{t('manualPremiumTierTitle')}</span>
-                                    <Star className="h-6 w-6 text-yellow-500" />
-                                 </CardTitle>
-                            </CardHeader>
-                             <CardContent>
-                                <ul className="space-y-2">
-                                    {premiumFeatures.map((feature, index) => (
-                                        <li key={index} className="flex items-start gap-2">
-                                            <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                                            <span className="font-medium text-foreground">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                    <AccordionTrigger className="font-headline text-2xl text-primary">{t('manualSpecialProductsTitle')}</AccordionTrigger>
-                    <AccordionContent className="space-y-6 pt-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('akshayaCashBoxName')}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{t('akshayaCashBoxDescription')}</p>
-                                <p className="mt-2 text-sm text-foreground">{t('akshayaCashBoxInfo')}</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>{t('medicatedOilsTitle')}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{t('medicatedOilsDescription')}</p>
-                                <Separator className="my-4" />
-                                <ul className="space-y-4">
-                                    <li><strong className="font-semibold text-foreground">{t('hairOilName')}:</strong> <span className="text-muted-foreground">{t('hairOilDescription')}</span></li>
-                                    <li><strong className="font-semibold text-foreground">{t('painOilName')}:</strong> <span className="text-muted-foreground">{t('painOilDescription')}</span></li>
-                                    <li><strong className="font-semibold text-foreground">{t('skinOilName')}:</strong> <span className="text-muted-foreground">{t('skinOilDescription')}</span></li>
-                                    <li><strong className="font-semibold text-foreground">{t('sexualWellnessOilName')}:</strong> <span className="text-muted-foreground">{t('sexualWellnessOilDescription')}</span></li>
-                                </ul>
-                            </CardContent>
-                        </Card>
-                    </AccordionContent>
-                </AccordionItem>
-                 <AccordionItem value="item-3">
-                    <AccordionTrigger className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</AccordionTrigger>
-                    <AccordionContent className="space-y-6 pt-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('hanumanTherapyTitle')}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
-                                <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
-                                <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
-                                <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
-                            </CardContent>
-                        </Card>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualFeaturesTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{t('freePlanTitle')}</CardTitle>
+                            <CardDescription>{t('freePlanDescription')}</CardDescription>
+                        </CardHeader>
+                         <CardContent>
+                            <ul className="space-y-2">
+                                {freeFeatures.map((feature, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                        <Check className="h-5 w-5 text-muted-foreground/50 mt-1 flex-shrink-0" />
+                                        <span className="text-muted-foreground">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                    <Card className="border-secondary border-2">
+                        <CardHeader>
+                            <CardTitle>{t('manualBasicTierTitle')}</CardTitle>
+                            <CardDescription>{t('basicPlanDescription')}</CardDescription>
+                        </CardHeader>
+                         <CardContent>
+                            <ul className="space-y-2">
+                                {basicFeatures.map((feature, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                        <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                                        <span className="text-foreground">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                     <Card className="border-primary border-2">
+                        <CardHeader>
+                             <CardTitle className="flex items-center gap-2">
+                                <Star className="h-6 w-6 text-yellow-500" />
+                                <span>{t('manualPremiumTierTitle')}</span>
+                                <Star className="h-6 w-6 text-yellow-500" />
+                             </CardTitle>
+                        </CardHeader>
+                         <CardContent>
+                            <ul className="space-y-2">
+                                {premiumFeatures.map((feature, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                        <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                                        <span className="font-medium text-foreground">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualSpecialProductsTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle>{t('akshayaCashBoxName')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('akshayaCashBoxDescription')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('akshayaCashBoxInfo')}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader><CardTitle>{t('medicatedOilsTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('medicatedOilsDescription')}</p>
+                            <Separator className="my-4" />
+                            <ul className="space-y-4">
+                                <li><strong className="font-semibold text-foreground">{t('hairOilName')}:</strong> <span className="text-muted-foreground">{t('hairOilDescription')}</span></li>
+                                <li><strong className="font-semibold text-foreground">{t('painOilName')}:</strong> <span className="text-muted-foreground">{t('painOilDescription')}</span></li>
+                                <li><strong className="font-semibold text-foreground">{t('skinOilName')}:</strong> <span className="text-muted-foreground">{t('skinOilDescription')}</span></li>
+                                <li><strong className="font-semibold text-foreground">{t('sexualWellnessOilName')}:</strong> <span className="text-muted-foreground">{t('sexualWellnessOilDescription')}</span></li>
+                            </ul>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Card>
+                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
+                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
+                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
           </div>
         </div>
       </main>

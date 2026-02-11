@@ -382,7 +382,7 @@ export const translations = {
     userManualSubtitle: "A Complete Guide to Mantravaahini",
     downloadAsPdf: "Download as PDF",
     manualIntroTitle: "Welcome to Mantravaahini",
-    manualIntroContent: "This manual will guide you through the features, subscriptions, and special products of the app.",
+    manualIntroContent: "This manual guides you through the app's features, subscriptions, and special products, helping you harness the power of mantras for a healthier, more peaceful life.",
     manualFeaturesTitle: "App Features & Subscriptions",
     manualFreeTierFeatures: "Pain Relief Mantra (1 play/day)|Limited Plays",
     manualBasicTierTitle: "Basic Plan (₹99/month)",
