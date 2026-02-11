@@ -38,14 +38,21 @@ export default function UserManualPage() {
     
     let heightLeft = scaledImgHeight;
     let position = 0;
+    const totalPages = Math.ceil(scaledImgHeight / pageHeight);
+    let currentPage = 1;
 
     pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, scaledImgHeight);
+    pdf.setFontSize(10);
+    pdf.text(`Page ${currentPage} of ${totalPages}`, pdfWidth / 2, pageHeight - 10, { align: 'center' });
     heightLeft -= pageHeight;
 
     while (heightLeft > 0) {
-      position = -heightLeft;
+      currentPage++;
+      position -= pageHeight;
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, scaledImgHeight);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${currentPage} of ${totalPages}`, pdfWidth / 2, pageHeight - 10, { align: 'center' });
       heightLeft -= pageHeight;
     }
     
@@ -55,6 +62,15 @@ export default function UserManualPage() {
   const freeFeatures = t('manualFreeTierFeatures').split('|');
   const basicFeatures = t('manualBasicTierFeatures').split('|');
   const premiumFeatures = t('manualPremiumTierFeatures').split('|');
+
+  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+    <h2 className="font-headline text-2xl text-primary mt-8 mb-4 pt-4 border-t">{children}</h2>
+  );
+  
+  const FirstSectionTitle = ({ children }: { children: React.ReactNode }) => (
+    <h2 className="font-headline text-2xl text-primary mb-4">{children}</h2>
+  );
+
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -76,146 +92,128 @@ export default function UserManualPage() {
             </Button>
           </div>
 
-          <div ref={manualContentRef} className="space-y-8 p-4 bg-background">
+          <div ref={manualContentRef} className="bg-background p-4 md:p-6">
             
+            <FirstSectionTitle>{t('manualIntroTitle')}</FirstSectionTitle>
             <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-2xl">{t('manualIntroTitle')}</CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <p className="text-muted-foreground">{t('manualIntroContent')}</p>
               </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualFreeMantrasTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>{t('manualKaliMantraTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('manualKaliMantraDescription')}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader><CardTitle>{t('manualChakshuMantraTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('manualChakshuMantraDescription')}</p>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
+            <SectionTitle>{t('manualFreeMantrasTitle')}</SectionTitle>
+             <div className="space-y-6">
+                <Card>
+                    <CardHeader><CardTitle>{t('manualKaliMantraTitle')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('manualKaliMantraDescription')}</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                     <CardHeader><CardTitle>{t('manualChakshuMantraTitle')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('manualChakshuMantraDescription')}</p>
+                    </CardContent>
+                </Card>
+            </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualTherapiesTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
-                            <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
+            <SectionTitle>{t('manualTherapiesTitle')}</SectionTitle>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader><CardTitle>{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('hanumanTherapyDescription')}</p>
+                        <p className="mt-2 text-sm text-foreground">{t('healingInfo1')}</p>
+                        <p className="mt-2 text-sm text-foreground">{t('hanumanTherapyFeeDetails')}</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                     <CardHeader><CardTitle>{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('untimelyDeathContent')}</p>
+                        <p className="mt-4 font-semibold text-primary">{t('hanumanPranaContact')}</p>
+                    </CardContent>
+                </Card>
+            </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualFeaturesTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{t('freePlanTitle')}</CardTitle>
-                            <CardDescription>{t('freePlanDescription')}</CardDescription>
-                        </CardHeader>
-                         <CardContent>
-                            <ul className="space-y-2">
-                                {freeFeatures.map((feature, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                        <Check className="h-5 w-5 text-muted-foreground/50 mt-1 flex-shrink-0" />
-                                        <span className="text-muted-foreground">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-secondary border-2">
-                        <CardHeader>
-                            <CardTitle>{t('manualBasicTierTitle')}</CardTitle>
-                            <CardDescription>{t('basicPlanDescription')}</CardDescription>
-                        </CardHeader>
-                         <CardContent>
-                            <ul className="space-y-2">
-                                {basicFeatures.map((feature, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                        <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                                        <span className="text-foreground">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                    </Card>
-                     <Card className="border-primary border-2">
-                        <CardHeader>
-                             <CardTitle className="flex items-center gap-2">
-                                <Star className="h-6 w-6 text-yellow-500" />
-                                <span>{t('manualPremiumTierTitle')}</span>
-                                <Star className="h-6 w-6 text-yellow-500" />
-                             </CardTitle>
-                        </CardHeader>
-                         <CardContent>
-                            <ul className="space-y-2">
-                                {premiumFeatures.map((feature, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                        <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                                        <span className="font-medium text-foreground">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
+            <SectionTitle>{t('manualFeaturesTitle')}</SectionTitle>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('freePlanTitle')}</CardTitle>
+                        <CardDescription>{t('freePlanDescription')}</CardDescription>
+                    </CardHeader>
+                     <CardContent>
+                        <ul className="space-y-2">
+                            {freeFeatures.map((feature, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                    <Check className="h-5 w-5 text-muted-foreground/50 mt-1 flex-shrink-0" />
+                                    <span className="text-muted-foreground">{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Card className="border-secondary border-2">
+                    <CardHeader>
+                        <CardTitle>{t('manualBasicTierTitle')}</CardTitle>
+                        <CardDescription>{t('basicPlanDescription')}</CardDescription>
+                    </CardHeader>
+                     <CardContent>
+                        <ul className="space-y-2">
+                            {basicFeatures.map((feature, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                    <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                                    <span className="text-foreground">{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
+                 <Card className="border-primary border-2">
+                    <CardHeader>
+                         <CardTitle className="flex items-center gap-2">
+                            <Star className="h-6 w-6 text-yellow-500" />
+                            <span>{t('manualPremiumTierTitle')}</span>
+                            <Star className="h-6 w-6 text-yellow-500" />
+                         </CardTitle>
+                    </CardHeader>
+                     <CardContent>
+                        <ul className="space-y-2">
+                            {premiumFeatures.map((feature, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                    <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                                    <span className="font-medium text-foreground">{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl text-primary">{t('manualSpecialProductsTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>{t('akshayaCashBoxName')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('akshayaCashBoxDescription')}</p>
-                            <p className="mt-2 text-sm text-foreground">{t('akshayaCashBoxInfo')}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader><CardTitle>{t('medicatedOilsTitle')}</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{t('medicatedOilsDescription')}</p>
-                            <Separator className="my-4" />
-                            <ul className="space-y-4">
-                                <li><strong className="font-semibold text-foreground">{t('hairOilName')}:</strong> <span className="text-muted-foreground">{t('hairOilDescription')}</span></li>
-                                <li><strong className="font-semibold text-foreground">{t('painOilName')}:</strong> <span className="text-muted-foreground">{t('painOilDescription')}</span></li>
-                                <li><strong className="font-semibold text-foreground">{t('skinOilName')}:</strong> <span className="text-muted-foreground">{t('skinOilDescription')}</span></li>
-                                <li><strong className="font-semibold text-foreground">{t('sexualWellnessOilName')}:</strong> <span className="text-muted-foreground">{t('sexualWellnessOilDescription')}</span></li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
+            <SectionTitle>{t('manualSpecialProductsTitle')}</SectionTitle>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader><CardTitle>{t('akshayaCashBoxName')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('akshayaCashBoxDescription')}</p>
+                        <p className="mt-2 text-sm text-foreground">{t('akshayaCashBoxInfo')}</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                     <CardHeader><CardTitle>{t('medicatedOilsTitle')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">{t('medicatedOilsDescription')}</p>
+                        <Separator className="my-4" />
+                        <ul className="space-y-4">
+                            <li><strong className="font-semibold text-foreground">{t('hairOilName')}:</strong> <span className="text-muted-foreground">{t('hairOilDescription')}</span></li>
+                            <li><strong className="font-semibold text-foreground">{t('painOilName')}:</strong> <span className="text-muted-foreground">{t('painOilDescription')}</span></li>
+                            <li><strong className="font-semibold text-foreground">{t('skinOilName')}:</strong> <span className="text-muted-foreground">{t('skinOilDescription')}</span></li>
+                            <li><strong className="font-semibold text-foreground">{t('sexualWellnessOilName')}:</strong> <span className="text-muted-foreground">{t('sexualWellnessOilDescription')}</span></li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            </div>
 
           </div>
         </div>
@@ -223,4 +221,3 @@ export default function UserManualPage() {
     </div>
   );
 }
-
