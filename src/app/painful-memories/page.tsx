@@ -120,10 +120,10 @@ export default function PainfulMemoriesPage() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   
   useEffect(() => {
-    if (!isUserLoading && userProfile && !isPremiumUser) {
+    if (!isUserLoading && !isPremiumUser) {
         setShowUpgradeDialog(true);
     }
-  }, [userProfile, isPremiumUser, isUserLoading]);
+  }, [isPremiumUser, isUserLoading]);
 
   const handleStartSession = () => {
     setStep('session');
