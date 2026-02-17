@@ -6,8 +6,8 @@ import { useState } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -187,6 +187,27 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+
+            <Card className={cn("mt-4", cardAnimation)} style={{ animationDelay: "0.8s" }}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Brain className="h-6 w-6 text-primary" />
+                        {t('painfulMemoriesTitle')}
+                    </CardTitle>
+                    <CardDescription>{t('painfulMemoriesCardDescription')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">{t('painfulMemoriesCardContent')}</p>
+                </CardContent>
+                <CardFooter>
+                    <Button asChild className="w-full">
+                        <Link href="/painful-memories">
+                            {t('startSession')}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                </CardFooter>
+            </Card>
 
             <Card className={cn("mt-4", cardAnimation)} style={{ animationDelay: "0.7s" }}>
                 <CardContent className="p-6 text-center space-y-4">
