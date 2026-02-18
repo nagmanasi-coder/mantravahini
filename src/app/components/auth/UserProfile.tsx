@@ -14,10 +14,11 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
@@ -29,8 +30,10 @@ export function UserProfile() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [isDevMode, setIsDevMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -61,6 +64,20 @@ export function UserProfile() {
     localStorage.setItem('developerMode', String(newDevMode));
     setIsDevMode(newDevMode);
     window.location.reload(); 
+  };
+
+  const copyUid = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (user?.uid) {
+      navigator.clipboard.writeText(user.uid);
+      setCopied(true);
+      toast({
+        title: "UID Copied",
+        description: "Your User ID has been copied to the clipboard.",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const calculateRemainingDays = (startDateString?: string | null): number | null => {
@@ -105,19 +122,29 @@ export function UserProfile() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
               {user.displayName}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-muted-foreground truncate">
               {user.email}
             </p>
             {isPaidUser && remainingDays !== null && (
                 <p className="text-xs font-semibold leading-none text-primary/80 mt-1">
                 {remainingDays} days left
                 </p>
+            )}
+            {!isActualDeveloper && (
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t">
+                <p className="text-[10px] text-muted-foreground font-mono truncate flex-1">
+                  UID: {user.uid}
+                </p>
+                <Button variant="ghost" size="icon" className="h-4 w-4" onClick={copyUid}>
+                  {copied ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                </Button>
+              </div>
             )}
           </div>
         </DropdownMenuLabel>
@@ -134,6 +161,7 @@ export function UserProfile() {
               <Code className="mr-2 h-4 w-4" />
               <span>{isDevMode ? "Disable Dev Mode" : "Enable Dev Mode"}</span>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
           </>
         )}
         <DropdownMenuItem onClick={handleSignOut}>
