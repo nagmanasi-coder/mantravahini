@@ -6,7 +6,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sparkles, Send, Bot, User, Trash2, ShieldAlert } from 'lucide-react';
 import { chatWithGuide } from '@/ai/flows/spiritual-guide-flow';
@@ -86,11 +86,10 @@ export default function AiGuidePage() {
         localStorage.setItem('aiChatCount', newCount.toString());
       }
     } catch (error) {
-      console.error('Chat error:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to connect to the Divine Guide. Please try again.',
+        description: 'Connection interrupted. Please try again.',
       });
     } finally {
       setIsLoading(false);
