@@ -1,10 +1,11 @@
 
 import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 
 /**
  * Genkit initialization for the Mantravaahini app.
- * We use the standard genkit instance.
+ * We use the googleAI plugin to support multi-modal (audio) analysis.
  */
 export const ai = genkit({
-  plugins: [], // No standard plugins needed as we call Sarvam via OpenAI package
+  plugins: [googleAI()],
 });

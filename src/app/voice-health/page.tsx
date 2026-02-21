@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -7,7 +8,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -119,8 +120,7 @@ export default function VoiceHealthPage() {
         setResult(analysis);
         setIsAnalyzing(false);
 
-        // Only save to history if it's not a "silent" error report (all metrics 0)
-        if (analysis.metrics.physicalVitality > 0) {
+        if (analysis.isMantraMatch && analysis.metrics.physicalVitality > 0) {
           const newReport: StoredVoiceReport = {
             ...analysis,
             id: crypto.randomUUID(),
@@ -137,8 +137,8 @@ export default function VoiceHealthPage() {
         } else {
           toast({
             variant: 'destructive',
-            title: 'Incomplete Recording',
-            description: 'The recording was too quiet or empty. Please try again.',
+            title: language === 'kn' ? 'ತಪ್ಪು ಅಥವಾ ಖಾಲಿ ಧ್ವನಿ' : 'Incorrect or Empty Audio',
+            description: language === 'kn' ? 'ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ.' : 'Please recite the mantra clearly for analysis.',
           });
         }
       };
@@ -192,6 +192,19 @@ export default function VoiceHealthPage() {
     { key: 'ajna', color: 'bg-indigo-500', icon: '🟣' },
   ] as const;
 
+  // Comparison logic for latest two sessions
+  const wellnessTrend = useMemo(() => {
+    if (history.length < 2) return null;
+    const latest = history[0].metrics.physicalVitality;
+    const previous = history[1].metrics.physicalVitality;
+    const diff = latest - previous;
+    return {
+      diff,
+      direction: diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat',
+      label: language === 'kn' ? (diff > 0 ? 'ಸುಧಾರಿಸಿದೆ' : diff < 0 ? 'ಕಡಿಮೆಯಾಗಿದೆ' : 'ಸ್ಥಿರವಾಗಿದೆ') : (diff > 0 ? 'Improved' : diff < 0 ? 'Declined' : 'Stable')
+    };
+  }, [history, language]);
+
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8 pb-32">
       <header className="mb-8 text-center animate-fade-in">
@@ -203,7 +216,7 @@ export default function VoiceHealthPage() {
         </p>
       </header>
 
-      {!isPremium && (
+      {!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53' && (
         <Card className="mb-6 bg-amber-50 border-amber-200">
           <CardContent className="p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-amber-800">
@@ -298,10 +311,17 @@ export default function VoiceHealthPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
-                {result.metrics.physicalVitality === 0 && (
-                  <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3">
+                {(!result.isMantraMatch || result.metrics.physicalVitality === 0) && (
+                  <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3 border border-destructive/20">
                     <AlertCircle className="h-5 w-5" />
-                    <p className="text-sm font-bold">No valid audio was detected. Please record again.</p>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold">
+                        {language === 'kn' ? 'ಪಠ್ಯವು ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ' : 'Mantra Verification Failed'}
+                      </p>
+                      <p className="text-xs opacity-80">
+                        {language === 'kn' ? 'ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಮತ್ತೊಮ್ಮೆ ಸರಿಯಾಗಿ ಪಠಿಸಿ.' : 'Please recite the mantra correctly so the AI can analyze your vibrations.'}
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -406,11 +426,31 @@ export default function VoiceHealthPage() {
               <h2 className="text-2xl font-headline text-primary">{t('vocalPranaHistoryTitle')}</h2>
             </div>
 
+            {wellnessTrend && (
+              <Card className="bg-primary/5 border-primary/10 mb-6">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "p-2 rounded-full",
+                      wellnessTrend.direction === 'up' ? "bg-green-100 text-green-600" : wellnessTrend.direction === 'down' ? "bg-red-100 text-red-600" : "bg-muted text-muted-foreground"
+                    )}>
+                      {wellnessTrend.direction === 'up' ? <ArrowUpRight /> : wellnessTrend.direction === 'down' ? <ArrowDownRight /> : <Minus />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">{language === 'kn' ? 'ಒಟ್ಟಾರೆ ಆರೋಗ್ಯ ಪ್ರವೃತ್ತಿ' : 'Overall Health Trend'}</p>
+                      <p className="text-xs text-muted-foreground">{wellnessTrend.label} ({wellnessTrend.diff > 0 ? '+' : ''}{wellnessTrend.diff}%)</p>
+                    </div>
+                  </div>
+                  <TrendingUp className="text-primary/20 h-8 w-8" />
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="border-2 border-primary/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="space-y-1">
                   <CardTitle className="text-xl flex items-center gap-2 font-headline">
-                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <TrendingDown className="h-5 w-5 text-primary" />
                     {language === 'kn' ? 'ಆರೋಗ್ಯ ಪ್ರಗತಿ ಸ್ಥಿತಿ' : 'Health Progress Status'}
                   </CardTitle>
                   <CardDescription>

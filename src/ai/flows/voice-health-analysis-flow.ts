@@ -1,20 +1,16 @@
+
 'use server';
 /**
- * @fileOverview Physical Voice Vibration Health, Chakra, and Prana Analysis AI Flow.
+ * @fileOverview REAL Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
  * 
- * - analyzeVoiceHealth - Analyzes vocal vibrations to detect physical health, mental energy, and life force (Prana).
- * 
- * Note: This uses Sarvam AI's reasoning to correlate vocal presence with physical health markers.
+ * This flow uses Gemini 1.5 Flash to LISTEN to the actual audio recording.
+ * It performs a two-step check:
+ * 1. Transcription Verification: Ensures the user said "Om Hum Hanumate Namah".
+ * 2. Vibration Analysis: Evaluates physical health markers and 6-chakra energy patterns.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import OpenAI from 'openai';
-
-const client = new OpenAI({
-  apiKey: process.env.SARVAM_AI_API_KEY || '',
-  baseURL: 'https://api.sarvam.ai/v1',
-});
 
 const ChakraSchema = z.object({
   score: z.number().describe("Energy level 0-100."),
@@ -27,7 +23,8 @@ const VoiceAnalysisInputSchema = z.object({
 });
 
 const VoiceAnalysisOutputSchema = z.object({
-  transcript: z.string().describe("The transcription of the Mantra."),
+  transcript: z.string().describe("The transcription of the recorded audio."),
+  isMantraMatch: z.boolean().describe("Whether the audio contains the required mantra."),
   metrics: z.object({
     physicalVitality: z.number().describe("Physical vigor score 0-100."),
     respiratoryStrength: z.number().describe("Breath control score 0-100."),
@@ -46,8 +43,6 @@ const VoiceAnalysisOutputSchema = z.object({
     vishuddha: ChakraSchema,
     ajna: ChakraSchema,
   }).describe("Energy patterns across the 6 major chakras."),
-  recommendedMantra: z.string().optional().describe("A mantra from the app that might help."),
-  recommendedProduct: z.string().optional().describe("A product from the app that might help."),
 });
 
 export type VoiceAnalysisInput = z.infer<typeof VoiceAnalysisInputSchema>;
@@ -64,98 +59,70 @@ const voiceHealthFlow = ai.defineFlow(
     outputSchema: VoiceAnalysisOutputSchema,
   },
   async (input) => {
-    // 1. Strict Silence/Empty Check
-    // A standard recording base64 for 5-10s should be > 50,000 chars.
-    // Extremely small strings (under 5000) are definitely empty/silent.
-    const audioDataLength = input.audioDataUri.length;
-    if (audioDataLength < 5000) {
-      return getSilentReport(input.language);
+    // Basic sanity check for empty strings
+    if (input.audioDataUri.length < 1000) {
+      return getInvalidReport(input.language, "Empty recording");
     }
 
-    const systemPrompt = `You are the Physical Vocal Health, Chakra, and Prana Energy Analyst for Mantravaahini. 
-    Your task is to analyze the "Vibration Quality" of a user reciting the mantra "Om Hum Hanumate Namah" (ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ).
+    const systemPrompt = `You are the Physical Vocal Health, Chakra, and Prana Energy Analyst for Mantravaahini.
     
-    CRITICAL INSTRUCTIONS:
-    1. You must return your analysis in a STRICT JSON format.
-    2. Analyze the context: The user is recording their voice. Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
-    3. If the audio is described as short or low quality, lower the scores significantly.
-    4. Provide specific guidance on what health markers (e.g., lung capacity, physical fatigue, joint stiffness) are reflected in their vocal vibration.
-    5. Analyze the 6 Chakras (Muladhara to Ajna) based on the resonance of this specific mantra.
+    STEP 1: TRANSCRIPTION VERIFICATION
+    Listen to the audio. Transcribe the speech. 
+    The user MUST say the mantra "Om Hum Hanumate Namah" (ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ).
+    If the audio is silent, contains noise only, or does NOT contain this mantra, set 'isMantraMatch' to false and all scores to 0.
     
-    Expected JSON Structure:
-    {
-      "metrics": { "physicalVitality": 0-100, "respiratoryStrength": 0-100, "vocalClarity": 0-100, "mentalEnergy": 0-100, "pranaLevel": 0-100 },
-      "detectedMarkers": "string describing vocal stability",
-      "suggestedIssues": "string describing potential health concerns",
-      "physicalHealthGuidance": "detailed holistic guidance",
-      "chakras": { 
-        "muladhara": { "score": 0-100, "status": "string" },
-        "svadhishthana": { "score": 0-100, "status": "string" },
-        "manipura": { "score": 0-100, "status": "string" },
-        "anahata": { "score": 0-100, "status": "string" },
-        "vishuddha": { "score": 0-100, "status": "string" },
-        "ajna": { "score": 0-100, "status": "string" }
-      },
-      "transcript": "string"
-    }
-
+    STEP 2: HEALTH ANALYSIS (Only if Mantra Matches)
+    Analyze the "Vibration Quality". Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
+    Detect physical markers like lung capacity, physical fatigue, joint stiffness, or digestive sluggishness reflected in vocal resonance.
+    Analyze the 6 Chakras (Muladhara to Ajna) based on the resonance patterns.
+    
+    CRITICAL: You must return your analysis in STRICT JSON format.
     Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.`;
 
     try {
-      const response = await client.chat.completions.create({
-        model: 'sarvam-m',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Analyze the vibration intent of this recording. Data context length: ${audioDataLength}. Generate a realistic health report based on vocal presence.` }
+      const { output } = await ai.generate({
+        model: 'googleai/gemini-1.5-flash',
+        prompt: [
+          { text: systemPrompt },
+          { media: { url: input.audioDataUri, contentType: 'audio/webm' } }
         ],
-        temperature: 0.3, // Moderate temperature for variety but logical consistency
+        output: { schema: VoiceAnalysisOutputSchema },
       });
 
-      const content = response.choices[0]?.message?.content || "";
-      
-      try {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          
-          // Localization for recommendations if missing from AI
-          return {
-            ...parsed,
-            recommendedMantra: parsed.recommendedMantra || (input.language === 'kn' ? "ಹನುಮಾನ್ ಶಕ್ತಿ ಮಂತ್ರ" : "Hanuman Vitality Mantra"),
-            recommendedProduct: parsed.recommendedProduct || (input.language === 'kn' ? "ನೋವು ನಿವಾರಕ ತೈಲ" : "Pain Relief Oil"),
-          };
-        }
-      } catch (e) {
-        console.error("JSON Parse Error in Voice Flow:", e);
+      if (!output) throw new Error("AI failed to generate a report.");
+
+      // Final safety check: if the AI transcription failed or it's not a match
+      if (!output.isMantraMatch || output.metrics.physicalVitality === 0) {
+        return getInvalidReport(input.language, output.transcript || "Invalid Mantra");
       }
 
-      // Fallback if AI output is not valid JSON
-      throw new Error("Invalid report format generated by AI.");
+      return output;
 
     } catch (error: any) {
-      console.error('Sarvam AI Flow Error:', error);
-      return getSilentReport(input.language);
+      console.error('GenAI Voice Flow Error:', error);
+      return getInvalidReport(input.language, "Analysis Error");
     }
   }
 );
 
-function getSilentReport(lang: 'kn' | 'en'): VoiceAnalysisOutput {
+function getInvalidReport(lang: 'kn' | 'en', transcript: string): VoiceAnalysisOutput {
   const isKn = lang === 'kn';
   return {
-    transcript: isKn ? "ಯಾವುದೇ ಧ್ವನಿ ಪತ್ತೆಯಾಗಿಲ್ಲ" : "No audio content detected",
+    transcript: transcript,
+    isMantraMatch: false,
     metrics: { physicalVitality: 0, respiratoryStrength: 0, vocalClarity: 0, mentalEnergy: 0, pranaLevel: 0 },
-    detectedMarkers: isKn ? "ಮೌನ ಅಥವಾ ಅಸ್ಪಷ್ಟ ಕಂಪನ" : "Silence or insufficient vibration detected",
-    suggestedIssues: isKn ? "ಖಾಲಿ ಧ್ವನಿ ಅಥವಾ ಮೈಕ್ ಸಮಸ್ಯೆ" : "Empty recording or microphone issue",
+    detectedMarkers: isKn ? "ಮಂತ್ರವು ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ ಅಥವಾ ಮೌನವಾಗಿದೆ" : "Mantra did not match or audio is silent",
+    suggestedIssues: isKn ? "ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ" : "Please recite the mantra clearly",
     physicalHealthGuidance: isKn 
-      ? "ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆಯೇ ಎಂದು ಪರೀಕ್ಷಿಸಿ ಮತ್ತು ಮಂತ್ರವನ್ನು ಗಟ್ಟಿಯಾಗಿ, ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ." 
-      : "Please check your microphone and recite the mantra loudly and clearly for analysis.",
+      ? "ವಿಶ್ಲೇಷಣೆಗಾಗಿ ದಯವಿಟ್ಟು 'ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ' ಮಂತ್ರವನ್ನು ೩ ಬಾರಿ ಪಠಿಸಿ." 
+      : "Please recite the mantra 'Om Hum Hanumate Namah' 3 times for analysis.",
     chakras: {
-      muladhara: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
-      svadhishthana: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
-      manipura: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
-      anahata: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
-      vishuddha: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
-      ajna: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      muladhara: { score: 0, status: "-" },
+      svadhishthana: { score: 0, status: "-" },
+      manipura: { score: 0, status: "-" },
+      anahata: { score: 0, status: "-" },
+      vishuddha: { score: 0, status: "-" },
+      ajna: { score: 0, status: "-" },
     },
   };
 }
