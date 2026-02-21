@@ -1,4 +1,5 @@
 
+
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -92,8 +93,8 @@ export const translations = {
     specialProductsTitle: "ವಿಶೇಷ ಆಧ್ಯಾತ್ಮಿಕ ಉತ್ಪನ್ನಗಳು",
     specialProductsSubtitle: "ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣವನ್ನು ಹೆಚ್ಚಿಸಲು ಅನನ್ಯ ವಸ್ತುಗಳು.",
     akshayaCashBoxName: "ಅಕ್ಷಯ ಕ್ಯಾಶ್ ಬಾಕ್ಸ್",
-    akshayaCashBoxDescription: "ನಿಮ್ಮ ವ್ಯಾಪಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಒಳಹರಿವಿನ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸುತ್ತದೆ.",
-    akshayaCashBoxInfo: "ಈ ಶಕ್ತಿಯುತ ನಗದು ಪೆಟ್ಟಿಗೆಯ ಆರ್ಥಿಕ ಸಮೃದ್ಧಿಯನ್ನು ಆಕರ್ಷಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಪಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಹರಿವನ್ನು ಸುಗಮಗೊಳಿಸುತ್ತದೆ.",
+    akshayaCashBoxDescription: "ನಿಮ್ಮ ವ್ಯಾಬಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಒಳಹರಿವಿನ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸುತ್ತದೆ.",
+    akshayaCashBoxInfo: "ಈ ಶಕ್ತಿಯುತ ನಗದು ಪೆಟ್ಟಿಗೆಯ ಆರ್ಥಿಕ ಸಮೃದ್ಧಿಯನ್ನು ಆಕರ್ಷಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಬಾರ ಮತ್ತು ಮನೆಗೆ ಹಣದ ಹರಿವನ್ನು ಸುಗಮಗೊಳಿಸುತ್ತದೆ.",
     akshayaCashBoxContact: "ಬೆಲೆ ಮತ್ತು ಆರ್ಡರ್ ಮಾಡಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     orderContact: "ಆರ್ಡರ್ ಮಾಡಲು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ",
     orderOnWhatsApp: "WhatsApp ನಲ್ಲಿ ಆರ್ಡರ್ ಮಾಡಿ",
@@ -235,6 +236,13 @@ export const translations = {
     painfulMemoriesCaution: "ಎಚ್ಚರಿಕೆ: ಒಂದು ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಒಂದು ಅವಧಿ ಮಾತ್ರ ಕೆಲಸ ಮಾಡಿ. ಒಂದೇ ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಅವಧಿಯನ್ನು ಪುನರಾವರ್ತಿಸಬೇಡಿ.",
     painfulMemoriesTitleInputLabel: "ನೆನಪಿನ ಶೀರ್ಷಿಕೆ/ವಿವರಣೆ (ಉದಾ: ನೆನಪು 1 - ಶಾಲೆ):",
     painfulMemoriesTitleInputPlaceholder: "ಭವಿಷ್ಯದ ಉಲ್ಲೇಖಕ್ಕಾಗಿ ಶೀರ್ಷಿಕೆಯನ್ನು ನಮೂದಿಸಿ",
+    historyTableTitle: "ಸೆಷನ್ ಇತಿಹಾಸ",
+    historyColumnDate: "ದಿನಾಂಕ",
+    historyColumnTitle: "ನೆನಪಿನ ಶೀರ್ಷಿಕೆ",
+    historyColumnBefore: "ಮೊದಲು",
+    historyColumnAfter: "ನಂತರ",
+    historyColumnAction: "ಕ್ರಮ",
+    historyActionRetry: "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -471,5 +479,13 @@ export const translations = {
     painfulMemoriesCaution: "Caution: Work only one session per memory per day. Do not repeat sessions for the same memory twice in a day.",
     painfulMemoriesTitleInputLabel: "Memory Title/Description (e.g., Memory 1 - School):",
     painfulMemoriesTitleInputPlaceholder: "Enter a title for future reference",
+    historyTableTitle: "Session History",
+    historyColumnDate: "Date",
+    historyColumnTitle: "Memory Title",
+    historyColumnBefore: "Before",
+    historyColumnAfter: "After",
+    historyColumnAction: "Action",
+    historyActionRetry: "Practice Again",
   }
 };
+

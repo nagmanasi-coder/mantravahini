@@ -10,16 +10,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Slider } from '@/components/ui/slider';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Play, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Play, AlertTriangle, History, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
 };
+
+interface SessionResult {
+  date: string;
+  title: string;
+  before: number;
+  after: number;
+}
 
 const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const { t } = useLanguage();
@@ -42,7 +57,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     return () => clearInterval(interval);
   }, [hasStarted, timeLeft]);
 
-  // Effect to handle session end when timer hits zero
+  // Handle session end
   useEffect(() => {
     if (hasStarted && timeLeft <= 0) {
       onSessionEnd();
@@ -59,29 +74,24 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Initial position at center
     pos.current.x = container.clientWidth / 2;
     pos.current.y = container.clientHeight / 2;
     
-    // Initial random velocity
     const angle = Math.random() * Math.PI * 2;
     pos.current.vx = Math.cos(angle);
     pos.current.vy = Math.sin(angle);
 
     const animate = () => {
-      // Check if finished
       if (timeLeft <= 0) return;
 
-      // Speed levels every 10 seconds
-      let speed = 4; // Slow (60-51)
-      if (timeLeft <= 50) speed = 8; // Average (50-41)
-      if (timeLeft <= 40) speed = 14; // Speed (40-31)
-      if (timeLeft <= 30) speed = 22; // Very Speed (30-0)
+      let speed = 4;
+      if (timeLeft <= 50) speed = 8;
+      if (timeLeft <= 40) speed = 14;
+      if (timeLeft <= 30) speed = 22;
 
       pos.current.x += pos.current.vx * speed;
       pos.current.y += pos.current.vy * speed;
 
-      // Bounce logic
       if (pos.current.x <= 20 || pos.current.x >= container.clientWidth - 20) {
         pos.current.vx *= -1;
       }
@@ -170,6 +180,7 @@ export default function PainfulMemoriesPage() {
   const [afterScore, setAfterScore] = useState(5);
   const [memoryTitle, setMemoryTitle] = useState('');
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [history, setHistory] = useState<SessionResult[]>([]);
   
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
@@ -181,6 +192,20 @@ export default function PainfulMemoriesPage() {
       setIsDeveloper(isActualDeveloper && devModeEnabled);
     }
   }, [user]);
+
+  // Load history from local storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('painfulMemoriesResults');
+      if (saved) {
+        try {
+          setHistory(JSON.parse(saved));
+        } catch (e) {
+          console.error("Failed to parse history", e);
+        }
+      }
+    }
+  }, [step]);
 
   useEffect(() => {
     if (!isUserLoading && !isPremiumUser && !isDeveloper && step === 'instructions') {
@@ -207,9 +232,10 @@ export default function PainfulMemoriesPage() {
         before: beforeScore,
         after: afterScore
      };
-     const pastResults = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('painfulMemoriesResults') || '[]') : [];
+     const updatedHistory = [...history, sessionResult];
      if (typeof window !== 'undefined') {
-       localStorage.setItem('painfulMemoriesResults', JSON.stringify([...pastResults, sessionResult]));
+       localStorage.setItem('painfulMemoriesResults', JSON.stringify(updatedHistory));
+       setHistory(updatedHistory);
      }
      setStep('results');
   };
@@ -219,6 +245,15 @@ export default function PainfulMemoriesPage() {
     setAfterScore(5);
     setMemoryTitle('');
     setStep('instructions');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRetryFromHistory = (title: string, lastScore: number) => {
+    setMemoryTitle(title);
+    setBeforeScore(lastScore);
+    setAfterScore(lastScore);
+    setStep('instructions');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (isUserLoading) {
@@ -412,6 +447,64 @@ export default function PainfulMemoriesPage() {
                   </CardContent>
               </Card>
           )}
+
+          {/* History Section */}
+          <Card className="mt-8 overflow-hidden">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <History className="h-5 w-5 text-primary" />
+              <CardTitle className="text-xl">{t('historyTableTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">{t('historyColumnDate')}</TableHead>
+                    <TableHead>{t('historyColumnTitle')}</TableHead>
+                    <TableHead className="text-center">{t('historyColumnBefore')}</TableHead>
+                    <TableHead className="text-center">{t('historyColumnAfter')}</TableHead>
+                    <TableHead className="text-right">{t('historyColumnAction')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {history.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        No sessions recorded yet.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    [...history].reverse().map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium text-xs">
+                          {new Date(item.date).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate" title={item.title}>
+                          {item.title}
+                        </TableCell>
+                        <TableCell className="text-center font-bold">
+                          {item.before}
+                        </TableCell>
+                        <TableCell className="text-center font-bold text-primary">
+                          {item.after}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleRetryFromHistory(item.title, item.after)}
+                            disabled={item.after === 0}
+                          >
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                            {item.after === 0 ? 'Zero!' : t('historyActionRetry')}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
           <div className="mt-8 text-center">
               <Button asChild variant="ghost">
