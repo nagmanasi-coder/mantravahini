@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -37,9 +36,9 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Using the Bulbul model identified from the user's dashboard
+    // Using the 'sarvam-1' model which corresponds to "Sarvam M" on the dashboard
     const { response } = await ai.generate({
-      model: 'openai/bulbul-v1',
+      model: 'openai/sarvam-1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
       Your answers must be PRECISE, CLEAR, and spiritually uplifting. 
       Avoid long-winded introductions or conclusions. Get straight to the wisdom.
