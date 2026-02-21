@@ -11,6 +11,7 @@ import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Play } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
@@ -31,19 +32,26 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
-    const timer = setInterval(() => {
+    const timerInterval = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
-          setIsFinished(true);
+          clearInterval(timerInterval);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(timerInterval);
   }, [hasStarted, isFinished]);
+
+  // Handle session completion when timeLeft reaches 0
+  useEffect(() => {
+    if (hasStarted && timeLeft === 0 && !isFinished) {
+      setIsFinished(true);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    }
+  }, [timeLeft, hasStarted, isFinished]);
 
   // Animation logic
   useEffect(() => {
@@ -98,9 +106,12 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   }, [hasStarted, isFinished, timeLeft]);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex flex-col items-center justify-center overflow-hidden w-full h-full">
+    <div 
+      ref={containerRef} 
+      className="fixed inset-0 z-[2000] bg-white w-screen h-screen flex flex-col items-center justify-center overflow-hidden"
+    >
       {!hasStarted ? (
-        <div className="flex flex-col items-center justify-center gap-8 text-center animate-fade-in w-full h-full max-w-lg px-6">
+        <div className="flex flex-col items-center justify-center gap-8 text-center px-6 w-full max-w-lg">
           <p className="text-black text-2xl font-bold mb-4">
             {t('painfulMemoriesFollowDot')}
           </p>
@@ -120,7 +131,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
           </div>
         </div>
       ) : isFinished ? (
-        <div className="flex flex-col items-center justify-center gap-8 text-center px-6 w-full h-full">
+        <div className="flex flex-col items-center justify-center gap-8 text-center px-6 w-full max-w-lg">
           <h2 className="text-black text-3xl font-bold mb-2">
             {t('painfulMemoriesSessionEnded')}
           </h2>
@@ -243,133 +254,135 @@ export default function PainfulMemoriesPage() {
   
   return (
     <>
-      {step === 'session' && <MovingDot onSessionEnd={handleSessionEnd} />}
-      
-      <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-          <header className="mb-8 text-center">
-              <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-                {t('painfulMemoriesTitle')}
-              </h1>
-          </header>
+      {step === 'session' ? (
+        <MovingDot onSessionEnd={handleSessionEnd} />
+      ) : (
+        <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+            <header className="mb-8 text-center">
+                <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
+                  {t('painfulMemoriesTitle')}
+                </h1>
+            </header>
 
-          {step === 'instructions' && (
-              <Card className="animate-fade-in-up">
-                  <CardHeader>
-                      <CardTitle>{t('painfulMemoriesInstructionsTitle')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-muted-foreground">
-                      <div className="grid gap-3">
-                        <p>1. {t('painfulMemoriesInstructionsStep1')}</p>
-                        <p>2. {t('painfulMemoriesInstructionsStep2')}</p>
-                        <p>3. {t('painfulMemoriesInstructionsStep3')}</p>
-                        <p>4. {t('painfulMemoriesInstructionsStep4')}</p>
-                        <p>5. {t('painfulMemoriesInstructionsStep5')}</p>
-                      </div>
-                  </CardContent>
-                  <CardFooter className="flex flex-col gap-6 items-start pt-6 border-t">
-                      <div className="w-full space-y-4">
-                          <div className="flex justify-between items-center">
-                            <h3 className="font-bold text-lg text-primary">{t('painfulMemoriesPreSessionTitle')}</h3>
-                            <span className="text-2xl font-bold text-primary">{beforeScore}</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{t('painfulMemoriesRatePain')}</p>
-                          <Slider
-                              value={[beforeScore]}
-                              onValueChange={(value) => setBeforeScore(value[0])}
-                              max={10}
-                              step={1}
-                              className="py-4"
-                          />
-                           <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                              <span>0 (No Pain)</span>
-                              <span>10 (Max Pain)</span>
-                          </div>
-                      </div>
-                     <Button onClick={handleStartSession} size="lg" className="w-full text-lg font-bold h-14">
-                       {t('painfulMemoriesStartSession')}
-                     </Button>
-                  </CardFooter>
-              </Card>
-          )}
-
-          {step === 'post_session' && (
-              <Card className="animate-fade-in-up">
-                  <CardHeader>
-                      <CardTitle>{t('painfulMemoriesPostSessionTitle')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-6 items-start">
-                       <div className="w-full space-y-4">
-                           <div className="flex justify-between items-center">
-                              <h3 className="font-bold text-lg text-primary">After-Session Rating</h3>
-                              <span className="text-2xl font-bold text-primary">{afterScore}</span>
-                           </div>
-                           <p className="text-sm text-muted-foreground">{t('painfulMemoriesRatePainAgain')}</p>
-                           <Slider
-                               value={[afterScore]}
-                               onValueChange={(value) => setAfterScore(value[0])}
-                               max={10}
-                               step={1}
-                               className="py-4"
-                           />
-                            <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                                <span>0</span>
-                                <span>10</span>
+            {step === 'instructions' && (
+                <Card className="animate-fade-in-up">
+                    <CardHeader>
+                        <CardTitle>{t('painfulMemoriesInstructionsTitle')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground">
+                        <div className="grid gap-3">
+                          <p>1. {t('painfulMemoriesInstructionsStep1')}</p>
+                          <p>2. {t('painfulMemoriesInstructionsStep2')}</p>
+                          <p>3. {t('painfulMemoriesInstructionsStep3')}</p>
+                          <p>4. {t('painfulMemoriesInstructionsStep4')}</p>
+                          <p>5. {t('painfulMemoriesInstructionsStep5')}</p>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex flex-col gap-6 items-start pt-6 border-t">
+                        <div className="w-full space-y-4">
+                            <div className="flex justify-between items-center">
+                              <h3 className="font-bold text-lg text-primary">{t('painfulMemoriesPreSessionTitle')}</h3>
+                              <span className="text-2xl font-bold text-primary">{beforeScore}</span>
                             </div>
-                       </div>
-                       <Button onClick={handleViewResults} size="lg" className="w-full text-lg font-bold h-14">{t('painfulMemoriesViewResults')}</Button>
-                   </CardContent>
-               </Card>
-          )}
+                            <p className="text-sm text-muted-foreground">{t('painfulMemoriesRatePain')}</p>
+                            <Slider
+                                value={[beforeScore]}
+                                onValueChange={(value) => setBeforeScore(value[0])}
+                                max={10}
+                                step={1}
+                                className="py-4"
+                            />
+                             <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                                <span>0 (No Pain)</span>
+                                <span>10 (Max Pain)</span>
+                            </div>
+                        </div>
+                       <Button onClick={handleStartSession} size="lg" className="w-full text-lg font-bold h-14">
+                         {t('painfulMemoriesStartSession')}
+                       </Button>
+                    </CardFooter>
+                </Card>
+            )}
 
-          {step === 'results' && (
-              <Card className="animate-fade-in-up">
-                 <CardHeader>
-                      <CardTitle className="text-center">{t('painfulMemoriesResultsTitle')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-8 items-center py-8">
-                      <div className="flex justify-around w-full items-center">
-                          <div className="text-center">
-                              <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">{t('painfulMemoriesBeforeScore')}</p>
-                              <p className="text-5xl font-bold">{beforeScore}</p>
+            {step === 'post_session' && (
+                <Card className="animate-fade-in-up">
+                    <CardHeader>
+                        <CardTitle>{t('painfulMemoriesPostSessionTitle')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-6 items-start">
+                         <div className="w-full space-y-4">
+                             <div className="flex justify-between items-center">
+                                <h3 className="font-bold text-lg text-primary">After-Session Rating</h3>
+                                <span className="text-2xl font-bold text-primary">{afterScore}</span>
+                             </div>
+                             <p className="text-sm text-muted-foreground">{t('painfulMemoriesRatePainAgain')}</p>
+                             <Slider
+                                 value={[afterScore]}
+                                 onValueChange={(value) => setAfterScore(value[0])}
+                                 max={10}
+                                 step={1}
+                                 className="py-4"
+                             />
+                              <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                                  <span>0</span>
+                                  <span>10</span>
+                              </div>
+                         </div>
+                         <Button onClick={handleViewResults} size="lg" className="w-full text-lg font-bold h-14">{t('painfulMemoriesViewResults')}</Button>
+                     </CardContent>
+                 </Card>
+            )}
+
+            {step === 'results' && (
+                <Card className="animate-fade-in-up">
+                   <CardHeader>
+                        <CardTitle className="text-center">{t('painfulMemoriesResultsTitle')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-8 items-center py-8">
+                        <div className="flex justify-around w-full items-center">
+                            <div className="text-center">
+                                <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">{t('painfulMemoriesBeforeScore')}</p>
+                                <p className="text-5xl font-bold">{beforeScore}</p>
+                            </div>
+                            <div className="h-12 w-px bg-border"></div>
+                            <div className="text-center">
+                                <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">{t('painfulMemoriesAfterScore')}</p>
+                                <p className="text-5xl font-bold text-primary">{afterScore}</p>
+                            </div>
+                        </div>
+                        
+                        {afterScore < beforeScore ? (
+                          <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center w-full">
+                            <p className="font-bold">Great improvement!</p>
+                            <p className="text-sm">You reduced the emotional intensity by {beforeScore - afterScore} points.</p>
                           </div>
-                          <div className="h-12 w-px bg-border"></div>
-                          <div className="text-center">
-                              <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">{t('painfulMemoriesAfterScore')}</p>
-                              <p className="text-5xl font-bold text-primary">{afterScore}</p>
+                        ) : afterScore === beforeScore ? (
+                          <div className="bg-blue-100 text-blue-800 p-4 rounded-lg text-center w-full">
+                            <p className="font-bold">Consistency is key.</p>
+                            <p className="text-sm">Sometimes it takes multiple sessions to feel a change.</p>
                           </div>
-                      </div>
-                      
-                      {afterScore < beforeScore ? (
-                        <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center w-full">
-                          <p className="font-bold">Great improvement!</p>
-                          <p className="text-sm">You reduced the emotional intensity by {beforeScore - afterScore} points.</p>
-                        </div>
-                      ) : afterScore === beforeScore ? (
-                        <div className="bg-blue-100 text-blue-800 p-4 rounded-lg text-center w-full">
-                          <p className="font-bold">Consistency is key.</p>
-                          <p className="text-sm">Sometimes it takes multiple sessions to feel a change.</p>
-                        </div>
-                      ) : (
-                        <div className="bg-amber-100 text-amber-800 p-4 rounded-lg text-center w-full">
-                          <p className="font-bold">Interesting shift.</p>
-                          <p className="text-sm">It's normal for intensities to fluctuate. Try relaxing before the next session.</p>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="bg-amber-100 text-amber-800 p-4 rounded-lg text-center w-full">
+                            <p className="font-bold">Interesting shift.</p>
+                            <p className="text-sm">It's normal for intensities to fluctuate. Try relaxing before the next session.</p>
+                          </div>
+                        )}
 
-                      <Button onClick={handleStartNewSession} className="w-full h-12" variant="outline">{t('painfulMemoriesStartNewSession')}</Button>
-                  </CardContent>
-              </Card>
-          )}
+                        <Button onClick={handleStartNewSession} className="w-full h-12" variant="outline">{t('painfulMemoriesStartNewSession')}</Button>
+                    </CardContent>
+                </Card>
+            )}
 
-          <div className="mt-8 text-center">
-              <Button asChild variant="ghost">
-                  <Link href="/">
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      {t('backButton')}
-                  </Link>
-              </Button>
-          </div>
-      </div>
+            <div className="mt-8 text-center">
+                <Button asChild variant="ghost">
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        {t('backButton')}
+                    </Link>
+                </Button>
+            </div>
+        </div>
+      )}
     </>
   );
 }
