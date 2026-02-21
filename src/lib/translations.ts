@@ -232,6 +232,9 @@ export const translations = {
     painfulMemoriesSessionEnded: "ಅವಧಿ ಪೂರ್ಣಗೊಂಡಿದೆ.. ನೋವಿನ ರೇಟಿಂಗ್ ನೀಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
     painfulMemoriesClickToRate: "ರೇಟಿಂಗ್ ನೀಡಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ",
     painfulMemoriesRatePainInstruction: "ಆ ನೋವಿನ ನೆನಪನ್ನು ಮತ್ತೊಮ್ಮೆ ಸ್ಮರಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ನೋವಿನ ತೀವ್ರತೆಯನ್ನು ರೇಟ್ ಮಾಡಿ",
+    painfulMemoriesCaution: "ಎಚ್ಚರಿಕೆ: ಒಂದು ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಒಂದು ಅವಧಿ ಮಾತ್ರ ಕೆಲಸ ಮಾಡಿ. ಒಂದೇ ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಅವಧಿಯನ್ನು ಪುನರಾವರ್ತಿಸಬೇಡಿ.",
+    painfulMemoriesTitleInputLabel: "ನೆನಪಿನ ಶೀರ್ಷಿಕೆ/ವಿವರಣೆ (ಉದಾ: ನೆನಪು 1 - ಶಾಲೆ):",
+    painfulMemoriesTitleInputPlaceholder: "ಭವಿಷ್ಯದ ಉಲ್ಲೇಖಕ್ಕಾಗಿ ಶೀರ್ಷಿಕೆಯನ್ನು ನಮೂದಿಸಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -465,5 +468,8 @@ export const translations = {
     painfulMemoriesSessionEnded: "Session ended.. click to rate the pain",
     painfulMemoriesClickToRate: "Click here to rate pain",
     painfulMemoriesRatePainInstruction: "Remember the painful memory once again and rate the intensity of pain",
+    painfulMemoriesCaution: "Caution: Work only one session per memory per day. Do not repeat sessions for the same memory twice in a day.",
+    painfulMemoriesTitleInputLabel: "Memory Title/Description (e.g., Memory 1 - School):",
+    painfulMemoriesTitleInputPlaceholder: "Enter a title for future reference",
   }
 };

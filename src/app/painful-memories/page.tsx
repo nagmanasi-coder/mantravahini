@@ -10,9 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Slider } from '@/components/ui/slider';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Play } from 'lucide-react';
+import { ArrowLeft, Play, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
@@ -165,6 +168,7 @@ export default function PainfulMemoriesPage() {
   const [step, setStep] = useState<'instructions' | 'session' | 'session_ended' | 'post_session' | 'results'>('instructions');
   const [beforeScore, setBeforeScore] = useState(5);
   const [afterScore, setAfterScore] = useState(5);
+  const [memoryTitle, setMemoryTitle] = useState('');
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
@@ -199,6 +203,7 @@ export default function PainfulMemoriesPage() {
   const handleViewResults = () => {
      const sessionResult = {
         date: new Date().toISOString(),
+        title: memoryTitle || 'Untitled Memory',
         before: beforeScore,
         after: afterScore
      };
@@ -212,6 +217,7 @@ export default function PainfulMemoriesPage() {
   const handleStartNewSession = () => {
     setBeforeScore(5);
     setAfterScore(5);
+    setMemoryTitle('');
     setStep('instructions');
   };
 
@@ -270,13 +276,36 @@ export default function PainfulMemoriesPage() {
                   <CardHeader>
                       <CardTitle>{t('painfulMemoriesInstructionsTitle')}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 text-muted-foreground">
-                      <div className="grid gap-3">
-                        <p>1. {t('painfulMemoriesInstructionsStep1')}</p>
-                        <p>2. {t('painfulMemoriesInstructionsStep2')}</p>
-                        <p>3. {t('painfulMemoriesInstructionsStep3')}</p>
-                        <p>4. {t('painfulMemoriesInstructionsStep4')}</p>
-                        <p>5. {t('painfulMemoriesInstructionsStep5')}</p>
+                  <CardContent className="space-y-6">
+                      <Alert variant="destructive" className="bg-destructive/10 border-destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle className="font-bold">Caution</AlertTitle>
+                        <AlertDescription className="text-sm font-medium">
+                          {t('painfulMemoriesCaution')}
+                        </AlertDescription>
+                      </Alert>
+
+                      <div className="space-y-4 text-muted-foreground">
+                        <div className="grid gap-3">
+                          <p>1. {t('painfulMemoriesInstructionsStep1')}</p>
+                          <p>2. {t('painfulMemoriesInstructionsStep2')}</p>
+                          <p>3. {t('painfulMemoriesInstructionsStep3')}</p>
+                          <p>4. {t('painfulMemoriesInstructionsStep4')}</p>
+                          <p>5. {t('painfulMemoriesInstructionsStep5')}</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 border-t pt-4">
+                        <Label htmlFor="memory-title" className="font-bold text-foreground">
+                          {t('painfulMemoriesTitleInputLabel')}
+                        </Label>
+                        <Input 
+                          id="memory-title"
+                          placeholder={t('painfulMemoriesTitleInputPlaceholder')}
+                          value={memoryTitle}
+                          onChange={(e) => setMemoryTitle(e.target.value)}
+                          className="bg-muted/50"
+                        />
                       </div>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-6 items-start pt-6 border-t">
@@ -302,10 +331,13 @@ export default function PainfulMemoriesPage() {
                       onClick={handleStartSession} 
                       size="lg" 
                       className="w-full text-lg font-bold h-14"
-                      disabled={!isPremiumUser && !isDeveloper}
+                      disabled={(!isPremiumUser && !isDeveloper) || !memoryTitle.trim()}
                      >
                        {t('painfulMemoriesStartSession')}
                      </Button>
+                     {!memoryTitle.trim() && (
+                       <p className="text-xs text-center w-full text-destructive font-medium">Please enter a title for the memory to start.</p>
+                     )}
                   </CardFooter>
               </Card>
           )}
@@ -344,6 +376,7 @@ export default function PainfulMemoriesPage() {
               <Card className="animate-fade-in-up">
                  <CardHeader>
                       <CardTitle className="text-center">{t('painfulMemoriesResultsTitle')}</CardTitle>
+                      {memoryTitle && <p className="text-center text-muted-foreground font-bold italic">"{memoryTitle}"</p>}
                   </CardHeader>
                   <CardContent className="flex flex-col gap-8 items-center py-8">
                       <div className="flex justify-around w-full items-center">
