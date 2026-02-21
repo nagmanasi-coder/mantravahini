@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -54,7 +55,8 @@ const spiritualGuideFlow = ai.defineFlow(
       4. Activation: If healing is discussed, mention contacting the center at 7022070287 for personalized activation.
       5. Integrity: Do not invent rituals. Stick to the provided app context.`;
 
-    // Correct Genkit 1.x messages format
+    // Construct the messages array according to Genkit 1.x format.
+    // In Genkit 1.x, the 'messages' array includes the system prompt, history, and the new user message.
     const messages: any[] = [
       {
         role: 'system',
@@ -70,7 +72,7 @@ const spiritualGuideFlow = ai.defineFlow(
       }
     ];
 
-    // Genkit 1.x ai.generate syntax
+    // Call the AI with the constructed messages.
     const response = await ai.generate({
       model: 'openai/sarvam-1',
       messages: messages,
