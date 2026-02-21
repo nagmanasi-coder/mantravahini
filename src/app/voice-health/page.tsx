@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -153,15 +152,15 @@ export default function VoiceHealthPage() {
 
   const chartConfig = {
     vitality: {
-      label: language === 'kn' ? 'ಚೈತನ್ಯ' : 'Vitality',
+      label: t('physicalVitality'),
       color: "hsl(var(--primary))",
     },
     prana: {
-      label: language === 'kn' ? 'ಪ್ರಾಣ' : 'Prana',
+      label: t('pranaLevel'),
       color: "hsl(var(--accent))",
     },
     mental: {
-      label: language === 'kn' ? 'ಮಾನಸಿಕ' : 'Mental',
+      label: t('mentalEnergy'),
       color: "hsl(var(--secondary-foreground))",
     },
   } satisfies ChartConfig;
@@ -189,10 +188,10 @@ export default function VoiceHealthPage() {
     <div className="container mx-auto max-w-2xl px-4 py-8 pb-32">
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-          {language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ ತಪಾಸಣೆ' : 'Vocal Prana Checkup'}
+          {t('vocalPranaCheckupTitle')}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {language === 'kn' ? 'ಧ್ವನಿ ಕಂಪನದ ಮೂಲಕ ಆರೋಗ್ಯ, ಮಾನಸಿಕ ಶಕ್ತಿ ಮತ್ತು ಪ್ರಾಣವನ್ನು ಅರಿಯಿರಿ' : 'Analyze physical health, mental energy, and life force (Prana) through voice vibrations'}
+          {t('vocalPranaCheckupSubtitle')}
         </p>
       </header>
 
@@ -212,75 +211,84 @@ export default function VoiceHealthPage() {
         </Card>
       )}
 
-      <div className="space-y-6">
-        <Card className="border-2 border-primary/20 shadow-xl overflow-hidden">
-          <CardHeader className="bg-muted/30">
-            <CardTitle className="text-xl font-headline flex items-center gap-2">
-              <Activity className="h-5 w-5 text-primary" />
-              {language === 'kn' ? 'ಆರೋಗ್ಯ ಮಂತ್ರ' : 'Health Mantra'}
-            </CardTitle>
-            <CardDescription>
-              {language === 'kn' ? 'ಈ ಮಂತ್ರವನ್ನು ಮೂರು ಬಾರಿ ಕಂಪನದಿಂದ ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ' : 'Recite this mantra three times clearly with deep resonance into your microphone'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 text-center space-y-6">
-            <div className="p-8 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 italic font-headline text-2xl text-primary leading-relaxed">
-              {language === 'kn' ? '"ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ"' : '"Om Hum Hanumate Namah"'} <br />
-              <span className="text-sm text-muted-foreground mt-2 block">
-                {language === 'kn' ? '(೩ ಬಾರಿ ಪಠಿಸಿ)' : '(Repeat 3 Times)'}
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center gap-4">
-              <div className={cn(
-                "h-24 w-24 rounded-full flex items-center justify-center transition-all duration-500",
-                isRecording ? "bg-red-100 animate-pulse scale-110 shadow-lg shadow-red-200" : "bg-primary/10"
-              )}>
-                {isRecording ? (
-                  <Button onClick={stopRecording} variant="destructive" size="icon" className="h-16 w-16 rounded-full">
-                    <Square className="h-8 w-8" />
-                  </Button>
-                ) : (
-                  <Button onClick={startRecording} disabled={!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53'} className="h-16 w-16 rounded-full">
-                    <Mic className="h-8 w-8" />
-                  </Button>
-                )}
+      <div className="space-y-12">
+        {/* Recording Section */}
+        <section className="space-y-6">
+          <Card className="border-2 border-primary/20 shadow-xl overflow-hidden">
+            <CardHeader className="bg-muted/30">
+              <CardTitle className="text-xl font-headline flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                {t('healthMantraTitle')}
+              </CardTitle>
+              <CardDescription>
+                {t('healthMantraInstruction')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 text-center space-y-6">
+              <div className="p-8 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 italic font-headline text-2xl text-primary leading-relaxed">
+                {language === 'kn' ? '"ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ"' : '"Om Hum Hanumate Namah"'} <br />
+                <span className="text-sm text-muted-foreground mt-2 block">
+                  {language === 'kn' ? '(೩ ಬಾರಿ ಪಠಿಸಿ)' : '(Repeat 3 Times)'}
+                </span>
               </div>
-              <p className="text-sm font-mono font-bold">
-                {isRecording ? `${recordingTime}s Recording...` : audioBlob ? 'Vibration captured!' : 'Tap mic to start'}
-              </p>
-            </div>
-          </CardContent>
-          {audioBlob && !result && (
-            <CardFooter className="bg-muted/30 p-4 flex gap-2">
-              <Button onClick={handleAnalyze} className="flex-1 font-bold h-12 text-lg" disabled={isAnalyzing}>
-                {isAnalyzing ? (
-                  <Activity className="mr-2 h-5 w-5 animate-spin" />
-                ) : (
-                  <Sparkles className="mr-2 h-5 w-5" />
-                )}
-                {language === 'kn' ? 'ಕಂಪನ ವಿಶ್ಲೇಷಿಸಿ' : 'Analyze Vibrations'}
-              </Button>
-              <Button onClick={resetSession} variant="outline" size="icon" className="h-12 w-12">
-                <RotateCcw className="h-5 w-5" />
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
 
+              <div className="flex flex-col items-center gap-4">
+                <div className={cn(
+                  "h-24 w-24 rounded-full flex items-center justify-center transition-all duration-500",
+                  isRecording ? "bg-red-100 animate-pulse scale-110 shadow-lg shadow-red-200" : "bg-primary/10"
+                )}>
+                  {isRecording ? (
+                    <Button onClick={stopRecording} variant="destructive" size="icon" className="h-16 w-16 rounded-full">
+                      <Square className="h-8 w-8" />
+                    </Button>
+                  ) : (
+                    <Button onClick={startRecording} disabled={!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53'} className="h-16 w-16 rounded-full">
+                      <Mic className="h-8 w-8" />
+                    </Button>
+                  )}
+                </div>
+                <p className="text-sm font-mono font-bold">
+                  {isRecording ? `${recordingTime}s Recording...` : audioBlob ? t('vibrationAnalyzed') : t('tapMicToStart')}
+                </p>
+              </div>
+            </CardContent>
+            {audioBlob && !result && (
+              <CardFooter className="bg-muted/30 p-4 flex gap-2">
+                <Button onClick={handleAnalyze} className="flex-1 font-bold h-12 text-lg" disabled={isAnalyzing}>
+                  {isAnalyzing ? (
+                    <Activity className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-5 w-5" />
+                  )}
+                  {t('analyzeVibrations')}
+                </Button>
+                <Button onClick={resetSession} variant="outline" size="icon" className="h-12 w-12">
+                  <RotateCcw className="h-5 w-5" />
+                </Button>
+              </CardFooter>
+            )}
+          </Card>
+        </section>
+
+        {/* Status Section (Latest Result) */}
         {result && (
-          <div className="space-y-6 animate-fade-in-up">
+          <section className="space-y-6 animate-fade-in-up">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-headline text-primary">{t('vocalPranaStatusTitle')}</h2>
+            </div>
+            
             <Card className="border-2 border-accent/50 shadow-2xl">
               <CardHeader className="bg-accent/10 border-b border-accent/20">
                 <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
                   <HeartPulse className="h-6 w-6" />
-                  {language === 'kn' ? 'ಸಂಪೂರ್ಣ ಆರೋಗ್ಯ ವರದಿ' : 'Complete Health Report'}
+                  {t('healthReportTitle')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 border-b pb-8">
                   <div className="space-y-2 text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶಾರೀರಿಕ ಚೈತನ್ಯ' : 'Physical Vitality'}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('physicalVitality')}</p>
                     <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-primary/5">
                        <span className="text-2xl font-black text-primary">{result.metrics.physicalVitality}%</span>
                     </div>
@@ -288,7 +296,7 @@ export default function VoiceHealthPage() {
                   </div>
                   
                   <div className="space-y-2 text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಮಾನಸಿಕ ಶಕ್ತಿ' : 'Mental Energy'}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('mentalEnergy')}</p>
                     <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-blue-50">
                        <span className="text-2xl font-black text-blue-600">{result.metrics.mentalEnergy}%</span>
                     </div>
@@ -296,7 +304,7 @@ export default function VoiceHealthPage() {
                   </div>
 
                   <div className="space-y-2 text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಪ್ರಾಣ ಶಕ್ತಿ' : 'Prana Level'}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('pranaLevel')}</p>
                     <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-amber-50">
                        <span className="text-2xl font-black text-accent">{result.metrics.pranaLevel}%</span>
                     </div>
@@ -307,7 +315,7 @@ export default function VoiceHealthPage() {
                 <div className="space-y-4">
                   <h3 className="text-xl font-headline text-primary flex items-center gap-2">
                     <Sun className="h-5 w-5" />
-                    {language === 'kn' ? 'ಷಟ್ ಚಕ್ರಗಳ ಶಕ್ತಿ ವಿಶ್ಲೇಷಣೆ' : '6 Chakra Energy Analysis'}
+                    {t('chakraAnalysisTitle')}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {chakraOrder.map((chakra) => {
@@ -333,7 +341,7 @@ export default function VoiceHealthPage() {
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                     <div className="flex items-center gap-2 text-primary font-bold mb-2">
                       <Zap className="h-4 w-4" />
-                      <span>{language === 'kn' ? 'ಪತ್ತೆಯಾದ ಸೂಚಕಗಳು' : 'Detected Vibration Markers'}</span>
+                      <span>{t('detectedMarkers')}</span>
                     </div>
                     <p className="text-sm italic text-foreground/70">
                       {result.detectedMarkers}
@@ -343,7 +351,7 @@ export default function VoiceHealthPage() {
                   <div className="p-4 rounded-xl bg-destructive/5 border border-destructive/10">
                     <div className="flex items-center gap-2 text-destructive font-bold mb-2">
                       <ShieldAlert className="h-4 w-4" />
-                      <span>{language === 'kn' ? 'ಸಂಭವನೀಯ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳು' : 'Suggested Health Issues'}</span>
+                      <span>{t('suggestedIssues')}</span>
                     </div>
                     <p className="text-sm font-medium text-foreground/80">
                       {result.suggestedIssues}
@@ -353,7 +361,7 @@ export default function VoiceHealthPage() {
                   <div className="p-4 rounded-xl bg-muted/50 border space-y-2">
                     <div className="flex items-center gap-2 text-primary font-bold border-b pb-2">
                       <Sparkles className="h-4 w-4" />
-                      <span>{language === 'kn' ? 'ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ' : 'Health Guidance'}</span>
+                      <span>{t('healthGuidance')}</span>
                     </div>
                     <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/80">
                       {result.physicalHealthGuidance}
@@ -364,15 +372,21 @@ export default function VoiceHealthPage() {
               <CardFooter className="justify-center border-t bg-muted/20">
                 <Button variant="ghost" onClick={resetSession}>
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  {language === 'kn' ? 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ' : 'Try Again'}
+                  {t('tryAgain')}
                 </Button>
               </CardFooter>
             </Card>
-          </div>
+          </section>
         )}
 
+        {/* History Section */}
         {history.length > 0 && (
-          <div className="space-y-6 animate-fade-in">
+          <section className="space-y-6 animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <History className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-headline text-primary">{t('vocalPranaHistoryTitle')}</h2>
+            </div>
+
             <Card className="border-2 border-primary/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="space-y-1">
@@ -404,7 +418,7 @@ export default function VoiceHealthPage() {
             <Card>
               <CardHeader className="flex flex-row items-center gap-2">
                 <History className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg font-headline">{language === 'kn' ? 'ವರದಿಗಳ ಇತಿಹಾಸ' : 'Report History'}</CardTitle>
+                <CardTitle className="text-lg font-headline">{t('reportHistory')}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y">
@@ -418,7 +432,10 @@ export default function VoiceHealthPage() {
                           <span className="text-[10px] bg-blue-100 px-1.5 rounded text-blue-700 font-bold">M:{h.metrics.mentalEnergy}%</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => setResult(h)}>
+                      <Button variant="ghost" size="icon" onClick={() => {
+                        setResult(h);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
@@ -426,7 +443,7 @@ export default function VoiceHealthPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </section>
         )}
       </div>
 
