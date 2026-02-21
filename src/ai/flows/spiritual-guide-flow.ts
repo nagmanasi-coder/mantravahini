@@ -36,7 +36,8 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Using 'sarvam-1' which is the API identifier for "Sarvam M"
+    // Using the model ID directly as a string to bypass provider prefix checks
+    // Sarvam M model ID is 'sarvam-1'
     const { response } = await ai.generate({
       model: 'openai/sarvam-1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
