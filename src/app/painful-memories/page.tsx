@@ -25,42 +25,30 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const [timeLeft, setTimeLeft] = useState(60);
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  
   const timeLeftRef = useRef(timeLeft);
 
-  // Sync ref with state for the animation loop
   useEffect(() => {
     timeLeftRef.current = timeLeft;
   }, [timeLeft]);
 
-  // Timer Interval
+  // Timer and Animation Setup
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
+    // Timer Interval
     const timerInterval = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerInterval);
+          setIsFinished(true); // Explicitly finish here
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timerInterval);
-  }, [hasStarted, isFinished]);
-
-  // Session Completion Effect
-  useEffect(() => {
-    if (hasStarted && timeLeft === 0) {
-      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-      setIsFinished(true);
-    }
-  }, [timeLeft, hasStarted]);
-
-  // Animation Loop
-  useEffect(() => {
-    if (!hasStarted || isFinished) return;
-
+    // Animation Loop
     const container = containerRef.current;
     const dot = dotRef.current;
     if (!container || !dot) return;
@@ -74,6 +62,11 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     vy /= mag;
 
     const animate = () => {
+      if (timeLeftRef.current <= 0) {
+          if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+          return;
+      }
+
       const currentRemaining = timeLeftRef.current;
       let speed = 4; // Slow
       if (currentRemaining <= 50) speed = 8; // Average
@@ -111,7 +104,9 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     };
 
     animationFrameId.current = requestAnimationFrame(animate);
+
     return () => {
+      clearInterval(timerInterval);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
   }, [hasStarted, isFinished]);
@@ -119,8 +114,8 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   return (
     <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex items-center justify-center overflow-hidden">
       {!hasStarted ? (
-        <div className="flex flex-col items-center gap-8 animate-fade-in">
-          <p className="text-black text-2xl font-bold text-center px-4 mb-4">
+        <div className="flex flex-col items-center gap-8 text-center">
+          <p className="text-black text-2xl font-bold px-4 mb-4">
             {t('painfulMemoriesFollowDot')}
           </p>
           <Button 
@@ -130,7 +125,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
           >
             <Play className="h-14 w-14 fill-white text-white ml-1" />
           </Button>
-          <div className="flex flex-col gap-3 text-black/70 font-bold text-xl mt-8 px-6 text-center max-w-lg">
+          <div className="flex flex-col gap-3 text-black/70 font-bold text-xl mt-8 px-6 max-w-lg">
             <p>{t('painfulMemoriesSessionStep1')}</p>
             <p>{t('painfulMemoriesSessionStep2')}</p>
             <p>{t('painfulMemoriesSessionStep3')}</p>
@@ -139,7 +134,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
           </div>
         </div>
       ) : isFinished ? (
-        <div className="flex flex-col items-center gap-8 animate-fade-in text-center px-6">
+        <div className="flex flex-col items-center gap-8 text-center px-6">
           <p className="text-black text-3xl font-bold">
             {t('painfulMemoriesSessionEnded')}
           </p>
