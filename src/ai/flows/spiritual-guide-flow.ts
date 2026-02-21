@@ -36,10 +36,7 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Genkit 1.x ai.generate returns the GenerateResponse object directly.
-    const response = await ai.generate({
-      model: 'openai/sarvam-1',
-      system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
+    const systemPrompt = `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
       Your answers must be PRECISE, CLEAR, and spiritually uplifting. 
       Avoid long-winded introductions or conclusions. Get straight to the wisdom.
       
@@ -55,12 +52,25 @@ const spiritualGuideFlow = ai.defineFlow(
       2. Precision: Keep your response concise (maximum 3-4 sentences).
       3. Relevance: Only recommend app-specific mantras or products if they directly relate to the user's question.
       4. Activation: If healing is discussed, mention contacting the center at 7022070287 for personalized activation.
-      5. Integrity: Do not invent rituals. Stick to the provided app context.`,
-      prompt: input.message,
-      history: input.history?.map(h => ({
-        role: h.role,
-        content: [{ text: h.content }]
-      })),
+      5. Integrity: Do not invent rituals. Stick to the provided app context.`;
+
+    // Map history to the Genkit messages format
+    const messages: any[] = (input.history || []).map(h => ({
+      role: h.role,
+      content: [{ text: h.content }]
+    }));
+
+    // Add the current user message
+    messages.push({
+      role: 'user',
+      content: [{ text: input.message }]
+    });
+
+    // Genkit 1.x ai.generate syntax
+    const response = await ai.generate({
+      model: 'openai/sarvam-1',
+      system: systemPrompt,
+      messages: messages,
     });
 
     if (!response.text) {
