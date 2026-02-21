@@ -85,7 +85,7 @@ const spiritualGuideFlow = ai.defineFlow(
 
     try {
       const response = await client.chat.completions.create({
-        model: 'sarvam-1',
+        model: 'sarvam-m',
         messages: messages,
         temperature: 0.7,
         max_tokens: 1000,
