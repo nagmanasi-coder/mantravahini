@@ -23,7 +23,44 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const animationFrameId = useRef<number>();
   const [timeLeft, setTimeLeft] = useState(60);
   const [hasStarted, setHasStarted] = useState(false);
+  const timeLeftRef = useRef(timeLeft);
 
+  // Sync ref with state for the animation loop
+  useEffect(() => {
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  // Timer Interval
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    const timerInterval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [hasStarted]);
+
+  // Session Completion Effect
+  useEffect(() => {
+    if (hasStarted && timeLeft === 0) {
+      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      // Use setTimeout to ensure the session end state update happens in the next tick
+      // preventing the "Cannot update a component while rendering a different component" error
+      const timeout = setTimeout(() => {
+        onSessionEnd();
+      }, 0);
+      return () => clearTimeout(timeout);
+    }
+  }, [timeLeft, hasStarted, onSessionEnd]);
+
+  // Animation Loop
   useEffect(() => {
     if (!hasStarted) return;
 
@@ -31,35 +68,25 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     const dot = dotRef.current;
     if (!container || !dot) return;
 
-    // Start from center
     let x = container.clientWidth / 2;
     let y = container.clientHeight / 2;
-    
-    // Initial random direction
     let vx = (Math.random() - 0.5) * 2;
     let vy = (Math.random() - 0.5) * 2;
-    
-    // Normalize velocity
     const mag = Math.sqrt(vx * vx + vy * vy);
     vx /= mag;
     vy /= mag;
 
     const animate = () => {
-      // Speed progression every 10 seconds
-      // 60-51: Slow (3)
-      // 50-41: Average (6)
-      // 40-31: Speed (10)
-      // 30-0: Very Speed (15)
+      const currentRemaining = timeLeftRef.current;
       let speed = 3;
-      if (timeLeft <= 50) speed = 6;
-      if (timeLeft <= 40) speed = 10;
-      if (timeLeft <= 30) speed = 15;
-      if (timeLeft <= 15) speed = 20; // Extra boost for final 15s
+      if (currentRemaining <= 50) speed = 6;
+      if (currentRemaining <= 40) speed = 10;
+      if (currentRemaining <= 30) speed = 15;
+      if (currentRemaining <= 15) speed = 20;
 
       x += vx * speed;
       y += vy * speed;
 
-      // Bounce off walls
       if (x <= 12 || x >= container.clientWidth - 12) {
           vx *= -1;
           x = Math.max(12, Math.min(x, container.clientWidth - 12));
@@ -69,43 +96,27 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
           y = Math.max(12, Math.min(y, container.clientHeight - 12));
       }
       
-      // Randomly nudge direction slightly
       if (Math.random() < 0.02) {
           const nudgeX = (Math.random() - 0.5) * 0.5;
           const nudgeY = (Math.random() - 0.5) * 0.5;
           vx += nudgeX;
           vy += nudgeY;
-          // Re-normalize
           const newMag = Math.sqrt(vx * vx + vy * vy);
           vx /= newMag;
           vy /= newMag;
       }
 
-      dot.style.transform = `translate(${x}px, ${y}px)`;
+      if (dot) {
+        dot.style.transform = `translate(${x}px, ${y}px)`;
+      }
       animationFrameId.current = requestAnimationFrame(animate);
     };
 
     animationFrameId.current = requestAnimationFrame(animate);
-
-    const timerInterval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(timerInterval);
-            if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-            onSessionEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
-    }, 1000);
-
     return () => {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-      clearInterval(timerInterval);
+      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
-  }, [hasStarted, onSessionEnd, timeLeft]);
+  }, [hasStarted]);
 
   return (
     <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex items-center justify-center overflow-hidden">
