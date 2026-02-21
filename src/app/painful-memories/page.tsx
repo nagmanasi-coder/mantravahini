@@ -75,24 +75,25 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
 
     const animate = () => {
       const currentRemaining = timeLeftRef.current;
-      let speed = 3;
-      if (currentRemaining <= 50) speed = 6;
-      if (currentRemaining <= 40) speed = 10;
-      if (currentRemaining <= 30) speed = 15;
-      if (currentRemaining <= 15) speed = 20;
+      let speed = 4; // Slow
+      if (currentRemaining <= 50) speed = 8; // Average
+      if (currentRemaining <= 40) speed = 14; // Speed
+      if (currentRemaining <= 30) speed = 22; // Very Speed
 
       x += vx * speed;
       y += vy * speed;
 
-      if (x <= 12 || x >= container.clientWidth - 12) {
+      // Bounce logic
+      if (x <= 16 || x >= container.clientWidth - 16) {
           vx *= -1;
-          x = Math.max(12, Math.min(x, container.clientWidth - 12));
+          x = Math.max(16, Math.min(x, container.clientWidth - 16));
       }
-      if (y <= 12 || y >= container.clientHeight - 12) {
+      if (y <= 16 || y >= container.clientHeight - 16) {
           vy *= -1;
-          y = Math.max(12, Math.min(y, container.clientHeight - 12));
+          y = Math.max(16, Math.min(y, container.clientHeight - 16));
       }
       
+      // Small random direction shifts
       if (Math.random() < 0.02) {
           const nudgeX = (Math.random() - 0.5) * 0.5;
           const nudgeY = (Math.random() - 0.5) * 0.5;
@@ -173,7 +174,6 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     </div>
   );
 };
-
 
 export default function PainfulMemoriesPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
