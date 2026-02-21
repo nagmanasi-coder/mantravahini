@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -121,13 +122,24 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   return (
     <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex items-center justify-center overflow-hidden">
       {!hasStarted ? (
-        <div className="flex flex-col items-center gap-6 animate-fade-in">
-          <p className="text-black text-xl font-bold text-center px-4">
+        <div className="flex flex-col items-center gap-8 animate-fade-in">
+          <p className="text-black text-2xl font-bold text-center px-4 mb-4">
             {t('painfulMemoriesFollowDot')}
           </p>
-          <Button size="lg" className="rounded-full h-20 w-20" onClick={() => setHasStarted(true)}>
-            <Play className="h-10 w-10 fill-current" />
+          <Button 
+            size="lg" 
+            className="rounded-full h-32 w-32 bg-primary hover:bg-primary/90 shadow-2xl transition-transform hover:scale-105" 
+            onClick={() => setHasStarted(true)}
+          >
+            <Play className="h-14 w-14 fill-white text-white ml-1" />
           </Button>
+          <div className="flex flex-col gap-3 text-black/70 font-bold text-xl mt-8 px-6 text-center max-w-lg">
+            <p>{t('painfulMemoriesSessionStep1')}</p>
+            <p>{t('painfulMemoriesSessionStep2')}</p>
+            <p>{t('painfulMemoriesSessionStep3')}</p>
+            <p>{t('painfulMemoriesSessionStep4')}</p>
+            <p>{t('painfulMemoriesSessionStep5')}</p>
+          </div>
         </div>
       ) : (
         <>
