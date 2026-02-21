@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, TrendingDown, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
