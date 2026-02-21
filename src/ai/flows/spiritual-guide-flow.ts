@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -37,8 +36,7 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Using 'sarvam-1' which corresponds to "Sarvam M" on the dashboard.
-    // We use the string identifier directly as it's now registered in genkit.ts
+    // Using 'sarvam-1' which is the API identifier for "Sarvam M"
     const { response } = await ai.generate({
       model: 'openai/sarvam-1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
