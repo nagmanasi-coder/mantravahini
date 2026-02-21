@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Slider } from '@/components/ui/slider';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Play, AlertTriangle, History, RotateCcw, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Play, AlertTriangle, History, RotateCcw, TrendingDown, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -55,7 +55,6 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const requestRef = useRef<number>();
   const pos = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
 
-  // Timer logic
   useEffect(() => {
     if (!hasStarted || timeLeft <= 0) return;
 
@@ -69,14 +68,12 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     return () => clearInterval(interval);
   }, [hasStarted, timeLeft]);
 
-  // Handle session end side effect
   useEffect(() => {
     if (hasStarted && timeLeft === 0) {
       onSessionEnd();
     }
   }, [timeLeft, hasStarted, onSessionEnd]);
 
-  // Animation logic
   useEffect(() => {
     if (!hasStarted || timeLeft <= 0) {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -205,7 +202,6 @@ export default function PainfulMemoriesPage() {
     }
   }, [user]);
 
-  // Load history from local storage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('painfulMemoriesResults');
@@ -281,7 +277,6 @@ export default function PainfulMemoriesPage() {
 
   const chartData = useMemo(() => {
     if (history.length === 0) return [];
-    // Show only last 10 sessions for clarity
     return history.slice(-10).map((h, i) => ({
       index: i + 1,
       before: h.before,
@@ -447,7 +442,7 @@ export default function PainfulMemoriesPage() {
                       <CardTitle className="text-center">{t('painfulMemoriesResultsTitle')}</CardTitle>
                       {memoryTitle && <p className="text-center text-muted-foreground font-bold italic">"{memoryTitle}"</p>}
                   </CardHeader>
-                  <CardContent className="flex flex-col gap-8 items-center py-8">
+                  <CardContent className="flex flex-col gap-8 items-center py-4">
                       <div className="flex justify-around w-full items-center">
                           <div className="text-center">
                               <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">{t('painfulMemoriesBeforeScore')}</p>
@@ -477,12 +472,22 @@ export default function PainfulMemoriesPage() {
                         </div>
                       )}
 
+                      <div className="p-4 rounded-lg bg-accent/10 border border-accent/20 w-full text-left space-y-2">
+                        <div className="flex items-center gap-2 text-primary font-bold">
+                          <Sparkles className="h-4 w-4" />
+                          <span>{t('upsellPainfulMemoriesTitle')}</span>
+                        </div>
+                        <ul className="text-sm space-y-1 text-muted-foreground font-medium">
+                          <li>{t('upsellPainfulMemoriesItem1')}</li>
+                          <li>{t('upsellPainfulMemoriesItem2')}</li>
+                        </ul>
+                      </div>
+
                       <Button onClick={handleStartNewSession} className="w-full h-12" variant="outline">{t('painfulMemoriesStartNewSession')}</Button>
                   </CardContent>
               </Card>
           )}
 
-          {/* Visual Progress Chart */}
           {history.length > 0 && (
             <Card className="mt-8 animate-fade-in">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -533,7 +538,6 @@ export default function PainfulMemoriesPage() {
             </Card>
           )}
 
-          {/* History Section */}
           <Card className="mt-8 overflow-hidden">
             <CardHeader className="flex flex-row items-center gap-2">
               <History className="h-5 w-5 text-primary" />
@@ -603,4 +607,3 @@ export default function PainfulMemoriesPage() {
     </>
   );
 }
-

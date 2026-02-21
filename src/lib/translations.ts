@@ -52,7 +52,7 @@ export const translations = {
     aboutSection4Content: "ನಾವು ಪ್ರಕಟಿಸುವ ಯಾವುದೇ ಮಂತ್ರ ಅಥವಾ ತಂತ್ರ ಮೊದಲು ಸ್ವಯಂ ಪರೀಕ್ಷಿತ, ಪ್ರಾಯೋಗಿಕವಾಗಿ ಫಲ ಕಂಡ ನಂತರ ಮಾತ್ರ, ಅಂಧವಿಶ್ವಾಸಕ್ಕೆ ಉತ್ತೇಜನ ನೀಡದೇ, ನೈತಿಕತೆ ಮತ್ತು ಮಾನವ ಕಲ್ಯಾಣವನ್ನು ಕೇಂದ್ರವಾಗಿಟ್ಟುಕೊಂಡು ಜನರಿಗೆ ನೀಡಲಾಗುತ್ತದೆ.",
     aboutSection5Title: "ಉದ್ದೇಶ ಮತ್ತು ಧ್ಯೇಯ (Vision & Mission)",
     aboutSection5Content: "ನಮ್ಮ ಮುಖ್ಯ ಉದ್ದೇಶ ಮಂತ್ರ–ತಂತ್ರವನ್ನು ಭಯದ ವಿಷಯವಾಗಿಸದೇ, ಅದನ್ನು ಜ್ಞಾನ, ಶಕ್ತಿ ಮತ್ತು ಶಾಂತಿಯ ಸಾಧನವಾಗಿಸುವುದು. ಆರೋಗ್ಯ, ಮಾನಸಿಕ ನೆಮ್ಮದಿ, ಆತ್ಮವಿಶ್ವಾಸ ಮತ್ತು ಜೀವನದ ಸ್ಥಿರತೆಗೆ ಸಹಾಯಕವಾಗಿಸುವುದು.\n\n👉 ಮಾನವ ಕಲ್ಯಾಣವೇ ನಮ್ಮ ಪರಮ ಧ್ಯೇಯ.",
-    aboutSection6Title: "ಪ್ರಕಟಣೆ ಮತ್ತು ಹಂಚಿಕೆ (Publishing & Sharing)",
+    aboutSection6Title: "ಪಕಟಣೆ ಮತ್ತು ಹಂಚಿಕೆ (Publishing & Sharing)",
     aboutSection6Content: "ಪರೀಕ್ಷಿತ ಮತ್ತು ಪ್ರಯೋಜನಕಾರಿ ಮಂತ್ರ–ತಂತ್ರಗಳನ್ನು ಕನ್ನಡದಲ್ಲಿ, ಸರಳ ಭಾಷೆಯಲ್ಲಿ, ಎಲ್ಲರಿಗೂ ಅರ್ಥವಾಗುವ ರೀತಿಯಲ್ಲಿ ಲೇಖನಗಳು, ವೀಡಿಯೊಗಳು, ಆಡಿಯೋ ಮತ್ತು ಡಿಜಿಟಲ್ ಮಾಧ್ಯಮಗಳ ಮೂಲಕ ಹಂಚಲಾಗುತ್ತದೆ.",
     aboutSection7Title: "ಅಂತಿಮ ಸಂದೇಶ (Closing Note)",
     aboutSection7Content: "ಮಂತ್ರ ಮತ್ತು ತಂತ್ರವು ಅಂಧವಿಶ್ವಾಸವಲ್ಲ; ಅವು ಸರಿಯಾಗಿ ಅರ್ಥಮಾಡಿಕೊಂಡರೆ ಜೀವನವನ್ನು ಸುಧಾರಿಸುವ ವಿಜ್ಞಾನಸಮಾನ ಸಾಧನೆಗಳು. ಸರಿಯಾದ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಶುದ್ಧ ಉದ್ದೇಶ ಇದ್ದರೆ, ಇವು ಕಲಿಯುಗದಲ್ಲೂ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ.",
@@ -252,6 +252,12 @@ export const translations = {
     pointsReduced: "ಪಾಯಿಂಟ್‌ಗಳು ಕಡಿಮೆಯಾಗಿವೆ",
     physicalHealingProgressTitle: "ದೇಹ/ಕೀಲು ನೋವು ನಿವಾರಣೆ ಪ್ರಗತಿ",
     pleaseRateToStart: "ಪ್ರಾರಂಭಿಸಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ದೇಹ/ಕೀಲು ನೋವನ್ನು ರೇಟ್ ಮಾಡಿ",
+    upsellPainReliefTitle: "ಇನ್ನಷ್ಟು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳಿಗಾಗಿ:",
+    upsellPainReliefItem1: "1. ನಮ್ಮ ನೋವು ನಿವಾರಕ ತೈಲವನ್ನು ಬಳಸಿ",
+    upsellPainReliefItem2: "2. ಹನುಮಾನ್ ರೋಗ ಚಿಕಿತ್ಸಾ ಮಂತ್ರವನ್ನು ಅಭ್ಯಾಸ ಮಾಡಿ",
+    upsellPainfulMemoriesTitle: "ಇನ್ನಷ್ಟು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳಿಗಾಗಿ:",
+    upsellPainfulMemoriesItem1: "1. ನಮ್ಮ ಮೆಮೊರಿ ಹೇರ್ ಆಯಿಲ್ ಬಳಸಿ",
+    upsellPainfulMemoriesItem2: "2. ಹನುಮಾನ್ ಪ್ರಾಣ ಮಂತ್ರವನ್ನು ಅಭ್ಯಾಸ ಮಾಡಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -506,5 +512,11 @@ export const translations = {
     pointsReduced: "points reduced",
     physicalHealingProgressTitle: "Body/Joint Pain Relief Progress",
     pleaseRateToStart: "Please rate your body/joint pain to start",
+    upsellPainReliefTitle: "For even better results:",
+    upsellPainReliefItem1: "1. Use our Pain Relief Oil",
+    upsellPainReliefItem2: "2. Practice Hanuman Rog Chikitse Mantra",
+    upsellPainfulMemoriesTitle: "For even better results:",
+    upsellPainfulMemoriesItem1: "1. Use our Memory Hair Oil",
+    upsellPainfulMemoriesItem2: "2. Practice Hanuman Prana Mantra",
   }
 };

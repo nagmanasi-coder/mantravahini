@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -181,7 +181,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     localStorage.setItem('painReliefHistory', JSON.stringify(updatedHistory));
     
     setStep('result');
-    // Dispatch a custom event to notify the page to refresh the chart
     window.dispatchEvent(new Event('painHistoryUpdated'));
   };
 
@@ -283,14 +282,26 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
           {showTracker && step === 'result' && (
             <div className="flex flex-col items-center justify-center space-y-4 py-8 text-center animate-fade-in">
-              <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <CheckCircle2 className="h-12 w-12 text-primary" />
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <CheckCircle2 className="h-10 w-10 text-primary" />
               </div>
               <h3 className="text-2xl font-bold text-primary">{t('healingGreatSuccess')}</h3>
               <p className="text-muted-foreground">
                 {beforeScore - afterScore} {t('pointsReduced')}
               </p>
-              <Button variant="outline" onClick={() => setStep('pre_play')} className="mt-4">
+              
+              <div className="mt-4 p-4 rounded-lg bg-accent/10 border border-accent/20 w-full text-left space-y-2">
+                <div className="flex items-center gap-2 text-primary font-bold">
+                  <Sparkles className="h-4 w-4" />
+                  <span>{t('upsellPainReliefTitle')}</span>
+                </div>
+                <ul className="text-sm space-y-1 text-muted-foreground font-medium">
+                  <li>{t('upsellPainReliefItem1')}</li>
+                  <li>{t('upsellPainReliefItem2')}</li>
+                </ul>
+              </div>
+
+              <Button variant="outline" onClick={() => setStep('pre_play')} className="mt-4 w-full">
                 {t('closeButton')}
               </Button>
             </div>
