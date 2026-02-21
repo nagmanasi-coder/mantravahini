@@ -7,7 +7,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -122,7 +122,7 @@ export default function VoiceHealthPage() {
           {language === 'kn' ? 'ಶಾರೀರಿಕ ಆರೋಗ್ಯ ತಪಾಸಣೆ' : 'Physical Health Checkup'}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {language === 'kn' ? 'ನಿಮ್ಮ ಧ್ವನಿಯ ಕಂಪನದ ಮೂಲಕ ನಿಮ್ಮ ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ಅರಿಯಿರಿ' : 'Analyze your physical health status through the resonance of your voice'}
+          {language === 'kn' ? 'ನಿಮ್ಮ ಧ್ವನಿಯ ಕಂಪನದ ಮೂಲಕ ನಿಮ್ಮ ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ಅರಿಯಿರಿ' : 'Analyze your physical health status through the vibration resonance of your voice'}
         </p>
       </header>
 
@@ -147,18 +147,16 @@ export default function VoiceHealthPage() {
           <CardHeader className="bg-muted/30">
             <CardTitle className="text-xl font-headline flex items-center gap-2">
               <Activity className="h-5 w-5 text-primary" />
-              {language === 'kn' ? 'ವಾರದ ಶ್ಲೋಕ' : 'Weekly Shloka'}
+              {language === 'kn' ? 'ಆರೋಗ್ಯ ಮಂತ್ರ' : 'Health Mantra'}
             </CardTitle>
             <CardDescription>
-              {language === 'kn' ? 'ಈ ಕೆಳಗಿನ ಶ್ಲೋಕವನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ' : 'Recite the following Shloka clearly into your microphone'}
+              {language === 'kn' ? 'ಈ ಮಂತ್ರವನ್ನು ಮೂರು ಬಾರಿ ಕಂಪನದಿಂದ ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ' : 'Recite this mantra three times clearly with deep resonance into your microphone'}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 text-center space-y-6">
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/10 italic font-headline text-xl text-primary leading-relaxed">
-              "Manojavam Marutatulyavegam <br />
-              Jitendriyam Buddhimatam Varishtham <br />
-              Vatatmajam Vanarayuthamukhyam <br />
-              Shri Ramadutam Sharanam Prapadye"
+            <div className="p-8 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 italic font-headline text-2xl text-primary leading-relaxed">
+              "Om Hum Hanumate Namah" <br />
+              <span className="text-sm text-muted-foreground mt-2 block">(Repeat 3 Times)</span>
             </div>
 
             <div className="flex flex-col items-center gap-4">
@@ -177,22 +175,22 @@ export default function VoiceHealthPage() {
                 )}
               </div>
               <p className="text-sm font-mono font-bold">
-                {isRecording ? `${recordingTime}s Recording...` : audioBlob ? 'Recording captured!' : 'Tap mic to start'}
+                {isRecording ? `${recordingTime}s Recording...` : audioBlob ? 'Vibration captured!' : 'Tap mic to start'}
               </p>
             </div>
           </CardContent>
           {audioBlob && !result && (
             <CardFooter className="bg-muted/30 p-4 flex gap-2">
-              <Button onClick={handleAnalyze} className="flex-1 font-bold" disabled={isAnalyzing}>
+              <Button onClick={handleAnalyze} className="flex-1 font-bold h-12 text-lg" disabled={isAnalyzing}>
                 {isAnalyzing ? (
-                  <Activity className="mr-2 h-4 w-4 animate-spin" />
+                  <Activity className="mr-2 h-5 w-5 animate-spin" />
                 ) : (
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-5 w-5" />
                 )}
-                {language === 'kn' ? 'ಆರೋಗ್ಯ ವಿಶ್ಲೇಷಿಸಿ' : 'Analyze My Health'}
+                {language === 'kn' ? 'ಕಂಪನ ವಿಶ್ಲೇಷಿಸಿ' : 'Analyze Vibrations'}
               </Button>
-              <Button onClick={resetSession} variant="outline" size="icon">
-                <RotateCcw className="h-4 w-4" />
+              <Button onClick={resetSession} variant="outline" size="icon" className="h-12 w-12">
+                <RotateCcw className="h-5 w-5" />
               </Button>
             </CardFooter>
           )}
@@ -232,14 +230,36 @@ export default function VoiceHealthPage() {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-muted/50 border space-y-4">
-                  <div className="flex items-center gap-2 text-primary font-bold border-b pb-2">
-                    <Sparkles className="h-4 w-4" />
-                    <span>{language === 'kn' ? 'ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ' : 'Health Guidance'}</span>
+                <div className="grid gap-4">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                    <div className="flex items-center gap-2 text-primary font-bold mb-2">
+                      <Zap className="h-4 w-4" />
+                      <span>{language === 'kn' ? 'ಪತ್ತೆಯಾದ ಸೂಚಕಗಳು' : 'Detected Vibration Markers'}</span>
+                    </div>
+                    <p className="text-sm italic text-foreground/70">
+                      {result.detectedMarkers}
+                    </p>
                   </div>
-                  <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/80">
-                    {result.physicalHealthGuidance}
-                  </p>
+
+                  <div className="p-4 rounded-xl bg-destructive/5 border border-destructive/10">
+                    <div className="flex items-center gap-2 text-destructive font-bold mb-2">
+                      <ShieldAlert className="h-4 w-4" />
+                      <span>{language === 'kn' ? 'ಸಂಭವನೀಯ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳು' : 'Suggested Health Issues'}</span>
+                    </div>
+                    <p className="text-sm font-medium text-foreground/80">
+                      {result.suggestedIssues}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-muted/50 border space-y-2">
+                    <div className="flex items-center gap-2 text-primary font-bold border-b pb-2">
+                      <Sparkles className="h-4 w-4" />
+                      <span>{language === 'kn' ? 'ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ' : 'Health Guidance'}</span>
+                    </div>
+                    <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/80">
+                      {result.physicalHealthGuidance}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -284,7 +304,7 @@ export default function VoiceHealthPage() {
               </CardHeader>
               <CardContent>
                 <div className="h-32 w-full bg-muted/30 rounded flex items-center justify-center text-muted-foreground text-sm italic">
-                  {language === 'kn' ? 'ವಾರದ ಪ್ರಗತಿಯನ್ನು ಇಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ' : 'Your weekly health progress will be graphed here.'}
+                  {language === 'kn' ? 'ವಾರದ ಪ್ರಗತಿಯನ್ನು ಇಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ' : 'Your weekly physical health progress will be graphed here.'}
                 </div>
               </CardContent>
             </Card>

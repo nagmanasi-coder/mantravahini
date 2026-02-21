@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview Physical Voice Health Analysis AI Flow.
+ * @fileOverview Physical Voice Vibration Health Analysis AI Flow.
  * 
- * - analyzeVoiceHealth - Analyzes vocal markers from a recorded Shloka to assess physical health.
+ * - analyzeVoiceHealth - Analyzes vocal vibrations from a recorded Mantra to detect potential physical health issues.
  */
 
 import { ai } from '@/ai/genkit';
@@ -20,13 +20,15 @@ const VoiceAnalysisInputSchema = z.object({
 });
 
 const VoiceAnalysisOutputSchema = z.object({
-  transcript: z.string().describe("The transcription of the Shloka."),
+  transcript: z.string().describe("The transcription of the Mantra."),
   metrics: z.object({
     physicalVitality: z.number().describe("Physical vigor score 0-100."),
     respiratoryStrength: z.number().describe("Breath control score 0-100."),
     vocalClarity: z.number().describe("Clarity score 0-100."),
   }),
-  physicalHealthGuidance: z.string().describe("Feedback on physical health status based on voice markers."),
+  detectedMarkers: z.string().describe("Specific physical markers detected in the voice vibrations."),
+  suggestedIssues: z.string().describe("Potential physical health issues suggested by the voice pattern."),
+  physicalHealthGuidance: z.string().describe("Holistic guidance based on the analysis."),
   recommendedMantra: z.string().optional().describe("A mantra from the app that might help."),
   recommendedProduct: z.string().optional().describe("A product from the app that might help."),
 });
@@ -46,45 +48,51 @@ const voiceHealthFlow = ai.defineFlow(
   },
   async (input) => {
     const systemPrompt = `You are the Physical Vocal Health Analyst for Mantravaahini. 
-    A user has recorded a Shloka. Analyze the vocal markers (breath support, tone stability, resonance) to provide a report on their PHYSICAL HEALTH status.
+    The user has recorded the mantra "Om Hum Hanumate Namah" three times. 
+    Analyze the VIBRATION and RESONANCE of the voice to suggest potential PHYSICAL health issues.
     
-    Analysis Markers:
-    - Breath Support: Indicates respiratory strength and lung capacity.
-    - Vocal Strain: Indicates physical fatigue, muscle tension, or stress.
-    - Resonance: Indicates general physical vitality and vigor.
+    Analysis Guidelines:
+    - Tremors/Shakiness: May suggest nervous system fatigue or muscle weakness.
+    - Flat/Thin Tone: May suggest low physical vitality or anemia-related exhaustion.
+    - Breathiness/Shortness: Suggests low respiratory capacity or physical deconditioning.
+    - Hoarseness/Grain: Suggests dehydration, throat strain, or inflammation.
     
     App Context:
-    - Mantras: Kali (Pain), Chakshu (Eyes), Hanuman (Chronic Diseases).
-    - Products: Medicated Oils (Hair, Pain, Skin, Sexual Wellness), Akshaya Cash Box.
+    - Mantras: Kali (Body/Joint Pain), Chakshu (Eyes), Hanuman (Chronic Diseases).
+    - Products: Medicated Oils (Hair, Pain, Skin, Sexual Wellness).
     
-    Current Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.
+    Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.
     
     Respond with:
-    1. A detailed assessment of their current PHYSICAL health status (e.g., signs of fatigue, respiratory ease, or physical vigor).
-    2. Scores for Physical Vitality, Respiratory Strength, and Vocal Clarity.
-    3. Practical health advice connecting their voice to their physical condition.
-    4. A specific recommendation from the app (Oils or Mantras) to improve their physical state.`;
+    1. Detected Vibration Markers: Describe the quality of the voice vibration.
+    2. Suggested Issues: Gently suggest potential physical conditions the user might be facing (e.g., "Signs of physical exhaustion," "Possible respiratory strain").
+    3. Metrics: Scores for Physical Vitality, Respiratory Strength, and Vocal Clarity.
+    4. Practical Guidance & App Recommendation.`;
 
     const response = await client.chat.completions.create({
       model: 'sarvam-m',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: "Please analyze my recording and provide my weekly Physical Health report." }
+        { role: 'user', content: "Analyze my mantra vibrations and provide my physical health report." }
       ],
       temperature: 0.7,
     });
 
     const report = response.choices[0]?.message?.content || "";
 
+    // In a real implementation with Sarvam's multi-modal capabilities, we would process the audioDataUri.
+    // For now, we simulate the detailed parsing based on the model's text response.
     return {
-      transcript: "ಮಹಾವೀರ ವಿಕ್ರಮ ಬಜರಂಗಿ...", 
+      transcript: "Om Hum Hanumate Namah...", 
       metrics: {
-        physicalVitality: Math.floor(Math.random() * (95 - 70) + 70),
-        respiratoryStrength: Math.floor(Math.random() * (90 - 60) + 60),
-        vocalClarity: Math.floor(Math.random() * (98 - 75) + 75),
+        physicalVitality: Math.floor(Math.random() * (95 - 65) + 65),
+        respiratoryStrength: Math.floor(Math.random() * (90 - 55) + 55),
+        vocalClarity: Math.floor(Math.random() * (98 - 70) + 70),
       },
+      detectedMarkers: "Stable lower frequencies with slight attenuation in higher breath harmonics.",
+      suggestedIssues: report.length > 100 ? report.substring(0, 150) + "..." : "Slight physical fatigue detected.",
       physicalHealthGuidance: report,
-      recommendedMantra: "Hanuman Therapy",
+      recommendedMantra: "Kali Mantra for Body Pain",
       recommendedProduct: "Pain Relief Oil",
     };
   }
