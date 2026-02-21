@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Brain, TrendingDown } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Brain, TrendingDown, MessageSquareQuote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -164,6 +164,23 @@ export default function Home() {
              {t('appSubtitle')}
             </p>
           </header>
+
+          <Card className={cn("mb-6 bg-primary/10 border-primary/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.2s" }}>
+            <Link href="/ai-guide">
+              <CardContent className="p-4 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/20 p-2 rounded-full">
+                    <MessageSquareQuote className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <h2 className="font-headline text-xl font-bold text-primary">{t('talkToAiGuide')}</h2>
+                    <p className="text-xs text-muted-foreground">{t('aiGuideSubtitle')}</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-primary" />
+              </CardContent>
+            </Link>
+          </Card>
 
           <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.4s" }}>
             <CardHeader>

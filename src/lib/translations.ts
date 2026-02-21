@@ -265,6 +265,7 @@ export const translations = {
     aiChatLimitReached: "ನೀವು ನಿಮ್ಮ 5 ಉಚಿತ ಸಂದೇಶಗಳ ಮಿತಿಯನ್ನು ತಲುಪಿದ್ದೀರಿ. ಮುಂದುವರಿಯಲು ದಯವಿಟ್ಟು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.",
     aiChatFreeMessagesLeft: "ಉಚಿತ ಸಂದೇಶಗಳು ಬಾಕಿ ಇವೆ",
     aiChatWelcome: "ನಮಸ್ತೆ! ನಾನು ನಿಮ್ಮ ದೈವಿಕ ಮಾರ್ಗದರ್ಶಿ. ಮಂತ್ರಗಳು, ಉತ್ಪನ್ನಗಳು ಅಥವಾ ನಮ್ಮ ಚಿಕಿತ್ಸೆಗಳ ಬಗ್ಗೆ ಏನನ್ನಾದರೂ ಕೇಳಿ.",
+    talkToAiGuide: "AI ದೈವಿಕ ಮಾರ್ಗದರ್ಶಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -532,5 +533,6 @@ export const translations = {
     aiChatLimitReached: "You have reached your limit of 5 free messages. Please upgrade to continue.",
     aiChatFreeMessagesLeft: "Free messages remaining",
     aiChatWelcome: "Namaste! I am your Divine Guide. Ask me anything about mantras, products, or our therapies.",
+    talkToAiGuide: "Talk to AI Divine Guide",
   }
 };
