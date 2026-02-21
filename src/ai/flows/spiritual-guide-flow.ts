@@ -37,9 +37,9 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Explicitly using the Sarvam model provided by the OpenAI community plugin
+    // Using the Bulbul model identified from the user's dashboard
     const { response } = await ai.generate({
-      model: 'openai/sarvam-1',
+      model: 'openai/bulbul-v1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
       Your answers must be PRECISE, CLEAR, and spiritually uplifting. 
       Avoid long-winded introductions or conclusions. Get straight to the wisdom.
@@ -65,7 +65,7 @@ const spiritualGuideFlow = ai.defineFlow(
     });
 
     if (!response.text) {
-      throw new Error('The AI guide was unable to generate a response. Please check your API configuration.');
+      throw new Error('The AI guide was unable to generate a response. Please check your API configuration or model availability.');
     }
 
     return { response: response.text };
