@@ -33,18 +33,18 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     if (!hasStarted || timeLeft <= 0) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          onSessionEnd();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [hasStarted, timeLeft, onSessionEnd]);
+  }, [hasStarted, timeLeft]);
+
+  // Effect to handle session end when timer hits zero
+  useEffect(() => {
+    if (hasStarted && timeLeft <= 0) {
+      onSessionEnd();
+    }
+  }, [timeLeft, hasStarted, onSessionEnd]);
 
   // Animation logic
   useEffect(() => {
@@ -66,6 +66,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     pos.current.vy = Math.sin(angle);
 
     const animate = () => {
+      // Check if finished
       if (timeLeft <= 0) return;
 
       // Speed levels every 10 seconds
