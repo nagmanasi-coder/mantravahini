@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2 } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,8 +42,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [isDeveloper, setIsDeveloper] = useState(false);
   
   const [step, setStep] = useState<'initial' | 'pre_play' | 'playing' | 'post_play' | 'result'>(showTracker ? 'pre_play' : 'initial');
-  const [beforeScore, setBeforeScore] = useState(5);
-  const [afterScore, setAfterScore] = useState(5);
+  const [beforeScore, setBeforeScore] = useState(0);
+  const [afterScore, setAfterScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -109,6 +109,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const handlePlayPause = () => {
     if (isPlaying) {
       setIsPlaying(false);
+      return;
+    }
+
+    if (showTracker && beforeScore === 0) {
+      toast({
+        variant: "destructive",
+        title: "Rating Required",
+        description: t('pleaseRateToStart'),
+      });
       return;
     }
 
@@ -223,7 +232,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                 max={10}
                 step={1}
               />
-              <Button onClick={handlePlayPause} className="w-full h-12 text-lg font-bold">
+              {beforeScore === 0 && (
+                <p className="text-xs text-center text-destructive font-medium flex items-center justify-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {t('pleaseRateToStart')}
+                </p>
+              )}
+              <Button onClick={handlePlayPause} disabled={beforeScore === 0} className="w-full h-12 text-lg font-bold">
                 <Play className="mr-2 h-5 w-5" />
                 {t('startHealing')}
               </Button>
