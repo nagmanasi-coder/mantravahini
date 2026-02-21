@@ -7,7 +7,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -119,20 +119,28 @@ export default function VoiceHealthPage() {
         setResult(analysis);
         setIsAnalyzing(false);
 
-        // Save to history
-        const newReport: StoredVoiceReport = {
-          ...analysis,
-          id: crypto.randomUUID(),
-          timestamp: new Date().toISOString(),
-        };
-        const updatedHistory = [newReport, ...history].slice(0, 20); // Keep last 20
-        setHistory(updatedHistory);
-        localStorage.setItem('voiceHealthHistory', JSON.stringify(updatedHistory));
-
-        toast({
-          title: 'Analysis Complete',
-          description: 'Your Health and Prana Report is ready.',
-        });
+        // Only save to history if it's not a "silent" error report (all metrics 0)
+        if (analysis.metrics.physicalVitality > 0) {
+          const newReport: StoredVoiceReport = {
+            ...analysis,
+            id: crypto.randomUUID(),
+            timestamp: new Date().toISOString(),
+          };
+          const updatedHistory = [newReport, ...history].slice(0, 20);
+          setHistory(updatedHistory);
+          localStorage.setItem('voiceHealthHistory', JSON.stringify(updatedHistory));
+          
+          toast({
+            title: 'Analysis Complete',
+            description: 'Your Health and Prana Report is ready.',
+          });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Incomplete Recording',
+            description: 'The recording was too quiet or empty. Please try again.',
+          });
+        }
       };
     } catch (error: any) {
       setIsAnalyzing(false);
@@ -242,7 +250,11 @@ export default function VoiceHealthPage() {
                       <Square className="h-8 w-8" />
                     </Button>
                   ) : (
-                    <Button onClick={startRecording} disabled={!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53'} className="h-16 w-16 rounded-full">
+                    <Button 
+                      onClick={startRecording} 
+                      disabled={(!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53') || isAnalyzing} 
+                      className="h-16 w-16 rounded-full"
+                    >
                       <Mic className="h-8 w-8" />
                     </Button>
                   )}
@@ -262,7 +274,7 @@ export default function VoiceHealthPage() {
                   )}
                   {t('analyzeVibrations')}
                 </Button>
-                <Button onClick={resetSession} variant="outline" size="icon" className="h-12 w-12">
+                <Button onClick={resetSession} variant="outline" size="icon" className="h-12 w-12" disabled={isAnalyzing}>
                   <RotateCcw className="h-5 w-5" />
                 </Button>
               </CardFooter>
@@ -272,7 +284,7 @@ export default function VoiceHealthPage() {
 
         {/* Status Section (Latest Result) */}
         {result && (
-          <section className="space-y-6 animate-fade-in-up">
+          <section id="status-section" className="space-y-6 animate-fade-in-up">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-headline text-primary">{t('vocalPranaStatusTitle')}</h2>
@@ -286,6 +298,13 @@ export default function VoiceHealthPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
+                {result.metrics.physicalVitality === 0 && (
+                  <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5" />
+                    <p className="text-sm font-bold">No valid audio was detected. Please record again.</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 border-b pb-8">
                   <div className="space-y-2 text-center">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('physicalVitality')}</p>
@@ -381,7 +400,7 @@ export default function VoiceHealthPage() {
 
         {/* History Section */}
         {history.length > 0 && (
-          <section className="space-y-6 animate-fade-in">
+          <section id="history-section" className="space-y-6 animate-fade-in">
             <div className="flex items-center gap-2 mb-4">
               <History className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-headline text-primary">{t('vocalPranaHistoryTitle')}</h2>
@@ -434,7 +453,8 @@ export default function VoiceHealthPage() {
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => {
                         setResult(h);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        const statusSection = document.getElementById('status-section');
+                        if (statusSection) statusSection.scrollIntoView({ behavior: 'smooth' });
                       }}>
                         <ChevronRight className="h-4 w-4" />
                       </Button>

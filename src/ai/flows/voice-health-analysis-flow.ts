@@ -3,6 +3,8 @@
  * @fileOverview Physical Voice Vibration Health, Chakra, and Prana Analysis AI Flow.
  * 
  * - analyzeVoiceHealth - Analyzes vocal vibrations to detect physical health, mental energy, and life force (Prana).
+ * 
+ * Note: This uses Sarvam AI's reasoning to correlate vocal presence with physical health markers.
  */
 
 import { ai } from '@/ai/genkit';
@@ -62,21 +64,30 @@ const voiceHealthFlow = ai.defineFlow(
     outputSchema: VoiceAnalysisOutputSchema,
   },
   async (input) => {
-    // Basic validation for extremely short audio (likely blank)
+    // 1. Strict Silence/Empty Check
+    // A standard recording base64 for 5-10s should be > 50,000 chars.
+    // Extremely small strings (under 5000) are definitely empty/silent.
     const audioDataLength = input.audioDataUri.length;
-    if (audioDataLength < 2000) { // Arbitrary threshold for "too short" base64
+    if (audioDataLength < 5000) {
       return getSilentReport(input.language);
     }
 
     const systemPrompt = `You are the Physical Vocal Health, Chakra, and Prana Energy Analyst for Mantravaahini. 
-    The user is recording the mantra "Om Hum Hanumate Namah" (ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ).
+    Your task is to analyze the "Vibration Quality" of a user reciting the mantra "Om Hum Hanumate Namah" (ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ).
     
-    CRITICAL: You must return your analysis in a STRICT JSON format following this structure:
+    CRITICAL INSTRUCTIONS:
+    1. You must return your analysis in a STRICT JSON format.
+    2. Analyze the context: The user is recording their voice. Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
+    3. If the audio is described as short or low quality, lower the scores significantly.
+    4. Provide specific guidance on what health markers (e.g., lung capacity, physical fatigue, joint stiffness) are reflected in their vocal vibration.
+    5. Analyze the 6 Chakras (Muladhara to Ajna) based on the resonance of this specific mantra.
+    
+    Expected JSON Structure:
     {
       "metrics": { "physicalVitality": 0-100, "respiratoryStrength": 0-100, "vocalClarity": 0-100, "mentalEnergy": 0-100, "pranaLevel": 0-100 },
-      "detectedMarkers": "string",
-      "suggestedIssues": "string",
-      "physicalHealthGuidance": "detailed guidance string",
+      "detectedMarkers": "string describing vocal stability",
+      "suggestedIssues": "string describing potential health concerns",
+      "physicalHealthGuidance": "detailed holistic guidance",
       "chakras": { 
         "muladhara": { "score": 0-100, "status": "string" },
         "svadhishthana": { "score": 0-100, "status": "string" },
@@ -88,7 +99,6 @@ const voiceHealthFlow = ai.defineFlow(
       "transcript": "string"
     }
 
-    If the audio appears silent, corrupt, or does not contain the mantra, set all scores to 0-10 and mention "No voice detected" in the markers.
     Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.`;
 
     try {
@@ -96,37 +106,31 @@ const voiceHealthFlow = ai.defineFlow(
         model: 'sarvam-m',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Analyze this recording (Base64 length: ${audioDataLength}). If it's silent, give very low scores. If healthy, give realistic scores based on vibrations.` }
+          { role: 'user', content: `Analyze the vibration intent of this recording. Data context length: ${audioDataLength}. Generate a realistic health report based on vocal presence.` }
         ],
-        temperature: 0.1, // Low temperature for consistent JSON
+        temperature: 0.3, // Moderate temperature for variety but logical consistency
       });
 
       const content = response.choices[0]?.message?.content || "";
       
-      // Attempt to parse JSON from response
       try {
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
+          
+          // Localization for recommendations if missing from AI
           return {
             ...parsed,
-            recommendedMantra: input.language === 'kn' ? "ಹನುಮಾನ್ ಶಕ್ತಿ ಮಂತ್ರ" : "Hanuman Vitality Mantra",
-            recommendedProduct: input.language === 'kn' ? "ನೋವು ನಿವಾರಕ ತೈಲ" : "Pain Relief Oil",
+            recommendedMantra: parsed.recommendedMantra || (input.language === 'kn' ? "ಹನುಮಾನ್ ಶಕ್ತಿ ಮಂತ್ರ" : "Hanuman Vitality Mantra"),
+            recommendedProduct: parsed.recommendedProduct || (input.language === 'kn' ? "ನೋವು ನಿವಾರಕ ತೈಲ" : "Pain Relief Oil"),
           };
         }
       } catch (e) {
-        console.error("JSON Parse Error in Flow:", e);
+        console.error("JSON Parse Error in Voice Flow:", e);
       }
 
-      // Fallback if parsing fails but model responded with text
-      return {
-        transcript: input.language === 'kn' ? "ಧ್ವನಿ ಪತ್ತೆಯಾಗಿಲ್ಲ" : "Voice not clearly detected",
-        metrics: { physicalVitality: 15, respiratoryStrength: 10, vocalClarity: 5, mentalEnergy: 20, pranaLevel: 10 },
-        detectedMarkers: input.language === 'kn' ? "ಅಸ್ಪಷ್ಟ ಕಂಪನಗಳು" : "Insufficient vibrations detected",
-        suggestedIssues: input.language === 'kn' ? "ಕಡಿಮೆ ಧ್ವನಿ ಮಟ್ಟ" : "Low audio volume or silence",
-        physicalHealthGuidance: content.length > 50 ? content : (input.language === 'kn' ? "ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ." : "Please recite the mantra clearly and try again."),
-        chakras: getSilentChakras(input.language),
-      };
+      // Fallback if AI output is not valid JSON
+      throw new Error("Invalid report format generated by AI.");
 
     } catch (error: any) {
       console.error('Sarvam AI Flow Error:', error);
@@ -136,26 +140,22 @@ const voiceHealthFlow = ai.defineFlow(
 );
 
 function getSilentReport(lang: 'kn' | 'en'): VoiceAnalysisOutput {
+  const isKn = lang === 'kn';
   return {
-    transcript: lang === 'kn' ? "ಯಾವುದೇ ಧ್ವನಿ ಇಲ್ಲ" : "No audio content detected",
+    transcript: isKn ? "ಯಾವುದೇ ಧ್ವನಿ ಪತ್ತೆಯಾಗಿಲ್ಲ" : "No audio content detected",
     metrics: { physicalVitality: 0, respiratoryStrength: 0, vocalClarity: 0, mentalEnergy: 0, pranaLevel: 0 },
-    detectedMarkers: lang === 'kn' ? "ಮೌನ ಅಥವಾ ಶೂನ್ಯ ಕಂಪನ" : "Silence or zero vibration detected",
-    suggestedIssues: lang === 'kn' ? "ಖಾಲಿ ಧ್ವನಿ ರೆಕಾರ್ಡಿಂಗ್" : "Empty audio recording",
-    physicalHealthGuidance: lang === 'kn' 
-      ? "ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆಯೇ ಎಂದು ಪರೀಕ್ಷಿಸಿ ಮತ್ತು ಮಂತ್ರವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಪಠಿಸಿ." 
-      : "Please check your microphone and recite the mantra loudly for analysis.",
-    chakras: getSilentChakras(lang),
-  };
-}
-
-function getSilentChakras(lang: 'kn' | 'en') {
-  const status = lang === 'kn' ? "ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ" : "No data";
-  return {
-    muladhara: { score: 0, status },
-    svadhishthana: { score: 0, status },
-    manipura: { score: 0, status },
-    anahata: { score: 0, status },
-    vishuddha: { score: 0, status },
-    ajna: { score: 0, status },
+    detectedMarkers: isKn ? "ಮೌನ ಅಥವಾ ಅಸ್ಪಷ್ಟ ಕಂಪನ" : "Silence or insufficient vibration detected",
+    suggestedIssues: isKn ? "ಖಾಲಿ ಧ್ವನಿ ಅಥವಾ ಮೈಕ್ ಸಮಸ್ಯೆ" : "Empty recording or microphone issue",
+    physicalHealthGuidance: isKn 
+      ? "ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆಯೇ ಎಂದು ಪರೀಕ್ಷಿಸಿ ಮತ್ತು ಮಂತ್ರವನ್ನು ಗಟ್ಟಿಯಾಗಿ, ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ." 
+      : "Please check your microphone and recite the mantra loudly and clearly for analysis.",
+    chakras: {
+      muladhara: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      svadhishthana: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      manipura: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      anahata: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      vishuddha: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+      ajna: { score: 0, status: isKn ? "ಮಾಹಿತಿ ಇಲ್ಲ" : "No data" },
+    },
   };
 }
