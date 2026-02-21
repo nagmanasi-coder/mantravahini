@@ -1,14 +1,22 @@
+
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
  *
- * - chatWithGuide - Handles communication with the spiritual guide.
+ * - chatWithGuide - Handles communication with the spiritual guide using Sarvam AI.
  * - ChatInput - Input schema for the chat.
  * - ChatOutput - Output schema for the chat response.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import OpenAI from 'openai';
+
+// Initialize the OpenAI client for Sarvam AI
+const client = new OpenAI({
+  apiKey: process.env.SARVAM_AI_API_KEY || '',
+  baseURL: 'https://api.sarvam.ai/v1',
+});
 
 const ChatInputSchema = z.object({
   message: z.string().describe('The user message to the spiritual guide.'),
@@ -57,35 +65,42 @@ const spiritualGuideFlow = ai.defineFlow(
     const messages: any[] = [
       {
         role: 'system',
-        content: [{ text: systemPrompt }]
+        content: systemPrompt,
       }
     ];
 
     if (input.history && input.history.length > 0) {
       input.history.forEach(h => {
         messages.push({
-          role: h.role,
-          content: [{ text: h.content }]
+          role: h.role === 'model' ? 'assistant' : 'user',
+          content: h.content,
         });
       });
     }
 
     messages.push({
       role: 'user',
-      content: [{ text: input.message }]
+      content: input.message,
     });
 
-    const response = await ai.generate({
-      model: 'openai/sarvam-1',
-      messages: messages,
-    });
+    try {
+      const response = await client.chat.completions.create({
+        model: 'sarvam-1',
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
 
-    const responseText = response.text;
+      const responseText = response.choices[0]?.message?.content;
 
-    if (!responseText) {
-      throw new Error('The AI guide was unable to generate a response. Please check your Sarvam AI API key or dashboard.');
+      if (!responseText) {
+        throw new Error('The AI guide was unable to generate a response. Please check your Sarvam AI API key or dashboard.');
+      }
+
+      return { response: responseText };
+    } catch (error: any) {
+      console.error('Sarvam AI Error:', error);
+      throw new Error(`Failed to contact the Divine Guide: ${error.message}`);
     }
-
-    return { response: responseText };
   }
 );
