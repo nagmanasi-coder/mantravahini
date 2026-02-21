@@ -1,6 +1,5 @@
-
 import { genkit } from 'genkit';
-import { openai } from 'genkitx-openai';
+import { openAI } from 'genkitx-openai';
 
 /**
  * Genkit initialization for Sarvam AI.
@@ -8,7 +7,7 @@ import { openai } from 'genkitx-openai';
  */
 export const ai = genkit({
   plugins: [
-    openai({
+    openAI({
       apiKey: process.env.SARVAM_AI_API_KEY,
       config: {
         baseURL: 'https://api.sarvam.ai/v1',

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -55,24 +54,28 @@ const spiritualGuideFlow = ai.defineFlow(
       4. Activation: If healing is discussed, mention contacting the center at 7022070287 for personalized activation.
       5. Integrity: Do not invent rituals. Stick to the provided app context.`;
 
-    // Construct the messages array according to Genkit 1.x format.
-    // In Genkit 1.x, the 'messages' array includes the system prompt, history, and the new user message.
     const messages: any[] = [
       {
         role: 'system',
         content: [{ text: systemPrompt }]
-      },
-      ...(input.history || []).map(h => ({
-        role: h.role,
-        content: [{ text: h.content }]
-      })),
-      {
-        role: 'user',
-        content: [{ text: input.message }]
       }
     ];
 
-    // Call the AI with the constructed messages.
+    if (input.history && input.history.length > 0) {
+      input.history.forEach(h => {
+        messages.push({
+          role: h.role,
+          content: [{ text: h.content }]
+        });
+      });
+    }
+
+    messages.push({
+      role: 'user',
+      content: [{ text: input.message }]
+    });
+
+    // Using openai/sarvam-1 as the identifier for Sarvam M via the OpenAI bridge
     const response = await ai.generate({
       model: 'openai/sarvam-1',
       messages: messages,
