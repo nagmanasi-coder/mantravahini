@@ -1,6 +1,3 @@
-
-
-
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -33,7 +30,7 @@ export const translations = {
     hosadurga: "ಹೊಸದುರ್ಗ",
     toastPainMantraSelectedTitle: "ನೋವು ನಿವಾರಣೆ ಮಂತ್ರ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
     toastPainMantraSelectedDescription: "ಈಗ ನೀವು ಪ್ಲೇಯರ್‌ನಲ್ಲಿ ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು.",
-    toastEyeMantraSelectedTitle: "ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳ ಮಂತ್ರ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
+    toastEyeMantraSelectedTitle: "ಕಣ್ಣಿನ समस्याಗಳ ಮಂತ್ರ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
     toastEyeMantraSelectedDescription: "ಈಗ ನೀವು ಪ್ಲೇಯರ್‌ನಲ್ಲಿ ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು.",
     toastDailyLimitTitle: "ದೈನಂದಿನ ಮಿತಿಯನ್ನು ತಲುಪಿದೆ",
     toastDailyLimitDescription: "ನೀವು ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಒಮ್ಮೆ ಮಾತ್ರ ಪ್ಲೇ ಮಾಡಬಹುದು. ಮಧ್ಯರಾತ್ರಿ ಕೌಂಟ್ ಮರುಹೊಂದಿಸುತ್ತದೆ.",
@@ -236,7 +233,7 @@ export const translations = {
     painfulMemoriesRatePainInstruction: "ಆ ನೋವಿನ ನೆನಪನ್ನು ಮತ್ತೊಮ್ಮೆ ಸ್ಮರಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ನೋವಿನ ತೀವ್ರತೆಯನ್ನು ರೇಟ್ ಮಾಡಿ",
     painfulMemoriesCaution: "ಎಚ್ಚರಿಕೆ: ಒಂದು ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಒಂದು ಅವಧಿ ಮಾತ್ರ ಕೆಲಸ ಮಾಡಿ. ಒಂದೇ ನೆನಪಿಗೆ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಅವಧಿಯನ್ನು ಪುನರಾವರ್ತಿಸಬೇಡಿ.",
     painfulMemoriesTitleInputLabel: "ನೆನಪಿನ ಶೀರ್ಷಿಕೆ/ವಿವರಣೆ (ಉದಾ: ನೆನಪು 1 - ಶಾಲೆ):",
-    painfulMemoriesTitleInputPlaceholder: "ಭವಿಷ್ಯದ ಉಲ್ಲೇಖಕ್ಕಾಗಿ ಶೀರ್ಷಿಕೆಯನ್ನು ನಮೂದಿಸಿ",
+    painfulMemoriesTitleInputPlaceholder: "ಭವಿಷ್ಯದ ಉಲ್ಲೇಖಕ್ಕಾಗಿ ಶೀರ್ಖಿಕೆಯನ್ನು ನಮೂದಿಸಿ",
     historyTableTitle: "ಸೆಷನ್ ಇತಿಹಾಸ",
     historyColumnDate: "ದಿನಾಂಕ",
     historyColumnTitle: "ನೆನಪಿನ ಶೀರ್ಷಿಕೆ",
@@ -247,6 +244,13 @@ export const translations = {
     healingProgressTitle: "ಗುಣಪಡಿಸುವ ಪ್ರಗತಿಯ ಸ್ಥಿತಿ",
     chartLegendBefore: "ಮೊದಲು",
     chartLegendAfter: "ನಂತರ",
+    rateYourPain: "ನಿಮ್ಮ ನೋವಿನ ತೀವ್ರತೆಯನ್ನು ರೇಟ್ ಮಾಡಿ (0-10)",
+    startHealing: "ಗುಣಪಡಿಸಲು ಪ್ರಾರಂಭಿಸಿ",
+    ratePainAfterMantra: "ಮಂತ್ರದ ನಂತರ ನೋವನ್ನು ರೇಟ್ ಮಾಡಿ",
+    saveHealingResult: "ಫಲಿತಾಂಶ ಉಳಿಸಿ",
+    healingGreatSuccess: "ಅದ್ಭುತ! ನೀವು ನೋವನ್ನು ಕಡಿಮೆ ಮಾಡಿದ್ದೀರಿ.",
+    pointsReduced: "ಪಾಯಿಂಟ್‌ಗಳು ಕಡಿಮೆಯಾಗಿವೆ",
+    physicalHealingProgressTitle: "ದೈಹಿಕ ನೋವು ನಿವಾರಣೆ ಪ್ರಗತಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -493,7 +497,12 @@ export const translations = {
     healingProgressTitle: "Overall Healing Progress",
     chartLegendBefore: "Before",
     chartLegendAfter: "After",
+    rateYourPain: "Rate your pain severity (0-10)",
+    startHealing: "Start Healing",
+    ratePainAfterMantra: "Rate pain after mantra",
+    saveHealingResult: "Save Result",
+    healingGreatSuccess: "Great! You have reduced the pain.",
+    pointsReduced: "points reduced",
+    physicalHealingProgressTitle: "Physical Pain Relief Progress",
   }
 };
-
-

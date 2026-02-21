@@ -2,12 +2,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Brain } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Brain, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,15 @@ import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -41,6 +50,7 @@ export default function Home() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
+  const [painHistory, setPainHistory] = useState<any[]>([]);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -50,9 +60,21 @@ export default function Home() {
   const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
 
+  useEffect(() => {
+    const loadHistory = () => {
+      const saved = localStorage.getItem('painReliefHistory');
+      if (saved) {
+        setPainHistory(JSON.parse(saved));
+      }
+    };
+    loadHistory();
+    window.addEventListener('painHistoryUpdated', loadHistory);
+    return () => window.removeEventListener('painHistoryUpdated', loadHistory);
+  }, []);
+
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
-  const whatsAppGroupUrl = `https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE`; // Placeholder for your group invite
+  const whatsAppGroupUrl = `https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE`;
 
   const painMantra = mantras.find(m => m.id === 1);
   const eyeMantra = mantras.find(m => m.id === 2);
@@ -110,6 +132,26 @@ export default function Home() {
     router.push('/upgrade');
   };
 
+  const chartConfig = {
+    before: {
+      label: t('chartLegendBefore'),
+      color: "hsl(var(--muted-foreground))",
+    },
+    after: {
+      label: t('chartLegendAfter'),
+      color: "hsl(var(--primary))",
+    },
+  } satisfies ChartConfig;
+
+  const chartData = useMemo(() => {
+    if (painHistory.length === 0) return [];
+    return painHistory.slice(-10).map((h, i) => ({
+      index: i + 1,
+      before: h.before,
+      after: h.after,
+    }));
+  }, [painHistory]);
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
@@ -144,6 +186,7 @@ export default function Home() {
                         mantra={painMantra} 
                         onUpgradeRequest={handleUpgradeRequest}
                         imageId="kali-mantra-infographic"
+                        showTracker={true}
                       />
                       <Card className="mt-4">
                           <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-sm">
@@ -176,6 +219,32 @@ export default function Home() {
                   </div>
                 )}
             </div>
+
+            {painHistory.length > 0 && (
+              <Card className={cn("mt-4 animate-fade-in", cardAnimation)}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <div className="space-y-1">
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <TrendingDown className="h-5 w-5 text-primary" />
+                      {t('physicalHealingProgressTitle')}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-4">
+                  <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                    <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                      <XAxis dataKey="index" tickLine={false} axisLine={false} tickMargin={8} />
+                      <YAxis domain={[0, 10]} tickLine={false} axisLine={false} tickMargin={8} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      <Line type="monotone" dataKey="before" stroke="var(--color-before)" strokeWidth={2} dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="after" stroke="var(--color-after)" strokeWidth={3} dot={{ r: 4 }} />
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            )}
             
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
               <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
