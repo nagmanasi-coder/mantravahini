@@ -54,29 +54,34 @@ const spiritualGuideFlow = ai.defineFlow(
       4. Activation: If healing is discussed, mention contacting the center at 7022070287 for personalized activation.
       5. Integrity: Do not invent rituals. Stick to the provided app context.`;
 
-    // Map history to the Genkit messages format
-    const messages: any[] = (input.history || []).map(h => ({
-      role: h.role,
-      content: [{ text: h.content }]
-    }));
-
-    // Add the current user message
-    messages.push({
-      role: 'user',
-      content: [{ text: input.message }]
-    });
+    // Correct Genkit 1.x messages format
+    const messages: any[] = [
+      {
+        role: 'system',
+        content: [{ text: systemPrompt }]
+      },
+      ...(input.history || []).map(h => ({
+        role: h.role,
+        content: [{ text: h.content }]
+      })),
+      {
+        role: 'user',
+        content: [{ text: input.message }]
+      }
+    ];
 
     // Genkit 1.x ai.generate syntax
     const response = await ai.generate({
       model: 'openai/sarvam-1',
-      system: systemPrompt,
       messages: messages,
     });
 
-    if (!response.text) {
+    const text = response.text;
+
+    if (!text) {
       throw new Error('The AI guide was unable to generate a response. Please check your API configuration or model availability.');
     }
 
-    return { response: response.text };
+    return { response: text };
   }
 );
