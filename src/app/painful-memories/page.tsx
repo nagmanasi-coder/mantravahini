@@ -19,113 +19,100 @@ type UserProfileType = {
 
 const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const { t } = useLanguage();
-  const dotRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const animationFrameId = useRef<number>();
-  const [timeLeft, setTimeLeft] = useState(60);
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
   
-  const timeLeftRef = useRef(timeLeft);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number>();
+  const pos = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
 
-  useEffect(() => {
-    timeLeftRef.current = timeLeft;
-  }, [timeLeft]);
-
-  // Timer and Animation Setup
+  // Timer logic
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
-    // Timer Interval
-    const timerInterval = setInterval(() => {
+    const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timerInterval);
-          setIsFinished(true); // Explicitly finish here
+          clearInterval(timer);
+          setIsFinished(true);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    // Animation Loop
-    const container = containerRef.current;
-    const dot = dotRef.current;
-    if (!container || !dot) return;
+    return () => clearInterval(timer);
+  }, [hasStarted, isFinished]);
 
-    let x = container.clientWidth / 2;
-    let y = container.clientHeight / 2;
-    let vx = (Math.random() - 0.5) * 2;
-    let vy = (Math.random() - 0.5) * 2;
-    const mag = Math.sqrt(vx * vx + vy * vy);
-    vx /= mag;
-    vy /= mag;
+  // Animation logic
+  useEffect(() => {
+    if (!hasStarted || isFinished) {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      return;
+    }
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Initial position at center
+    pos.current.x = container.clientWidth / 2;
+    pos.current.y = container.clientHeight / 2;
+    
+    // Initial random velocity
+    const angle = Math.random() * Math.PI * 2;
+    pos.current.vx = Math.cos(angle);
+    pos.current.vy = Math.sin(angle);
 
     const animate = () => {
-      if (timeLeftRef.current <= 0) {
-          if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-          return;
-      }
+      if (isFinished) return;
 
-      const currentRemaining = timeLeftRef.current;
-      let speed = 4; // Slow
-      if (currentRemaining <= 50) speed = 8; // Average
-      if (currentRemaining <= 40) speed = 14; // Speed
-      if (currentRemaining <= 30) speed = 22; // Very Speed
+      // Speed levels every 10 seconds
+      let speed = 4; // Slow (60-51)
+      if (timeLeft <= 50) speed = 8; // Average (50-41)
+      if (timeLeft <= 40) speed = 14; // Speed (40-31)
+      if (timeLeft <= 30) speed = 22; // Very Speed (30-0)
 
-      x += vx * speed;
-      y += vy * speed;
+      pos.current.x += pos.current.vx * speed;
+      pos.current.y += pos.current.vy * speed;
 
       // Bounce logic
-      if (x <= 16 || x >= container.clientWidth - 16) {
-          vx *= -1;
-          x = Math.max(16, Math.min(x, container.clientWidth - 16));
+      if (pos.current.x <= 20 || pos.current.x >= container.clientWidth - 20) {
+        pos.current.vx *= -1;
       }
-      if (y <= 16 || y >= container.clientHeight - 16) {
-          vy *= -1;
-          y = Math.max(16, Math.min(y, container.clientHeight - 16));
-      }
-      
-      // Small random direction shifts
-      if (Math.random() < 0.02) {
-          const nudgeX = (Math.random() - 0.5) * 0.5;
-          const nudgeY = (Math.random() - 0.5) * 0.5;
-          vx += nudgeX;
-          vy += nudgeY;
-          const newMag = Math.sqrt(vx * vx + vy * vy);
-          vx /= newMag;
-          vy /= newMag;
+      if (pos.current.y <= 20 || pos.current.y >= container.clientHeight - 20) {
+        pos.current.vy *= -1;
       }
 
-      if (dot) {
-        dot.style.transform = `translate(${x}px, ${y}px)`;
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
       }
-      animationFrameId.current = requestAnimationFrame(animate);
+
+      requestRef.current = requestAnimationFrame(animate);
     };
 
-    animationFrameId.current = requestAnimationFrame(animate);
-
+    requestRef.current = requestAnimationFrame(animate);
     return () => {
-      clearInterval(timerInterval);
-      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [hasStarted, isFinished]);
+  }, [hasStarted, isFinished, timeLeft]);
 
   return (
     <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex items-center justify-center overflow-hidden">
       {!hasStarted ? (
-        <div className="flex flex-col items-center gap-8 text-center">
+        <div className="flex flex-col items-center gap-8 text-center animate-fade-in">
           <p className="text-black text-2xl font-bold px-4 mb-4">
             {t('painfulMemoriesFollowDot')}
           </p>
           <Button 
             size="lg" 
-            className="rounded-full h-32 w-32 bg-primary hover:bg-primary/90 shadow-2xl transition-transform hover:scale-105" 
+            className="rounded-full h-32 w-32 bg-primary hover:bg-primary/90 shadow-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center" 
             onClick={() => setHasStarted(true)}
           >
-            <Play className="h-14 w-14 fill-white text-white ml-1" />
+            <Play className="h-16 w-16 fill-white text-white ml-1" />
           </Button>
-          <div className="flex flex-col gap-3 text-black/70 font-bold text-xl mt-8 px-6 max-w-lg">
+          <div className="flex flex-col gap-3 text-black/80 font-bold text-lg mt-4 px-6 max-w-lg">
             <p>{t('painfulMemoriesSessionStep1')}</p>
             <p>{t('painfulMemoriesSessionStep2')}</p>
             <p>{t('painfulMemoriesSessionStep3')}</p>
@@ -134,14 +121,14 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
           </div>
         </div>
       ) : isFinished ? (
-        <div className="flex flex-col items-center gap-8 text-center px-6">
-          <p className="text-black text-3xl font-bold">
+        <div className="flex flex-col items-center gap-8 text-center px-6 animate-fade-in">
+          <h2 className="text-black text-4xl font-bold mb-4">
             {t('painfulMemoriesSessionEnded')}
-          </p>
+          </h2>
           <Button 
             size="lg" 
-            className="rounded-full px-8 py-4 bg-primary hover:bg-primary/90 shadow-2xl transition-transform hover:scale-105 h-auto text-xl font-bold" 
-            onClick={() => onSessionEnd()}
+            className="rounded-full px-12 py-6 bg-primary hover:bg-primary/90 shadow-2xl h-auto text-2xl font-bold" 
+            onClick={onSessionEnd}
           >
             {t('painfulMemoriesClickToRate')}
           </Button>
@@ -150,18 +137,18 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
         <>
           <div
             ref={dotRef}
-            className="absolute w-8 h-8 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg"
+            className="absolute w-10 h-10 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 shadow-xl"
             style={{ top: '0px', left: '0px' }}
           />
-          <div className="absolute top-8 right-8 text-black text-4xl font-bold font-mono bg-white/80 px-4 py-2 rounded-lg border-2 border-black">
+          <div className="absolute top-8 right-8 text-black text-4xl font-bold font-mono bg-white/90 px-6 py-3 rounded-xl border-4 border-black shadow-lg">
             {timeLeft}s
           </div>
-          <div className="absolute bottom-8 left-0 w-full text-center">
-             <p className="text-black/60 font-medium px-4">
-               {timeLeft > 50 ? 'Level: Slow' : 
-                timeLeft > 40 ? 'Level: Average' : 
-                timeLeft > 30 ? 'Level: Speed' : 
-                'Level: Very Speed'}
+          <div className="absolute bottom-12 w-full text-center">
+             <p className="text-black/40 text-xl font-bold uppercase tracking-widest">
+               {timeLeft > 50 ? 'Slow' : 
+                timeLeft > 40 ? 'Average' : 
+                timeLeft > 30 ? 'Speed' : 
+                'Very Speed'}
              </p>
           </div>
         </>
@@ -235,8 +222,8 @@ export default function PainfulMemoriesPage() {
 
   if (isUserLoading) {
     return (
-       <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8 text-center mt-20">
-          <p className="text-muted-foreground">{t('loading') || 'Loading...'}</p>
+       <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
+          <p className="text-muted-foreground">{t('loading')}</p>
        </div>
     )
   }
@@ -296,7 +283,9 @@ export default function PainfulMemoriesPage() {
                             <span>10 (Max Pain)</span>
                         </div>
                     </div>
-                   <Button onClick={handleStartSession} size="lg" className="w-full text-lg font-bold h-14">{t('painfulMemoriesStartSession')}</Button>
+                   <Button onClick={handleStartSession} size="lg" className="w-full text-lg font-bold h-14">
+                     {t('painfulMemoriesStartSession')}
+                   </Button>
                 </CardFooter>
             </Card>
         )}
