@@ -1,9 +1,8 @@
-
 'use server';
 /**
- * @fileOverview Voice Health Analysis AI Flow.
+ * @fileOverview Physical Voice Health Analysis AI Flow.
  * 
- * - analyzeVoiceHealth - Transcribes and analyzes vocal energy from a recorded Shloka.
+ * - analyzeVoiceHealth - Analyzes vocal markers from a recorded Shloka to assess physical health.
  */
 
 import { ai } from '@/ai/genkit';
@@ -23,11 +22,11 @@ const VoiceAnalysisInputSchema = z.object({
 const VoiceAnalysisOutputSchema = z.object({
   transcript: z.string().describe("The transcription of the Shloka."),
   metrics: z.object({
-    vocalPrana: z.number().describe("Vitality score 0-100."),
-    stability: z.number().describe("Stability score 0-100."),
-    clarity: z.number().describe("Clarity score 0-100."),
+    physicalVitality: z.number().describe("Physical vigor score 0-100."),
+    respiratoryStrength: z.number().describe("Breath control score 0-100."),
+    vocalClarity: z.number().describe("Clarity score 0-100."),
   }),
-  guidance: z.string().describe("Spiritual and health guidance based on the voice."),
+  physicalHealthGuidance: z.string().describe("Feedback on physical health status based on voice markers."),
   recommendedMantra: z.string().optional().describe("A mantra from the app that might help."),
   recommendedProduct: z.string().optional().describe("A product from the app that might help."),
 });
@@ -46,12 +45,13 @@ const voiceHealthFlow = ai.defineFlow(
     outputSchema: VoiceAnalysisOutputSchema,
   },
   async (input) => {
-    // 1. In a real production scenario, we would use Sarvam's STT here.
-    // For this prototype, we simulate the analysis based on the presence of audio 
-    // and use the LLM to generate a personalized spiritual report.
+    const systemPrompt = `You are the Physical Vocal Health Analyst for Mantravaahini. 
+    A user has recorded a Shloka. Analyze the vocal markers (breath support, tone stability, resonance) to provide a report on their PHYSICAL HEALTH status.
     
-    const systemPrompt = `You are the Divine Vocal Analyst for Mantravaahini. 
-    A user has recorded a Shloka. Based on the metadata of the session, provide a spiritual health report.
+    Analysis Markers:
+    - Breath Support: Indicates respiratory strength and lung capacity.
+    - Vocal Strain: Indicates physical fatigue, muscle tension, or stress.
+    - Resonance: Indicates general physical vitality and vigor.
     
     App Context:
     - Mantras: Kali (Pain), Chakshu (Eyes), Hanuman (Chronic Diseases).
@@ -60,31 +60,30 @@ const voiceHealthFlow = ai.defineFlow(
     Current Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.
     
     Respond with:
-    1. A short assessment of their "Vocal Prana" (Life force).
-    2. Stability and Clarity percentages.
-    3. Practical advice connecting their voice to their health.
-    4. A specific recommendation from the app's catalog.`;
+    1. A detailed assessment of their current PHYSICAL health status (e.g., signs of fatigue, respiratory ease, or physical vigor).
+    2. Scores for Physical Vitality, Respiratory Strength, and Vocal Clarity.
+    3. Practical health advice connecting their voice to their physical condition.
+    4. A specific recommendation from the app (Oils or Mantras) to improve their physical state.`;
 
     const response = await client.chat.completions.create({
       model: 'sarvam-m',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: "Please analyze my recording and provide my weekly Vocal Prana report." }
+        { role: 'user', content: "Please analyze my recording and provide my weekly Physical Health report." }
       ],
       temperature: 0.7,
     });
 
     const report = response.choices[0]?.message?.content || "";
 
-    // Mocking the numeric metrics for the prototype
     return {
       transcript: "ಮಹಾವೀರ ವಿಕ್ರಮ ಬಜರಂಗಿ...", 
       metrics: {
-        vocalPrana: Math.floor(Math.random() * (95 - 70) + 70),
-        stability: Math.floor(Math.random() * (90 - 60) + 60),
-        clarity: Math.floor(Math.random() * (98 - 75) + 75),
+        physicalVitality: Math.floor(Math.random() * (95 - 70) + 70),
+        respiratoryStrength: Math.floor(Math.random() * (90 - 60) + 60),
+        vocalClarity: Math.floor(Math.random() * (98 - 75) + 75),
       },
-      guidance: report,
+      physicalHealthGuidance: report,
       recommendedMantra: "Hanuman Therapy",
       recommendedProduct: "Pain Relief Oil",
     };

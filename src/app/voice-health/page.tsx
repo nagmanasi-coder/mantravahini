@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -8,8 +7,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Mic, Square, Play, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -86,7 +84,6 @@ export default function VoiceHealthPage() {
 
     setIsAnalyzing(true);
     try {
-      // Convert blob to base64
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
       reader.onloadend = async () => {
@@ -99,7 +96,7 @@ export default function VoiceHealthPage() {
         setIsAnalyzing(false);
         toast({
           title: 'Analysis Complete',
-          description: 'Your Divine Vocal Report is ready.',
+          description: 'Your Physical Health Report is ready.',
         });
       };
     } catch (error: any) {
@@ -122,10 +119,10 @@ export default function VoiceHealthPage() {
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-          {language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆ' : 'Vocal Prana Checkup'}
+          {language === 'kn' ? 'ಶಾರೀರಿಕ ಆರೋಗ್ಯ ತಪಾಸಣೆ' : 'Physical Health Checkup'}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {language === 'kn' ? 'ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ನಿಮ್ಮ ಆರೋಗ್ಯವನ್ನು ಅರಿಯಿರಿ' : 'Analyze your health through the resonance of your voice'}
+          {language === 'kn' ? 'ನಿಮ್ಮ ಧ್ವನಿಯ ಕಂಪನದ ಮೂಲಕ ನಿಮ್ಮ ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ಅರಿಯಿರಿ' : 'Analyze your physical health status through the resonance of your voice'}
         </p>
       </header>
 
@@ -192,7 +189,7 @@ export default function VoiceHealthPage() {
                 ) : (
                   <Sparkles className="mr-2 h-4 w-4" />
                 )}
-                {language === 'kn' ? 'ವಿಶ್ಲೇಷಿಸಿ' : 'Analyze My Voice'}
+                {language === 'kn' ? 'ಆರೋಗ್ಯ ವಿಶ್ಲೇಷಿಸಿ' : 'Analyze My Health'}
               </Button>
               <Button onClick={resetSession} variant="outline" size="icon">
                 <RotateCcw className="h-4 w-4" />
@@ -207,41 +204,41 @@ export default function VoiceHealthPage() {
               <CardHeader className="bg-accent/10 border-b border-accent/20">
                 <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
                   <HeartPulse className="h-6 w-6" />
-                  {language === 'kn' ? 'ದೈವಿಕ ಧ್ವನಿ ವರದಿ' : 'Divine Vocal Report'}
+                  {language === 'kn' ? 'ಶಾರೀರಿಕ ಆರೋಗ್ಯ ವರದಿ' : 'Physical Health Report'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ' : 'Vocal Prana'}</p>
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶಾರೀರಿಕ ಚೈತನ್ಯ' : 'Physical Vitality'}</p>
                     <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-primary">{result.metrics.vocalPrana}%</span>
+                       <span className="text-3xl font-black text-primary">{result.metrics.physicalVitality}%</span>
                     </div>
-                    <Progress value={result.metrics.vocalPrana} className="h-2" />
+                    <Progress value={result.metrics.physicalVitality} className="h-2" />
                   </div>
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಸ್ಥಿರತೆ' : 'Stability'}</p>
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶ್ವಾಸಕೋಶದ ಶಕ್ತಿ' : 'Respiratory Strength'}</p>
                     <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-accent">{result.metrics.stability}%</span>
+                       <span className="text-3xl font-black text-accent">{result.metrics.respiratoryStrength}%</span>
                     </div>
-                    <Progress value={result.metrics.stability} className="h-2" />
+                    <Progress value={result.metrics.respiratoryStrength} className="h-2" />
                   </div>
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಸ್ಪಷ್ಟತೆ' : 'Clarity'}</p>
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಧ್ವನಿ ಸ್ಪಷ್ಟತೆ' : 'Vocal Clarity'}</p>
                     <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-green-600">{result.metrics.clarity}%</span>
+                       <span className="text-3xl font-black text-green-600">{result.metrics.vocalClarity}%</span>
                     </div>
-                    <Progress value={result.metrics.clarity} className="h-2" />
+                    <Progress value={result.metrics.vocalClarity} className="h-2" />
                   </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-muted/50 border space-y-4">
                   <div className="flex items-center gap-2 text-primary font-bold border-b pb-2">
                     <Sparkles className="h-4 w-4" />
-                    <span>{language === 'kn' ? 'ದೈವಿಕ ಮಾರ್ಗದರ್ಶನ' : 'Divine Guidance'}</span>
+                    <span>{language === 'kn' ? 'ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ' : 'Health Guidance'}</span>
                   </div>
                   <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/80">
-                    {result.guidance}
+                    {result.physicalHealthGuidance}
                   </p>
                 </div>
 
@@ -249,7 +246,7 @@ export default function VoiceHealthPage() {
                   {result.recommendedMantra && (
                     <div className="p-4 border rounded-lg bg-primary/5 flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Play className="h-5 w-5 text-primary" />
+                        <Activity className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="text-[10px] uppercase font-bold text-muted-foreground">Recommended Mantra</p>
@@ -282,12 +279,12 @@ export default function VoiceHealthPage() {
               <CardHeader>
                  <CardTitle className="text-lg flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-primary" />
-                    {language === 'kn' ? 'ಪ್ರಗತಿ ಇತಿಹಾಸ' : 'Health Progress'}
+                    {language === 'kn' ? 'ಆರೋಗ್ಯ ಇತಿಹಾಸ' : 'Health History'}
                  </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-32 w-full bg-muted/30 rounded flex items-center justify-center text-muted-foreground text-sm italic">
-                  {language === 'kn' ? 'ವಾರದ ಪ್ರಗತಿಯನ್ನು ಇಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ' : 'Your weekly progress will be graphed here.'}
+                  {language === 'kn' ? 'ವಾರದ ಪ್ರಗತಿಯನ್ನು ಇಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ' : 'Your weekly health progress will be graphed here.'}
                 </div>
               </CardContent>
             </Card>
