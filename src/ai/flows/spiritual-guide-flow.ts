@@ -36,9 +36,8 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
-    // Using the model ID directly as a string to bypass provider prefix checks
-    // Sarvam M model ID is 'sarvam-1'
-    const { response } = await ai.generate({
+    // Genkit 1.x ai.generate returns the GenerateResponse object directly.
+    const response = await ai.generate({
       model: 'openai/sarvam-1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
       Your answers must be PRECISE, CLEAR, and spiritually uplifting. 
