@@ -75,18 +75,17 @@ const spiritualGuideFlow = ai.defineFlow(
       content: [{ text: input.message }]
     });
 
-    // Using openai/sarvam-1 as the identifier for Sarvam M via the OpenAI bridge
     const response = await ai.generate({
       model: 'openai/sarvam-1',
       messages: messages,
     });
 
-    const text = response.text;
+    const responseText = response.text;
 
-    if (!text) {
-      throw new Error('The AI guide was unable to generate a response. Please check your API configuration or model availability.');
+    if (!responseText) {
+      throw new Error('The AI guide was unable to generate a response. Please check your Sarvam AI API key or dashboard.');
     }
 
-    return { response: text };
+    return { response: responseText };
   }
 );
