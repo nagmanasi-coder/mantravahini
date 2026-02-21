@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -224,8 +225,10 @@ export default function VoiceHealthPage() {
           </CardHeader>
           <CardContent className="p-6 text-center space-y-6">
             <div className="p-8 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 italic font-headline text-2xl text-primary leading-relaxed">
-              "Om Hum Hanumate Namah" <br />
-              <span className="text-sm text-muted-foreground mt-2 block">(Repeat 3 Times)</span>
+              {language === 'kn' ? '"ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ"' : '"Om Hum Hanumate Namah"'} <br />
+              <span className="text-sm text-muted-foreground mt-2 block">
+                {language === 'kn' ? '(೩ ಬಾರಿ ಪಠಿಸಿ)' : '(Repeat 3 Times)'}
+              </span>
             </div>
 
             <div className="flex flex-col items-center gap-4">
