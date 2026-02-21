@@ -21,7 +21,6 @@ type UserProfileType = {
 const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const { t } = useLanguage();
   const [hasStarted, setHasStarted] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,27 +28,27 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const requestRef = useRef<number>();
   const pos = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
 
-  // Improved Timer logic
+  // Timer logic
   useEffect(() => {
-    if (!hasStarted || isFinished || timeLeft <= 0) return;
+    if (!hasStarted || timeLeft <= 0) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          onSessionEnd();
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [hasStarted, isFinished, timeLeft]);
-
-  // Handle session completion
-  useEffect(() => {
-    if (hasStarted && timeLeft === 0 && !isFinished) {
-      setIsFinished(true);
-    }
-  }, [timeLeft, hasStarted, isFinished]);
+  }, [hasStarted, timeLeft, onSessionEnd]);
 
   // Animation logic
   useEffect(() => {
-    if (!hasStarted || isFinished) {
+    if (!hasStarted || timeLeft <= 0) {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       return;
     }
@@ -67,7 +66,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     pos.current.vy = Math.sin(angle);
 
     const animate = () => {
-      if (isFinished) return;
+      if (timeLeft <= 0) return;
 
       // Speed levels every 10 seconds
       let speed = 4; // Slow (60-51)
@@ -97,26 +96,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [hasStarted, isFinished, timeLeft]);
-
-  if (isFinished) {
-    return (
-      <div className="fixed inset-0 z-[2000] bg-white flex flex-col items-center pt-24 p-6 text-center">
-        <div className="max-w-md w-full space-y-12">
-          <h2 className="text-black text-3xl sm:text-4xl font-bold leading-tight">
-            {t('painfulMemoriesSessionEnded')}
-          </h2>
-          <Button 
-            size="lg" 
-            className="rounded-full px-10 py-8 bg-primary hover:bg-primary/90 shadow-2xl h-auto text-xl sm:text-2xl font-bold w-full" 
-            onClick={onSessionEnd}
-          >
-            {t('painfulMemoriesClickToRate')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  }, [hasStarted, timeLeft]);
 
   return (
     <div 
@@ -181,7 +161,7 @@ export default function PainfulMemoriesPage() {
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfileType>(userDocRef);
   
   const [isDeveloper, setIsDeveloper] = useState(false);
-  const [step, setStep] = useState<'instructions' | 'session' | 'post_session' | 'results'>('instructions');
+  const [step, setStep] = useState<'instructions' | 'session' | 'session_ended' | 'post_session' | 'results'>('instructions');
   const [beforeScore, setBeforeScore] = useState(5);
   const [afterScore, setAfterScore] = useState(5);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
@@ -208,6 +188,10 @@ export default function PainfulMemoriesPage() {
   };
 
   const handleSessionEnd = () => {
+    setStep('session_ended');
+  };
+
+  const handleRatePain = () => {
     setStep('post_session');
   };
 
@@ -240,7 +224,7 @@ export default function PainfulMemoriesPage() {
   
   return (
     <>
-      {!isPremiumUser && !isDeveloper && step !== 'results' && (
+      {!isPremiumUser && !isDeveloper && (step === 'instructions' || step === 'session') && (
         <UpgradeDialog 
             open={showUpgradeDialog} 
             onOpenChange={(isOpen) => {
@@ -255,8 +239,25 @@ export default function PainfulMemoriesPage() {
       {step === 'session' && (
         <MovingDot onSessionEnd={handleSessionEnd} />
       )}
+
+      {step === 'session_ended' && (
+        <div className="fixed inset-0 z-[2000] bg-white flex flex-col items-center p-6 text-center pt-24">
+          <div className="max-w-md w-full space-y-12">
+            <h2 className="text-black text-3xl sm:text-4xl font-bold leading-tight">
+              {t('painfulMemoriesSessionEnded')}
+            </h2>
+            <Button 
+              size="lg" 
+              className="rounded-full px-10 py-8 bg-primary hover:bg-primary/90 shadow-2xl h-auto text-xl sm:text-2xl font-bold w-full" 
+              onClick={handleRatePain}
+            >
+              {t('painfulMemoriesClickToRate')}
+            </Button>
+          </div>
+        </div>
+      )}
       
-      <div className={cn("container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8", step === 'session' ? 'hidden' : 'block')}>
+      <div className={cn("container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8", (step === 'session' || step === 'session_ended') ? 'hidden' : 'block')}>
           <header className="mb-8 text-center">
               <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
                 {t('painfulMemoriesTitle')}
