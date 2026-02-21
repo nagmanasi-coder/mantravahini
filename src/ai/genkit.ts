@@ -5,6 +5,7 @@ import { openAI } from 'genkitx-openai';
 /**
  * Genkit initialization for Sarvam AI.
  * Sarvam AI provides an OpenAI-compatible API.
+ * We explicitly register 'sarvam-1' (Sarvam M) as a supported model.
  */
 export const ai = genkit({
   plugins: [
