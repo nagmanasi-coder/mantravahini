@@ -13,5 +13,4 @@ export const ai = genkit({
       baseURL: 'https://api.sarvam.ai/v1',
     }),
   ],
-  model: 'openai/sarvam-1',
 });

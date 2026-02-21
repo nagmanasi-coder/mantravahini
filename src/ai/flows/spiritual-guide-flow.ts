@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -36,7 +37,9 @@ const spiritualGuideFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async (input) => {
+    // Explicitly using the Sarvam model provided by the OpenAI community plugin
     const { response } = await ai.generate({
+      model: 'openai/sarvam-1',
       system: `You are the AI Master Spiritual Guide for the Mantravaahini (ಮಂತ್ರವಾಹಿನಿ) app.
       Your answers must be PRECISE, CLEAR, and spiritually uplifting. 
       Avoid long-winded introductions or conclusions. Get straight to the wisdom.
@@ -60,6 +63,10 @@ const spiritualGuideFlow = ai.defineFlow(
         content: [{ text: h.content }]
       })),
     });
+
+    if (!response.text) {
+      throw new Error('The AI guide was unable to generate a response. Please check your API configuration.');
+    }
 
     return { response: response.text };
   }

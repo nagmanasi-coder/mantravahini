@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -85,11 +86,12 @@ export default function AiGuidePage() {
         setChatCount(newCount);
         localStorage.setItem('aiChatCount', newCount.toString());
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('AI Chat Error:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Connection interrupted. Please try again.',
+        title: 'Connection Error',
+        description: error.message || 'The Divine Guide is currently unavailable. Please check your connection or API key.',
       });
     } finally {
       setIsLoading(false);
