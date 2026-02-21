@@ -1,12 +1,11 @@
 
 'use server';
 /**
- * @fileOverview REAL Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
+ * @fileOverview Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
  * 
- * This flow uses Gemini 1.5 Flash to LISTEN to the actual audio recording.
- * It performs a two-step check:
- * 1. Transcription Verification: Ensures the user said "Om Hum Hanumate Namah".
- * 2. Vibration Analysis: Evaluates physical health markers and 6-chakra energy patterns.
+ * This flow uses a two-stage analysis:
+ * 1. Sarvam STT: Transcribes the audio using Sarvam's saarthi:v1 model for high-accuracy mantra verification.
+ * 2. Gemini 1.5 Flash: Performs vibration analysis on the audio file to evaluate health markers.
  */
 
 import { ai } from '@/ai/genkit';
@@ -52,6 +51,60 @@ export async function analyzeVoiceHealth(input: VoiceAnalysisInput): Promise<Voi
   return voiceHealthFlow(input);
 }
 
+/**
+ * Uses Sarvam AI REST API to transcribe audio.
+ */
+async function transcribeWithSarvam(audioDataUri: string): Promise<string> {
+  try {
+    const base64 = audioDataUri.split(',')[1];
+    if (!base64) return '';
+    
+    const buffer = Buffer.from(base64, 'base64');
+    const formData = new FormData();
+    const blob = new Blob([buffer], { type: 'audio/webm' });
+    formData.append('file', blob, 'recording.webm');
+    formData.append('model', 'saarthi:v1');
+
+    const response = await fetch('https://api.sarvam.ai/v1/speech-to-text', {
+      method: 'POST',
+      headers: {
+        'api-subscription-key': process.env.SARVAM_AI_API_KEY || '',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Sarvam STT API Error:', err);
+      return '';
+    }
+
+    const result = await response.json();
+    return result.transcript || '';
+  } catch (error) {
+    console.error('Sarvam STT Network Error:', error);
+    return '';
+  }
+}
+
+/**
+ * Checks if the transcript contains key parts of the required mantra.
+ */
+function verifyMantra(transcript: string): boolean {
+  if (!transcript) return false;
+  const t = transcript.toLowerCase();
+  const patterns = [
+    'om hum hanumate namah',
+    'om hum hanumate namaha',
+    'ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ',
+    'hanumate',
+    'ಹನುಮತೇ',
+    'namah',
+    'ನಮಃ'
+  ];
+  return patterns.some(p => t.includes(p.toLowerCase()));
+}
+
 const voiceHealthFlow = ai.defineFlow(
   {
     name: 'voiceHealthFlow',
@@ -64,15 +117,23 @@ const voiceHealthFlow = ai.defineFlow(
       return getInvalidReport(input.language, "Empty recording");
     }
 
+    // STEP 1: TRANSCRIPTION VERIFICATION WITH SARVAM
+    const sarvamTranscript = await transcribeWithSarvam(input.audioDataUri);
+    const isMantraMatch = verifyMantra(sarvamTranscript);
+
+    if (!isMantraMatch) {
+      return getInvalidReport(input.language, sarvamTranscript || "Invalid Mantra");
+    }
+
+    // STEP 2: VIBRATION ANALYSIS WITH GEMINI
     const systemPrompt = `You are the Physical Vocal Health, Chakra, and Prana Energy Analyst for Mantravaahini.
     
-    STEP 1: TRANSCRIPTION VERIFICATION
-    Listen to the audio. Transcribe the speech. 
-    The user MUST say the mantra "Om Hum Hanumate Namah" (ಓಂ ಹುಂ ಹನುಮತೇ ನಮಃ).
-    If the audio is silent, contains noise only, or does NOT contain this mantra, set 'isMantraMatch' to false and all scores to 0.
+    The user has successfully recited the mantra "Om Hum Hanumate Namah". 
+    I have verified this via Sarvam STT. 
     
-    STEP 2: HEALTH ANALYSIS (Only if Mantra Matches)
-    Analyze the "Vibration Quality". Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
+    YOUR TASK:
+    Analyze the "Vibration Quality" of the provided audio file. 
+    Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
     Detect physical markers like lung capacity, physical fatigue, joint stiffness, or digestive sluggishness reflected in vocal resonance.
     Analyze the 6 Chakras (Muladhara to Ajna) based on the resonance patterns.
     
@@ -91,10 +152,9 @@ const voiceHealthFlow = ai.defineFlow(
 
       if (!output) throw new Error("AI failed to generate a report.");
 
-      // Final safety check: if the AI transcription failed or it's not a match
-      if (!output.isMantraMatch || output.metrics.physicalVitality === 0) {
-        return getInvalidReport(input.language, output.transcript || "Invalid Mantra");
-      }
+      // Final metadata assembly
+      output.transcript = sarvamTranscript;
+      output.isMantraMatch = true;
 
       return output;
 
