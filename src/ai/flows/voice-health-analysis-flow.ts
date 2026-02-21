@@ -1,15 +1,21 @@
-
 'use server';
 /**
  * @fileOverview Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
  * 
- * This flow uses a two-stage analysis:
- * 1. Sarvam STT: Transcribes the audio using Sarvam's saarthi:v1 model for high-accuracy mantra verification.
- * 2. Gemini 1.5 Flash: Performs vibration analysis on the audio file to evaluate health markers.
+ * This flow uses a prioritized two-stage analysis:
+ * 1. Primary: Sarvam STT (transcription) + Sarvam-M (LLM reasoning).
+ * 2. Fallback: Gemini 1.5 Flash (Direct audio vibration analysis).
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import OpenAI from 'openai';
+
+// Initialize the OpenAI client for Sarvam AI reasoning
+const sarvamClient = new OpenAI({
+  apiKey: process.env.SARVAM_AI_API_KEY || '',
+  baseURL: 'https://api.sarvam.ai/v1',
+});
 
 const ChakraSchema = z.object({
   score: z.number().describe("Energy level 0-100."),
@@ -88,6 +94,65 @@ async function transcribeWithSarvam(audioDataUri: string): Promise<string> {
 }
 
 /**
+ * Uses Sarvam-M to generate health report based on verified transcription.
+ */
+async function analyzeWithSarvamM(transcript: string, language: 'kn' | 'en'): Promise<VoiceAnalysisOutput> {
+  const systemPrompt = `You are the Physical Vocal Health and Chakra Analyst for Mantravaahini.
+    The user has successfully recited the mantra "Om Hum Hanumate Namah". 
+    Verified Transcript: "${transcript}"
+    
+    YOUR TASK:
+    Generate a health analysis report based on the recitation. 
+    Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
+    Analyze the 6 Chakras (Muladhara to Ajna).
+    Provide specific detected markers and suggested issues.
+    
+    CRITICAL: You must return valid JSON matching the requested schema.
+    Language: ${language === 'kn' ? 'Kannada' : 'English'}.`;
+
+  const response = await sarvamClient.chat.completions.create({
+    model: 'sarvam-m',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: 'Generate my Vocal Prana health report based on my successful recitation.' }
+    ],
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error('Sarvam-M failed to generate content');
+  
+  const parsed = JSON.parse(content);
+  return {
+    ...parsed,
+    transcript,
+    isMantraMatch: true,
+  };
+}
+
+/**
+ * Uses Gemini 1.5 Flash for true audio-based vibration analysis.
+ */
+async function analyzeWithGemini(audioDataUri: string, language: 'kn' | 'en'): Promise<VoiceAnalysisOutput> {
+  const systemPrompt = `You are the Physical Vocal Health and Chakra Analyst.
+    Listen to the audio and verify if the user says "Om Hum Hanumate Namah".
+    If verified, analyze the VIBRATIONS for Physical Vitality, Respiratory Strength, and Chakra energy.
+    Language: ${language === 'kn' ? 'Kannada' : 'English'}.`;
+
+  const { output } = await ai.generate({
+    model: 'googleai/gemini-1.5-flash',
+    prompt: [
+      { text: systemPrompt },
+      { media: { url: audioDataUri, contentType: 'audio/webm' } }
+    ],
+    output: { schema: VoiceAnalysisOutputSchema },
+  });
+
+  if (!output) throw new Error("Gemini failed to generate report.");
+  return output;
+}
+
+/**
  * Checks if the transcript contains key parts of the required mantra.
  */
 function verifyMantra(transcript: string): boolean {
@@ -112,55 +177,41 @@ const voiceHealthFlow = ai.defineFlow(
     outputSchema: VoiceAnalysisOutputSchema,
   },
   async (input) => {
-    // Basic sanity check for empty strings
+    // Sanity check
     if (input.audioDataUri.length < 1000) {
       return getInvalidReport(input.language, "Empty recording");
     }
 
-    // STEP 1: TRANSCRIPTION VERIFICATION WITH SARVAM
-    const sarvamTranscript = await transcribeWithSarvam(input.audioDataUri);
-    const isMantraMatch = verifyMantra(sarvamTranscript);
-
-    if (!isMantraMatch) {
-      return getInvalidReport(input.language, sarvamTranscript || "Invalid Mantra");
-    }
-
-    // STEP 2: VIBRATION ANALYSIS WITH GEMINI
-    const systemPrompt = `You are the Physical Vocal Health, Chakra, and Prana Energy Analyst for Mantravaahini.
-    
-    The user has successfully recited the mantra "Om Hum Hanumate Namah". 
-    I have verified this via Sarvam STT. 
-    
-    YOUR TASK:
-    Analyze the "Vibration Quality" of the provided audio file. 
-    Evaluate Physical Vitality, Respiratory Strength, Vocal Clarity, Mental Energy, and Prana.
-    Detect physical markers like lung capacity, physical fatigue, joint stiffness, or digestive sluggishness reflected in vocal resonance.
-    Analyze the 6 Chakras (Muladhara to Ajna) based on the resonance patterns.
-    
-    CRITICAL: You must return your analysis in STRICT JSON format.
-    Language: ${input.language === 'kn' ? 'Kannada' : 'English'}.`;
-
     try {
-      const { output } = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
-        prompt: [
-          { text: systemPrompt },
-          { media: { url: input.audioDataUri, contentType: 'audio/webm' } }
-        ],
-        output: { schema: VoiceAnalysisOutputSchema },
-      });
+      // 1. PRIMARY PATH: Sarvam STT + Sarvam-M
+      const sarvamTranscript = await transcribeWithSarvam(input.audioDataUri);
+      
+      if (verifyMantra(sarvamTranscript)) {
+        try {
+          // Attempt Sarvam-M reasoning first
+          return await analyzeWithSarvamM(sarvamTranscript, input.language);
+        } catch (sarvamMError) {
+          console.warn('Sarvam-M failed, falling back to Gemini for analysis...');
+          return await analyzeWithGemini(input.audioDataUri, input.language);
+        }
+      } else {
+        // Mantra verify failed via Sarvam STT, but Sarvam might be less accurate than Gemini for audio.
+        // Let's try Gemini as a fallback for the WHOLE process if Sarvam says no.
+        console.log('Sarvam STT did not verify mantra, trying Gemini fallback...');
+        const geminiResult = await analyzeWithGemini(input.audioDataUri, input.language);
+        if (geminiResult.isMantraMatch) return geminiResult;
+        
+        return getInvalidReport(input.language, sarvamTranscript || "Invalid Mantra");
+      }
 
-      if (!output) throw new Error("AI failed to generate a report.");
-
-      // Final metadata assembly
-      output.transcript = sarvamTranscript;
-      output.isMantraMatch = true;
-
-      return output;
-
-    } catch (error: any) {
-      console.error('GenAI Voice Flow Error:', error);
-      return getInvalidReport(input.language, "Analysis Error");
+    } catch (globalError: any) {
+      console.error('Voice Flow Error:', globalError);
+      // FINAL FALLBACK: Attempt Gemini if Sarvam STT failed entirely
+      try {
+        return await analyzeWithGemini(input.audioDataUri, input.language);
+      } catch (e) {
+        return getInvalidReport(input.language, "Analysis Error");
+      }
     }
   }
 );
