@@ -266,6 +266,12 @@ export const translations = {
     aiChatFreeMessagesLeft: "ಉಚಿತ ಸಂದೇಶಗಳು ಬಾಕಿ ಇವೆ",
     aiChatWelcome: "ನಮಸ್ತೆ! ನಾನು ನಿಮ್ಮ ದೈವಿಕ ಮಾರ್ಗದರ್ಶಿ. ಮಂತ್ರಗಳು, ಉತ್ಪನ್ನಗಳು ಅಥವಾ ನಮ್ಮ ಚಿಕಿತ್ಸೆಗಳ ಬಗ್ಗೆ ಏನನ್ನಾದರೂ ಕೇಳಿ.",
     talkToAiGuide: "AI ದೈವಿಕ ಮಾರ್ಗದರ್ಶಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ",
+    chakra_muladhara: "ಮೂಲಾಧಾರ",
+    chakra_svadhishthana: "ಸ್ವಾಧಿಷ್ಠಾನ",
+    chakra_manipura: "ಮಣಿಪುರ",
+    chakra_anahata: "ಅನಾಹತ",
+    chakra_vishuddha: "ವಿಶುದ್ಧ",
+    chakra_ajna: "ಆಜ್ಞಾ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -534,5 +540,11 @@ export const translations = {
     aiChatFreeMessagesLeft: "Free messages remaining",
     aiChatWelcome: "Namaste! I am your Divine Guide. Ask me anything about mantras, products, or our therapies.",
     talkToAiGuide: "Talk to AI Divine Guide",
+    chakra_muladhara: "Muladhara",
+    chakra_svadhishthana: "Svadhishthana",
+    chakra_manipura: "Manipura",
+    chakra_anahata: "Anahata",
+    chakra_vishuddha: "Vishuddha",
+    chakra_ajna: "Ajna",
   }
 };

@@ -7,7 +7,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -96,7 +96,7 @@ export default function VoiceHealthPage() {
         setIsAnalyzing(false);
         toast({
           title: 'Analysis Complete',
-          description: 'Your Physical Health Report is ready.',
+          description: 'Your Health and Chakra Report is ready.',
         });
       };
     } catch (error: any) {
@@ -115,14 +115,23 @@ export default function VoiceHealthPage() {
     setRecordingTime(0);
   };
 
+  const chakraOrder = [
+    { key: 'muladhara', color: 'bg-red-500', icon: '🔴' },
+    { key: 'svadhishthana', color: 'bg-orange-500', icon: '🟠' },
+    { key: 'manipura', color: 'bg-yellow-500', icon: '🟡' },
+    { key: 'anahata', color: 'bg-green-500', icon: '🟢' },
+    { key: 'vishuddha', color: 'bg-blue-500', icon: '🔵' },
+    { key: 'ajna', color: 'bg-indigo-500', icon: '🟣' },
+  ] as const;
+
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-          {language === 'kn' ? 'ಶಾರೀರಿಕ ಆರೋಗ್ಯ ತಪಾಸಣೆ' : 'Physical Health Checkup'}
+          {language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ ತಪಾಸಣೆ' : 'Vocal Prana Checkup'}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {language === 'kn' ? 'ನಿಮ್ಮ ಧ್ವನಿಯ ಕಂಪನದ ಮೂಲಕ ನಿಮ್ಮ ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ಅರಿಯಿರಿ' : 'Analyze your physical health status through the vibration resonance of your voice'}
+          {language === 'kn' ? 'ಧ್ವನಿ ಕಂಪನದ ಮೂಲಕ ಆರೋಗ್ಯ ಮತ್ತು ಷಟ್ ಚಕ್ರಗಳ ಶಕ್ತಿಯನ್ನು ಅರಿಯಿರಿ' : 'Analyze physical health and energy patterns of 6 Chakras through voice vibrations'}
         </p>
       </header>
 
@@ -202,11 +211,11 @@ export default function VoiceHealthPage() {
               <CardHeader className="bg-accent/10 border-b border-accent/20">
                 <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
                   <HeartPulse className="h-6 w-6" />
-                  {language === 'kn' ? 'ಶಾರೀರಿಕ ಆರೋಗ್ಯ ವರದಿ' : 'Physical Health Report'}
+                  {language === 'kn' ? 'ಸಂಪೂರ್ಣ ಆರೋಗ್ಯ ವರದಿ' : 'Complete Health Report'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b pb-8">
                   <div className="space-y-2 text-center">
                     <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶಾರೀರಿಕ ಚೈತನ್ಯ' : 'Physical Vitality'}</p>
                     <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
@@ -230,7 +239,32 @@ export default function VoiceHealthPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-4">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-headline text-primary flex items-center gap-2">
+                    <Sun className="h-5 w-5" />
+                    {language === 'kn' ? 'ಷಟ್ ಚಕ್ರಗಳ ಶಕ್ತಿ ವಿಶ್ಲೇಷಣೆ' : '6 Chakra Energy Analysis'}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {chakraOrder.map((chakra) => {
+                      const data = result.chakras[chakra.key as keyof typeof result.chakras];
+                      return (
+                        <div key={chakra.key} className="p-4 rounded-xl border bg-muted/20 flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{chakra.icon}</span>
+                              <span className="font-bold capitalize text-sm">{t(`chakra_${chakra.key}` as any)}</span>
+                            </div>
+                            <span className="font-bold text-xs">{data.score}%</span>
+                          </div>
+                          <Progress value={data.score} className="h-1.5" />
+                          <p className="text-[10px] text-muted-foreground italic">{data.status}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid gap-4 mt-8">
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                     <div className="flex items-center gap-2 text-primary font-bold mb-2">
                       <Zap className="h-4 w-4" />
@@ -293,20 +327,6 @@ export default function VoiceHealthPage() {
                   {language === 'kn' ? 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ' : 'Try Again'}
                 </Button>
               </CardFooter>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                 <CardTitle className="text-lg flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    {language === 'kn' ? 'ಆರೋಗ್ಯ ಇತಿಹಾಸ' : 'Health History'}
-                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-32 w-full bg-muted/30 rounded flex items-center justify-center text-muted-foreground text-sm italic">
-                  {language === 'kn' ? 'ವಾರದ ಪ್ರಗತಿಯನ್ನು ಇಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ' : 'Your weekly physical health progress will be graphed here.'}
-                </div>
-              </CardContent>
             </Card>
           </div>
         )}
