@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -28,23 +29,23 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const requestRef = useRef<number>();
   const pos = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
 
-  // Timer logic
+  // Improved Timer logic
   useEffect(() => {
-    if (!hasStarted || isFinished) return;
+    if (!hasStarted || isFinished || timeLeft <= 0) return;
 
-    const timerInterval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerInterval);
-          setIsFinished(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(timerInterval);
-  }, [hasStarted, isFinished]);
+    return () => clearInterval(interval);
+  }, [hasStarted, isFinished, timeLeft]);
+
+  // Handle session completion
+  useEffect(() => {
+    if (hasStarted && timeLeft === 0 && !isFinished) {
+      setIsFinished(true);
+    }
+  }, [timeLeft, hasStarted, isFinished]);
 
   // Animation logic
   useEffect(() => {
@@ -100,14 +101,14 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
 
   if (isFinished) {
     return (
-      <div className="fixed inset-0 z-[2000] bg-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md w-full space-y-8 animate-fade-in">
-          <h2 className="text-black text-2xl sm:text-3xl font-bold leading-tight">
+      <div className="fixed inset-0 z-[2000] bg-white flex flex-col items-center pt-24 p-6 text-center">
+        <div className="max-w-md w-full space-y-12">
+          <h2 className="text-black text-3xl sm:text-4xl font-bold leading-tight">
             {t('painfulMemoriesSessionEnded')}
           </h2>
           <Button 
             size="lg" 
-            className="rounded-full px-10 py-6 bg-primary hover:bg-primary/90 shadow-2xl h-auto text-lg sm:text-xl font-bold w-full" 
+            className="rounded-full px-10 py-8 bg-primary hover:bg-primary/90 shadow-2xl h-auto text-xl sm:text-2xl font-bold w-full" 
             onClick={onSessionEnd}
           >
             {t('painfulMemoriesClickToRate')}
@@ -237,8 +238,9 @@ export default function PainfulMemoriesPage() {
     )
   }
   
-  if (!isPremiumUser && !isDeveloper && step !== 'results') {
-     return (
+  return (
+    <>
+      {!isPremiumUser && !isDeveloper && step !== 'results' && (
         <UpgradeDialog 
             open={showUpgradeDialog} 
             onOpenChange={(isOpen) => {
@@ -248,11 +250,8 @@ export default function PainfulMemoriesPage() {
             title={t('toastUpgradeRequiredTitle')}
             description={t('painfulMemoriesPremiumFeature')}
         />
-     )
-  }
-  
-  return (
-    <>
+      )}
+
       {step === 'session' && (
         <MovingDot onSessionEnd={handleSessionEnd} />
       )}
@@ -297,7 +296,12 @@ export default function PainfulMemoriesPage() {
                               <span>10 (Max Pain)</span>
                           </div>
                       </div>
-                     <Button onClick={handleStartSession} size="lg" className="w-full text-lg font-bold h-14">
+                     <Button 
+                      onClick={handleStartSession} 
+                      size="lg" 
+                      className="w-full text-lg font-bold h-14"
+                      disabled={!isPremiumUser && !isDeveloper}
+                     >
                        {t('painfulMemoriesStartSession')}
                      </Button>
                   </CardFooter>
