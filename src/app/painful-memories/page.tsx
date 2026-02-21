@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -101,7 +100,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
 
 
 export default function PainfulMemoriesPage() {
-  const { user } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const { t } = useLanguage();
   const router = useRouter();
@@ -111,19 +110,30 @@ export default function PainfulMemoriesPage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile, isLoading: isUserLoading } = useDoc<UserProfileType>(userDocRef);
-  const isPremiumUser = userProfile?.subscriptionTier === 'premium';
-
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfileType>(userDocRef);
+  
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const [step, setStep] = useState<'instructions' | 'session' | 'post_session' | 'results'>('instructions');
   const [beforeScore, setBeforeScore] = useState(5);
   const [afterScore, setAfterScore] = useState(5);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   
+  const isUserLoading = isAuthLoading || (user && isProfileLoading);
+  const isPremiumUser = userProfile?.subscriptionTier === 'premium';
+
   useEffect(() => {
-    if (!isUserLoading && !isPremiumUser) {
+    if (user) {
+      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDeveloper(isActualDeveloper && devModeEnabled);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!isUserLoading && !isPremiumUser && !isDeveloper) {
         setShowUpgradeDialog(true);
     }
-  }, [isPremiumUser, isUserLoading]);
+  }, [isPremiumUser, isUserLoading, isDeveloper]);
 
   const handleStartSession = () => {
     setStep('session');
@@ -139,8 +149,10 @@ export default function PainfulMemoriesPage() {
         before: beforeScore,
         after: afterScore
      };
-     const pastResults = JSON.parse(localStorage.getItem('painfulMemoriesResults') || '[]');
-     localStorage.setItem('painfulMemoriesResults', JSON.stringify([...pastResults, sessionResult]));
+     const pastResults = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('painfulMemoriesResults') || '[]') : [];
+     if (typeof window !== 'undefined') {
+       localStorage.setItem('painfulMemoriesResults', JSON.stringify([...pastResults, sessionResult]));
+     }
      setStep('results');
   };
   
@@ -158,7 +170,7 @@ export default function PainfulMemoriesPage() {
     )
   }
   
-  if (!isPremiumUser) {
+  if (!isPremiumUser && !isDeveloper) {
      return (
         <UpgradeDialog 
             open={showUpgradeDialog} 
@@ -172,7 +184,6 @@ export default function PainfulMemoriesPage() {
      )
   }
   
-  // The main component render
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8 text-center">
