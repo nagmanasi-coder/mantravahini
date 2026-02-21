@@ -1,17 +1,31 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
+
+interface StoredVoiceReport extends VoiceAnalysisOutput {
+  id: string;
+  timestamp: string;
+}
 
 export default function VoiceHealthPage() {
   const { t, language } = useLanguage();
@@ -24,6 +38,7 @@ export default function VoiceHealthPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<VoiceAnalysisOutput | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [history, setHistory] = useState<StoredVoiceReport[]>([]);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +52,14 @@ export default function VoiceHealthPage() {
   const isPremium = userProfile?.subscriptionTier === 'premium';
 
   useEffect(() => {
+    const savedHistory = localStorage.getItem('voiceHealthHistory');
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Failed to parse voice history", e);
+      }
+    }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -92,11 +115,23 @@ export default function VoiceHealthPage() {
           audioDataUri: base64Audio,
           language: language as 'kn' | 'en',
         });
+        
         setResult(analysis);
         setIsAnalyzing(false);
+
+        // Save to history
+        const newReport: StoredVoiceReport = {
+          ...analysis,
+          id: crypto.randomUUID(),
+          timestamp: new Date().toISOString(),
+        };
+        const updatedHistory = [newReport, ...history].slice(0, 20); // Keep last 20
+        setHistory(updatedHistory);
+        localStorage.setItem('voiceHealthHistory', JSON.stringify(updatedHistory));
+
         toast({
           title: 'Analysis Complete',
-          description: 'Your Health and Chakra Report is ready.',
+          description: 'Your Health and Prana Report is ready.',
         });
       };
     } catch (error: any) {
@@ -115,6 +150,31 @@ export default function VoiceHealthPage() {
     setRecordingTime(0);
   };
 
+  const chartConfig = {
+    vitality: {
+      label: language === 'kn' ? 'ಚೈತನ್ಯ' : 'Vitality',
+      color: "hsl(var(--primary))",
+    },
+    prana: {
+      label: language === 'kn' ? 'ಪ್ರಾಣ' : 'Prana',
+      color: "hsl(var(--accent))",
+    },
+    mental: {
+      label: language === 'kn' ? 'ಮಾನಸಿಕ' : 'Mental',
+      color: "hsl(var(--secondary-foreground))",
+    },
+  } satisfies ChartConfig;
+
+  const chartData = useMemo(() => {
+    return [...history].reverse().map((h, i) => ({
+      index: i + 1,
+      vitality: h.metrics.physicalVitality,
+      prana: h.metrics.pranaLevel,
+      mental: h.metrics.mentalEnergy,
+      date: new Date(h.timestamp).toLocaleDateString(),
+    }));
+  }, [history]);
+
   const chakraOrder = [
     { key: 'muladhara', color: 'bg-red-500', icon: '🔴' },
     { key: 'svadhishthana', color: 'bg-orange-500', icon: '🟠' },
@@ -125,13 +185,13 @@ export default function VoiceHealthPage() {
   ] as const;
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
+    <div className="container mx-auto max-w-2xl px-4 py-8 pb-32">
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
           {language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ ತಪಾಸಣೆ' : 'Vocal Prana Checkup'}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {language === 'kn' ? 'ಧ್ವನಿ ಕಂಪನದ ಮೂಲಕ ಆರೋಗ್ಯ ಮತ್ತು ಷಟ್ ಚಕ್ರಗಳ ಶಕ್ತಿಯನ್ನು ಅರಿಯಿರಿ' : 'Analyze physical health and energy patterns of 6 Chakras through voice vibrations'}
+          {language === 'kn' ? 'ಧ್ವನಿ ಕಂಪನದ ಮೂಲಕ ಆರೋಗ್ಯ, ಮಾನಸಿಕ ಶಕ್ತಿ ಮತ್ತು ಪ್ರಾಣವನ್ನು ಅರಿಯಿರಿ' : 'Analyze physical health, mental energy, and life force (Prana) through voice vibrations'}
         </p>
       </header>
 
@@ -215,27 +275,29 @@ export default function VoiceHealthPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b pb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 border-b pb-8">
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶಾರೀರಿಕ ಚೈತನ್ಯ' : 'Physical Vitality'}</p>
-                    <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-primary">{result.metrics.physicalVitality}%</span>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶಾರೀರಿಕ ಚೈತನ್ಯ' : 'Physical Vitality'}</p>
+                    <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-primary/5">
+                       <span className="text-2xl font-black text-primary">{result.metrics.physicalVitality}%</span>
                     </div>
-                    <Progress value={result.metrics.physicalVitality} className="h-2" />
+                    <Progress value={result.metrics.physicalVitality} className="h-1.5" />
                   </div>
+                  
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಶ್ವಾಸಕೋಶದ ಶಕ್ತಿ' : 'Respiratory Strength'}</p>
-                    <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-accent">{result.metrics.respiratoryStrength}%</span>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಮಾನಸಿಕ ಶಕ್ತಿ' : 'Mental Energy'}</p>
+                    <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-blue-50">
+                       <span className="text-2xl font-black text-blue-600">{result.metrics.mentalEnergy}%</span>
                     </div>
-                    <Progress value={result.metrics.respiratoryStrength} className="h-2" />
+                    <Progress value={result.metrics.mentalEnergy} className="h-1.5" />
                   </div>
+
                   <div className="space-y-2 text-center">
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಧ್ವನಿ ಸ್ಪಷ್ಟತೆ' : 'Vocal Clarity'}</p>
-                    <div className="relative h-20 w-20 mx-auto flex items-center justify-center">
-                       <span className="text-3xl font-black text-green-600">{result.metrics.vocalClarity}%</span>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{language === 'kn' ? 'ಪ್ರಾಣ ಶಕ್ತಿ' : 'Prana Level'}</p>
+                    <div className="relative h-16 w-16 mx-auto flex items-center justify-center rounded-full bg-amber-50">
+                       <span className="text-2xl font-black text-accent">{result.metrics.pranaLevel}%</span>
                     </div>
-                    <Progress value={result.metrics.vocalClarity} className="h-2" />
+                    <Progress value={result.metrics.pranaLevel} className="h-1.5" />
                   </div>
                 </div>
 
@@ -295,31 +357,6 @@ export default function VoiceHealthPage() {
                     </p>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {result.recommendedMantra && (
-                    <div className="p-4 border rounded-lg bg-primary/5 flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Activity className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Recommended Mantra</p>
-                        <p className="font-bold text-sm">{result.recommendedMantra}</p>
-                      </div>
-                    </div>
-                  )}
-                   {result.recommendedProduct && (
-                    <div className="p-4 border rounded-lg bg-accent/5 flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
-                        <Activity className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Recommended Product</p>
-                        <p className="font-bold text-sm">{result.recommendedProduct}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
               </CardContent>
               <CardFooter className="justify-center border-t bg-muted/20">
                 <Button variant="ghost" onClick={resetSession}>
@@ -327,6 +364,64 @@ export default function VoiceHealthPage() {
                   {language === 'kn' ? 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ' : 'Try Again'}
                 </Button>
               </CardFooter>
+            </Card>
+          </div>
+        )}
+
+        {history.length > 0 && (
+          <div className="space-y-6 animate-fade-in">
+            <Card className="border-2 border-primary/10">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl flex items-center gap-2 font-headline">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    {language === 'kn' ? 'ಆರೋಗ್ಯ ಪ್ರಗತಿ ಸ್ಥಿತಿ' : 'Health Progress Status'}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'kn' ? 'ಕಳೆದ 10 ತಪಾಸಣೆಗಳ ವರದಿ' : 'Trends from your last 10 sessions'}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                  <LineChart data={chartData.slice(-10)} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} hide />
+                    <YAxis domain={[0, 100]} tickLine={false} axisLine={false} tickMargin={8} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    <Line type="monotone" dataKey="vitality" stroke="var(--color-vitality)" strokeWidth={2} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="prana" stroke="var(--color-prana)" strokeWidth={2} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="mental" stroke="var(--color-mental)" strokeWidth={2} dot={{ r: 4 }} />
+                  </LineChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-2">
+                <History className="h-5 w-5 text-primary" />
+                <CardTitle className="text-lg font-headline">{language === 'kn' ? 'ವರದಿಗಳ ಇತಿಹಾಸ' : 'Report History'}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y">
+                  {history.map((h) => (
+                    <div key={h.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">{new Date(h.timestamp).toLocaleDateString()}</span>
+                        <div className="flex gap-2 mt-1">
+                          <span className="text-[10px] bg-primary/10 px-1.5 rounded text-primary font-bold">V:{h.metrics.physicalVitality}%</span>
+                          <span className="text-[10px] bg-accent/10 px-1.5 rounded text-accent font-bold">P:{h.metrics.pranaLevel}%</span>
+                          <span className="text-[10px] bg-blue-100 px-1.5 rounded text-blue-700 font-bold">M:{h.metrics.mentalEnergy}%</span>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => setResult(h)}>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}
