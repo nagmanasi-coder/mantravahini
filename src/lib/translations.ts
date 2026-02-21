@@ -1,5 +1,6 @@
 
 
+
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -243,6 +244,9 @@ export const translations = {
     historyColumnAfter: "ನಂತರ",
     historyColumnAction: "ಕ್ರಮ",
     historyActionRetry: "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+    healingProgressTitle: "ಗುಣಪಡಿಸುವ ಪ್ರಗತಿಯ ಸ್ಥಿತಿ",
+    chartLegendBefore: "ಮೊದಲು",
+    chartLegendAfter: "ನಂತರ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -486,6 +490,10 @@ export const translations = {
     historyColumnAfter: "After",
     historyColumnAction: "Action",
     historyActionRetry: "Practice Again",
+    healingProgressTitle: "Overall Healing Progress",
+    chartLegendBefore: "Before",
+    chartLegendAfter: "After",
   }
 };
+
 

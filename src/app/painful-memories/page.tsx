@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useLanguage } from '@/context/language-context';
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Slider } from '@/components/ui/slider';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Play, AlertTriangle, History, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Play, AlertTriangle, History, RotateCcw, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
@@ -51,15 +60,18 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     if (!hasStarted || timeLeft <= 0) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        const next = prev - 1;
+        return next < 0 ? 0 : next;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
   }, [hasStarted, timeLeft]);
 
-  // Handle session end
+  // Handle session end side effect
   useEffect(() => {
-    if (hasStarted && timeLeft <= 0) {
+    if (hasStarted && timeLeft === 0) {
       onSessionEnd();
     }
   }, [timeLeft, hasStarted, onSessionEnd]);
@@ -256,6 +268,28 @@ export default function PainfulMemoriesPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const chartConfig = {
+    before: {
+      label: t('chartLegendBefore'),
+      color: "hsl(var(--muted-foreground))",
+    },
+    after: {
+      label: t('chartLegendAfter'),
+      color: "hsl(var(--primary))",
+    },
+  } satisfies ChartConfig;
+
+  const chartData = useMemo(() => {
+    if (history.length === 0) return [];
+    // Show only last 10 sessions for clarity
+    return history.slice(-10).map((h, i) => ({
+      index: i + 1,
+      before: h.before,
+      after: h.after,
+      title: h.title,
+    }));
+  }, [history]);
+
   if (isUserLoading) {
     return (
        <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
@@ -448,6 +482,57 @@ export default function PainfulMemoriesPage() {
               </Card>
           )}
 
+          {/* Visual Progress Chart */}
+          {history.length > 0 && (
+            <Card className="mt-8 animate-fade-in">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <TrendingDown className="h-5 w-5 text-primary" />
+                    {t('healingProgressTitle')}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                  <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="index"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
+                    <YAxis
+                      domain={[0, 10]}
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    <Line
+                      type="monotone"
+                      dataKey="before"
+                      stroke="var(--color-before)"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="after"
+                      stroke="var(--color-after)"
+                      strokeWidth={3}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          )}
+
           {/* History Section */}
           <Card className="mt-8 overflow-hidden">
             <CardHeader className="flex flex-row items-center gap-2">
@@ -518,3 +603,4 @@ export default function PainfulMemoriesPage() {
     </>
   );
 }
+
