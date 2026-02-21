@@ -321,6 +321,7 @@ export default function PainfulMemoriesPage() {
                               <h3 className="font-bold text-lg text-primary">After-Session Rating</h3>
                               <span className="text-2xl font-bold text-primary">{afterScore}</span>
                            </div>
+                           <p className="text-sm font-semibold text-foreground mb-1">{t('painfulMemoriesRatePainInstruction')}</p>
                            <p className="text-sm text-muted-foreground">{t('painfulMemoriesRatePainAgain')}</p>
                            <Slider
                                value={[afterScore]}

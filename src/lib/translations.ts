@@ -168,7 +168,7 @@ export const translations = {
     shishyaDutiesSubtitle: "ಎರಡನೇ ಷರತ್ತಿನ ಮಹತ್ವ",
     shishyaDutiesContent: "ಗುರು ದೀಕ್ಷೆ ಪಡೆದ ನಂತರ, ಶಿಷ್ಯನಿಗೆ ಕೆಲವು ಜವಾಬ್ದಾರಿಗಳಿರುತ್ತವೆ. ಎರಡನೇ ಷರತ್ತಿನಲ್ಲಿ ತಿಳಿಸಿದಂತೆ, ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಗೆ ನಿಷ್ಠೆಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವುದು ಶಿಷ್ಯನ ಪ್ರಮುಖ ಕರ್ತವ್ಯ. ಇದು ಕೇವಲ ಒಂದು ಷರತ್ತಲ್ಲ, ಬದಲಿಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣದ ಒಂದು ಅವಿಭಾಜ್ಯ ಅಂಗ. ಈ ಸೇವಾ ಮನೋಭಾವದಿಂದ ಮಾತ್ರ ಶಿಷ್ಯನು ಗುರುವಿನ ಸಂಪೂರ್ಣ ಕೃಪೆಗೆ ಪಾತ್ರನಾಗುತ್ತಾನೆ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕವಾಗಿ ಬೆಳೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.",
     untimelyDeathTitle: "ಹನುಮನಿದ್ದಲ್ಲಿ ಅಕಾಲಿಕ ಮರಣದ ಮಾತೆಲ್ಲಿ?",
-    untimelyDeathContent: "ಹನುಮಂತನು 'ಪ್ರಾಣದೇವರು' ಎಂದು ಪ್ರಸಿದ್ಧ. ಆತನು ಕೇವಲ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವುದಲ್ಲದೆ, ಅಕಾಲಿಕ ಮರಣದಿಂದಲೂ ರಕ್ಷಿಸುತ್ತಾನೆ. ಅವರ ಉಪಾಸನೆಯು ಆಯುಷ್ಯವನ್ನು ವೃದ್ಧಿಸುತ್ತದೆ ಮತ್ತು ಜೀವನಕ್ಕೆ ರಕ್ಷಣೆ ನೀಡುತ್ತದೆ. ಆತನನ್ನು ಶ್ರದ್ಧೆಯಿಂದ ಪೂಜಿಸುವವರಿಗೆ, ಆತನು ಎಲ್ಲಾ ಭಯಗಳಿಂದ ಮುಕ್ತಿ ನೀಡಿ, ದೀರ್ಘ ಮತ್ತು ಆರೋಗ್ಯಕರ ಜೀವನವನ್ನು ಅನುಗ್ರಹಿಸುತ್ತಾನೆ.",
+    untimelyDeathContent: "ಹನುಮಂತನು 'ಪ್ರಾಣದೇವರು' ಎಂದು ಪ್ರಸಿದ್ಧ. ಆತನು ಕೇವಲ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವುದಲ್ಲದೆ, ಅಕಾಲಿಕ ಮರಣದಿಂದಲೂ ರಕ್ಷಿಸುತ್ತಾನೆ. ಅವರ ಉಪಾಸನೆಯು ಆಯುಷ್ಯವನ್ನು ವೃದ್ಧಿಸುತ್ತದೆ ಮತ್ತು ಜೀವನಕ್ಕೆ ರಕ್ಷಣೆ ನೀಡುತ್ತದೆ. ಆತನನ್ನು ಶ್ರದ್ಧೆಯಿಂದ ಪೂಜಿಸುವವರಿಗೆ, ಆತನು ಎಲ್ಲಾ ಭಯಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ ಮತ್ತು ದೀರ್ಘ ಮತ್ತು ಆರೋಗ್ಯಕರ ಜೀವನವನ್ನು ಅನುಗ್ರಹಿಸುತ್ತಾನೆ.",
     hanumanPranaTherapyTitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆ",
     hanumanPranaContact: "ಹನುಮಾನ್ ಪ್ರಾಣ ಮಂತ್ರ ಮತ್ತು ಪವಿತ್ರ ವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     installApp: "ಅಪ್ಲಿಕೇಶನ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ",
@@ -231,6 +231,7 @@ export const translations = {
     painfulMemoriesSessionStep5: "5. ಸ್ಟಾರ್ಟ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.",
     painfulMemoriesSessionEnded: "ಅವಧಿ ಪೂರ್ಣಗೊಂಡಿದೆ.. ನೋವಿನ ರೇಟಿಂಗ್ ನೀಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
     painfulMemoriesClickToRate: "ರೇಟಿಂಗ್ ನೀಡಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ",
+    painfulMemoriesRatePainInstruction: "ಆ ನೋವಿನ ನೆನಪನ್ನು ಮತ್ತೊಮ್ಮೆ ಸ್ಮರಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ನೋವಿನ ತೀವ್ರತೆಯನ್ನು ರೇಟ್ ಮಾಡಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -463,5 +464,6 @@ export const translations = {
     painfulMemoriesSessionStep5: "5. Click Start button.",
     painfulMemoriesSessionEnded: "Session ended.. click to rate the pain",
     painfulMemoriesClickToRate: "Click here to rate pain",
+    painfulMemoriesRatePainInstruction: "Remember the painful memory once again and rate the intensity of pain",
   }
 };
