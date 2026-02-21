@@ -24,6 +24,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const animationFrameId = useRef<number>();
   const [timeLeft, setTimeLeft] = useState(60);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const timeLeftRef = useRef(timeLeft);
 
   // Sync ref with state for the animation loop
@@ -33,7 +34,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
 
   // Timer Interval
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || isFinished) return;
 
     const timerInterval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -46,24 +47,19 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [hasStarted]);
+  }, [hasStarted, isFinished]);
 
   // Session Completion Effect
   useEffect(() => {
     if (hasStarted && timeLeft === 0) {
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-      // Use setTimeout to ensure the session end state update happens in the next tick
-      // preventing the "Cannot update a component while rendering a different component" error
-      const timeout = setTimeout(() => {
-        onSessionEnd();
-      }, 0);
-      return () => clearTimeout(timeout);
+      setIsFinished(true);
     }
-  }, [timeLeft, hasStarted, onSessionEnd]);
+  }, [timeLeft, hasStarted]);
 
   // Animation Loop
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || isFinished) return;
 
     const container = containerRef.current;
     const dot = dotRef.current;
@@ -117,7 +113,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     return () => {
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
-  }, [hasStarted]);
+  }, [hasStarted, isFinished]);
 
   return (
     <div ref={containerRef} className="fixed inset-0 bg-white z-[2000] flex items-center justify-center overflow-hidden">
@@ -140,6 +136,19 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
             <p>{t('painfulMemoriesSessionStep4')}</p>
             <p>{t('painfulMemoriesSessionStep5')}</p>
           </div>
+        </div>
+      ) : isFinished ? (
+        <div className="flex flex-col items-center gap-8 animate-fade-in text-center px-6">
+          <p className="text-black text-3xl font-bold">
+            {t('painfulMemoriesSessionEnded')}
+          </p>
+          <Button 
+            size="lg" 
+            className="rounded-full px-8 py-4 bg-primary hover:bg-primary/90 shadow-2xl transition-transform hover:scale-105 h-auto text-xl font-bold" 
+            onClick={() => onSessionEnd()}
+          >
+            {t('painfulMemoriesClickToRate')}
+          </Button>
         </div>
       ) : (
         <>
