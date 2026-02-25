@@ -66,14 +66,6 @@ export default function PremiumLibraryPage() {
   
   const isPremium = userProfile?.subscriptionTier === 'premium';
 
-  // Fetch uploaded PDF assets from Firestore metadata
-  const libraryAssetsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'assets'), where('fileType', '==', 'document'));
-  }, [firestore]);
-
-  const { data: uploadedAssets, isLoading: assetsLoading } = useCollection<Asset>(libraryAssetsQuery);
-
   const isDeveloper = useMemo(() => {
     if (!user) return false;
     const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
@@ -83,6 +75,14 @@ export default function PremiumLibraryPage() {
     }
     return false;
   }, [user]);
+
+  // Fetch uploaded PDF assets from Firestore metadata
+  const libraryAssetsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'assets'), where('fileType', '==', 'document'));
+  }, [firestore]);
+
+  const { data: uploadedAssets, isLoading: assetsLoading } = useCollection<Asset>(libraryAssetsQuery);
 
   useEffect(() => {
     if (!isAuthLoading && !isProfileLoading && !isPremium && !isDeveloper) {
@@ -148,8 +148,9 @@ export default function PremiumLibraryPage() {
         {/* Uploaded Assets */}
         {uploadedAssets && uploadedAssets.map((asset) => {
           // Specific logic for the Swayam Chikitse book requested by user
+          // We use translation key for this specific asset ID
           const displayTitle = asset.id === 'swayam-chikitse-paper-book-pdf' 
-            ? 'Swayam Chikitse - Acupressure, Traditional formula and Mudra'
+            ? t('swayamChikitseBookTitle' as any)
             : (asset.title || asset.fileName);
 
           return (

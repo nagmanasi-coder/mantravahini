@@ -68,7 +68,7 @@ export const translations = {
     healingInfo1: "ಈ ವಿಧಾನವು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಶಕ್ತಿಯನ್ನು ಬಳಸಿ, ದೀರ್ಘಕಾಲದ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಗುಣಪಡಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
     healingInfo2: "ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ,  ಇದು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತ ಮನುಕುಲಕ್ಕೆ ನೀಡಿರುವ ವಚನ.",
     hanumanDoha: "ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ",
-    hanumanDohaMeaning: "\"ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು ಮತ್ತು ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ.\" ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.",
+    hanumanDohaMeaning: "\"ಹನುಮಂತನ ವೀರ ನಾಮವನ್ನು ನಿರಂತರವಾಗಿ ಜಪಿಸುವುದರಿಂದ ಎಲ್ಲಾ ರೋಗಗಳು och ನೋವುಗಳು ದೂರವಾಗುತ್ತವೆ.\" ಈ ದೋಹವು ತನ್ನ ಚಿಕಿತ್ಸಕ ಶಕ್ತಿಗಳಿಗೆ ಹೆಸರುವಾಸಿಯಾಗಿದೆ, ಮತ್ತು ಇದನ್ನು ನಂಬಿಕೆಯಿಂದ ಪಠಿಸಿದಾಗ ಎಲ್ಲಾ ರೀತಿಯ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಂಕಟಗಳಿಂದ ಮುಕ್ತಿ ನೀಡುತ್ತದೆ. ಈ ದೋಹವು ವಯಸ್ಸು, ರೋಗ, ಮತ್ತು ರೋಗದ ತೀವ್ರತೆಗೆ ಅನುಗುಣವಾಗಿ ಸರಿಯಾದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯೊಂದಿಗೆ ಅಭ್ಯಾಸ ಮಾಡಿದರೆ, ಎಲ್ಲಾ ರೀತಿಯ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಸೂತ್ರವನ್ನು ಹೊಂದಿದೆ.",
     healingContact: "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಮತ್ತು ಮಂತ್ರ ಚಿಕಿತ್ಸೆ ಪಡೆಯಲು, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     hanumanTherapyFee: "ಶುಲ್ಕ: ₹5500 ರಿಂದ ಪ್ರಾರಂಭ",
     hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ ಶುಲ್ಕವು ಬದಲಾಗುತ್ತದೆ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ och ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
@@ -317,6 +317,7 @@ export const translations = {
     watchVideo: "ವೀಕ್ಷಿಸಿ",
     premiumOnlyContent: "ಇದು ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಿಗೆ ಮಾತ್ರ ಲಭ್ಯವಿದೆ.",
     contentComingSoon: "ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ... ವಿವರಗಳನ್ನು ಶೀಘ್ರದಲ್ಲೇ ನವೀಕರಿಸಲಾಗುತ್ತದೆ.",
+    swayamChikitseBookTitle: "ಸ್ವಯಂ ಚಿಕಿತ್ಸೆ - ಅಕ್ಯುಪ್ರೆಶರ್, ಸಾಂಪ್ರದಾಯಿಕ ಸೂತ್ರ ಮತ್ತು ಮುದ್ರೆ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -596,7 +597,7 @@ export const translations = {
     vocalPranaHistoryTitle: "Your Progress History",
     healthMantraTitle: "Health Mantra",
     healthMantraInstruction: "Recite this mantra three times clearly with deep resonance into your microphone",
-    vibrationAnalyzed: "Vibration captured!",
+    vibrationCaptured: "Vibration captured!",
     tapMicToStart: "Tap mic to start",
     analyzeVibrations: "Analyze Vibrations",
     healthReportTitle: "Complete Health Report",
@@ -632,5 +633,6 @@ export const translations = {
     watchVideo: "Watch",
     premiumOnlyContent: "This content is exclusive to Premium members.",
     contentComingSoon: "Coming Soon... Details will be updated soon.",
+    swayamChikitseBookTitle: "Swayam Chikitse - Acupressure, Traditional formula and Mudra",
   }
 };
