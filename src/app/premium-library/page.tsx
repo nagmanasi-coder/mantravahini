@@ -161,7 +161,7 @@ export default function PremiumLibraryPage() {
               <CardContent className="flex-1 pt-6">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <BookOpen className="h-4 w-4" />
-                  <span className="text-sm">Digital Edition</span>
+                  <span className="text-sm">{t('digitalEdition')}</span>
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/30 p-4">
@@ -212,7 +212,7 @@ export default function PremiumLibraryPage() {
               />
             )}
             <div className="absolute top-0 right-0 p-4 pointer-events-none">
-               <div className="bg-primary/80 text-white text-[10px] px-2 py-1 rounded-bl-lg font-bold">In-App Reader Only</div>
+               <div className="bg-primary/80 text-white text-[10px] px-2 py-1 rounded-bl-lg font-bold">{t('inAppReaderOnly')}</div>
             </div>
           </div>
         </DialogContent>
