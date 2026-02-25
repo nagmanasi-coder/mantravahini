@@ -2,28 +2,13 @@
  * FIRESTORE SECURITY RULES
  * 
  * Core Philosophy:
- * This ruleset implements a public-read, admin-write model. The application is designed to 
- * serve mantras and media assets to all users (including anonymous ones) while restricting 
- * all management capabilities (create, update, delete) to verified administrators.
- * 
- * Data Structure:
- * - /mantras/{mantraId}: Publicly accessible mantra metadata and content.
- * - /assets/{assetId}: Publicly accessible metadata for digital media (audio, video, PDFs).
- * - /admin_users/{userId}: A restricted collection used for Role-Based Access Control (RBAC).
+ * This ruleset implements a public-read, admin-write model for content (mantras/assets)
+ * and a private-read/write model for user data.
  * 
  * Key Security Decisions:
- * 1. Database-Backed Access Control (DBAC): Administrative privileges are determined by 
- *    the existence of a document in the `/admin_users` collection ("Existence over Content").
- * 2. Public Accessibility: Mantras and Assets are globally readable to support seamless 
- *    unauthenticated playback and viewing.
- * 3. Relational Integrity: On creation, we enforce that the document's internal 'id' 
- *    field matches the Firestore document ID to ensure consistency for client-side lookups.
- * 4. Prototyping Flexibility: While authorization is strictly enforced based on roles, 
- *    data schema validation (types, optional fields) is omitted to allow for rapid development.
- * 
- * Denormalization for Authorization:
- * This architecture uses a dedicated `/admin_users` collection to store roles. This avoids 
- * complex nested queries. Security checks for admin actions use a performant `exists()` check.
+ * 1. Developer Override: The hardcoded developer UID has full administrative access.
+ * 2. Database-Backed Access Control (DBAC): Roles are determined by existence in admin_users.
+ * 3. User Privacy: Users can read and write their own profile data in the 'users' collection.
  */
 
 rules_version = '2';
@@ -32,24 +17,25 @@ service cloud.firestore {
 
     // --- GLOBAL HELPER FUNCTIONS ---
 
-    /**
-     * @description Checks if the request is made by an authenticated user.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * @description Checks if the authenticated user is an administrator by verifying 
-     * the existence of their UID in the admin_users collection.
+     * @description Checks if the user is the primary developer.
+     * Update this UID when promoting a new account.
      */
-    function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
+    function isDeveloper() {
+      return isSignedIn() && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
 
     /**
-     * @description Combines admin check with existence check for destructive/modifying operations.
+     * @description Checks if the user is an admin via DBAC or Developer status.
      */
+    function isAdmin() {
+      return isDeveloper() || (isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)));
+    }
+
     function isExistingAdmin() {
       return isAdmin() && resource != null;
     }
@@ -57,12 +43,19 @@ service cloud.firestore {
     // --- COLLECTION RULES ---
 
     /**
-     * @description Rules for the 'mantras' collection. Public read access; Admin-only write access.
-     * @path /mantras/{mantraId}
-     * @allow (get/list) Any user, including anonymous.
-     * @allow (create) Authenticated admin user providing matching 'id' in data.
-     * @deny (write) Any non-admin user or admins attempting to change the 'id' field.
-     * @principle Public consumption with administrative content management.
+     * @description Rules for the 'users' collection.
+     * Users manage their own profiles. Admins can manage all.
+     */
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for 'mantras'. Public read; Admin write.
      */
     match /mantras/{mantraId} {
       allow get, list: if true;
@@ -72,12 +65,7 @@ service cloud.firestore {
     }
 
     /**
-     * @description Rules for the 'assets' collection. Stores metadata for PDF, video, audio, and image files.
-     * @path /assets/{assetId}
-     * @allow (get/list) Public access for media discovery.
-     * @allow (create) Admin uploading new asset metadata.
-     * @deny (delete) Non-admins attempting to remove media references.
-     * @principle Ensures media metadata is globally available but centrally managed.
+     * @description Rules for 'assets'. Public metadata discovery; Admin management.
      */
     match /assets/{assetId} {
       allow get, list: if true;
@@ -87,12 +75,7 @@ service cloud.firestore {
     }
 
     /**
-     * @description Rules for the 'admin_users' collection. Defines the system's administrators.
-     * @path /admin_users/{userId}
-     * @allow (get) Any signed-in user checking their own admin status.
-     * @allow (list) Only existing admins managing the staff list.
-     * @allow (write) Only existing admins can grant or revoke admin status to others.
-     * @principle Uses 'Existence over Content' for secure, database-backed role management.
+     * @description Rules for 'admin_users'. Role management.
      */
     match /admin_users/{userId} {
       allow get: if isSignedIn();

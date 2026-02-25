@@ -4,145 +4,93 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Mantra",
       "type": "object",
-      "description": "Represents a specific mantra track available for playback in the Mantravaahini application.",
+      "description": "Represents a specific mantra track available for playback.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Mantra entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The primary title or name of the mantra, displayed to the user."
-        },
-        "description": {
-          "type": "string",
-          "description": "A detailed description or significance of the mantra."
-        },
-        "language": {
-          "type": "string",
-          "description": "The original language associated with the mantra content (e.g., Sanskrit, Kannada)."
-        },
-        "durationSeconds": {
-          "type": "number",
-          "description": "The duration of the mantra's audio track in seconds."
-        },
-        "assetId": {
-          "type": "string",
-          "description": "Reference to the audio Asset associated with this mantra. (Relationship: Asset 1:N Mantra)"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "language": { "type": "string" },
+        "durationSeconds": { "type": "number" },
+        "assetId": { "type": "string" }
       },
-      "required": [
-        "id",
-        "title",
-        "description",
-        "assetId"
-      ]
+      "required": ["id", "title", "description", "assetId"]
     },
     "Asset": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Asset",
       "type": "object",
-      "description": "Represents a generic digital asset such as an audio file, video, image, or document uploaded to the application.",
+      "description": "Metadata for digital files (audio, video, PDF, image).",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Asset entity."
-        },
-        "fileName": {
-          "type": "string",
-          "description": "The original name of the uploaded file."
-        },
-        "fileType": {
-          "type": "string",
-          "description": "A broad category of the asset (e.g., 'audio', 'video', 'image', 'document')."
-        },
-        "mimeType": {
-          "type": "string",
-          "description": "The standard MIME type of the file (e.g., 'audio/mpeg', 'image/jpeg', 'application/pdf')."
-        },
-        "url": {
-          "type": "string",
-          "description": "The URL or path where the asset is stored and can be accessed.",
-          "format": "uri"
-        },
-        "sizeBytes": {
-          "type": "number",
-          "description": "The size of the asset file in bytes."
-        },
-        "uploadDate": {
-          "type": "string",
-          "description": "Timestamp when the asset was uploaded.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "fileName": { "type": "string" },
+        "fileType": { "type": "string", "enum": ["audio", "video", "document", "image"] },
+        "mimeType": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "sizeBytes": { "type": "number" },
+        "uploadDate": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "fileName",
-        "fileType",
-        "mimeType",
-        "url",
-        "sizeBytes",
-        "uploadDate"
-      ]
+      "required": ["id", "fileName", "fileType", "mimeType", "url", "sizeBytes", "uploadDate"]
+    },
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Stores user-specific data, settings, and subscription status.",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "subscriptionTier": { "type": "string", "enum": ["free", "basic", "premium"] },
+        "premiumCycleStartDate": { "type": ["string", "null"], "format": "date-time" },
+        "referralCode": { "type": "string" },
+        "referredBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "anonymous"]
   },
   "firestore": {
     "structure": [
       {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "Private user profiles. Access restricted to the owner and administrators.",
+          "params": [{ "name": "userId", "description": "The Firebase Auth UID of the user." }]
+        }
+      },
+      {
         "path": "/mantras/{mantraId}",
         "definition": {
           "entityName": "Mantra",
-          "schema": {
-            "$ref": "#/backend/entities/Mantra"
-          },
-          "description": "Contains public mantra tracks for playback. All documents in this collection share the same security posture: public read access for all users (authenticated or anonymous), and write access (create, update, delete) restricted to authenticated administrators. This design ensures QAPs by having a homogeneous security profile for list operations and supports authorization independence as access to Mantra documents is self-contained.",
-          "params": [
-            {
-              "name": "mantraId",
-              "description": "The unique identifier of the mantra."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Mantra" },
+          "description": "Public mantra tracks. Read by all; Admin write.",
+          "params": [{ "name": "mantraId", "description": "Unique identifier." }]
         }
       },
       {
         "path": "/assets/{assetId}",
         "definition": {
           "entityName": "Asset",
-          "schema": {
-            "$ref": "#/backend/entities/Asset"
-          },
-          "description": "Stores metadata for all digital assets (audio, video, images, documents) used across the application. All documents in this collection share the same security posture: public read access for all users (authenticated or anonymous), and write access (create, update, delete) restricted to authenticated administrators. This design ensures QAPs by having a homogeneous security profile for list operations and supports authorization independence as access to Asset documents is self-contained.",
-          "params": [
-            {
-              "name": "assetId",
-              "description": "The unique identifier of the asset."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Asset" },
+          "description": "Public media metadata. Read by all; Admin write.",
+          "params": [{ "name": "assetId", "description": "Unique identifier." }]
         }
       },
       {
         "path": "/admin_users/{userId}",
         "definition": {
           "entityName": "AdminUser",
-          "schema": {
-            "$ref": "#/backend/entities/AdminUser"
-          },
-          "description": "Dedicated collection for storing administrator roles. The existence of a document at `/admin_users/{userId}` grants administrative privileges to the corresponding user (userId). This implements DBAC using 'Existence over Content'. Documents typically contain minimal or no data, acting as markers. Read access to this collection is restricted to rules evaluation; write access is limited to existing administrators for managing roles.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the administrator user."
-            }
-          ]
+          "description": "Marker collection for admin roles. Presence grants privileges.",
+          "params": [{ "name": "userId", "description": "Admin UID." }]
         }
       }
     ],
-    "reasoning": "The Mantravaahini Firestore structure prioritizes security, scalability, and debuggability by strictly adhering to the core design principles and mandates. The core content of the application, consisting of Mantras and their associated digital Assets, is designed for public consumption with administrator-only management.\n\n**Authorization Independence (CRITICAL) & QAPs:**\nAll collections are top-level (`/mantras`, `/assets`, `/admin_users`). This design inherently achieves Authorization Independence as the access rules for a document in one collection do not depend on fetching data from another collection (`get()` calls in rules are avoided). For instance, access to a `/mantras/{mantraId}` document does not require checking its associated `/assets/{assetId}` document. Each document's authorization is self-contained within its collection's rules.\n\nThis structural segregation also directly supports **QAPs (Rules are not Filters)**. Both the `/mantras` and `/assets` collections have a homogeneous security posture: public read access for all users (authenticated or anonymous) and write access strictly limited to administrators. Therefore, `list` operations on these collections do not require complex filtering logic within security rules; rules can simply `allow read: if true;` and `allow write: if exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));`. This simplifies rule debugging and ensures efficient queries.\n\n**DBAC (Database-Backed Access Control):**\nAdministrator roles are managed using the 'Existence over Content' pattern in the dedicated `/admin_users/{userId}` collection. The presence of a document for a specific `userId` in this collection signifies administrative privileges. This approach avoids custom claims and ensures that all authorization logic is directly tied to Firestore data, making it transparent and auditable.\n\n**Structural Segregation & Access Modeling:**\nThe `Mantra` entities, representing the core audio tracks, are placed in `/mantras`. Their associated media files (and other generic media like PDFs, videos, images as per the user request) are stored as `Asset` entities in `/assets`. This segregation ensures that all documents within a collection share the same security requirements, simplifying rule logic. All data is globally accessible for reading, fulfilling the app's 'pre-loaded mantra' requirement. Write operations (for uploading and managing content) are exclusively administrative.\n\n**Data Clarity and Predictability:**\nWildcards are descriptive (`{mantraId}`, `{assetId}`, `{userId}`). The schemas are explicit for `Mantra` and `Asset`. The `admin_users` collection, while representing a conceptual `AdminUser` entity for role mapping, follows the 'Existence over Content' principle, maintaining predictability."
+    "reasoning": "Standard structure for a content-driven app with premium features. Public content is separated from private user profiles to ensure security rules are simple and maintainable. DBAC markers are used for roles to avoid custom claims complexity."
   }
 }
