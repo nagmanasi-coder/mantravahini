@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -183,7 +182,6 @@ export default function PainfulMemoriesPage() {
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfileType>(userDocRef);
   
-  const [isDeveloper, setIsDeveloper] = useState(false);
   const [step, setStep] = useState<'instructions' | 'session' | 'session_ended' | 'post_session' | 'results'>('instructions');
   const [beforeScore, setBeforeScore] = useState(5);
   const [afterScore, setAfterScore] = useState(5);
@@ -194,12 +192,14 @@ export default function PainfulMemoriesPage() {
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
 
-  useEffect(() => {
-    if (user) {
-      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+  const isDeveloper = useMemo(() => {
+    if (!user) return false;
+    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+    if (typeof window !== 'undefined') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      setIsDeveloper(isActualDeveloper && devModeEnabled);
+      return isActualDeveloper && devModeEnabled;
     }
+    return false;
   }, [user]);
 
   useEffect(() => {

@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -33,7 +32,6 @@ export default function AiGuidePage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [isDeveloper, setIsDeveloper] = useState(false);
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -46,12 +44,14 @@ export default function AiGuidePage() {
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
-  useEffect(() => {
-    if (user) {
-      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+  const isDeveloper = useMemo(() => {
+    if (!user) return false;
+    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+    if (typeof window !== 'undefined') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      setIsDeveloper(isActualDeveloper && devModeEnabled);
+      return isActualDeveloper && devModeEnabled;
     }
+    return false;
   }, [user]);
 
   useEffect(() => {

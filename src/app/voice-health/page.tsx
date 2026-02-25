@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -44,7 +43,6 @@ export default function VoiceHealthPage() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [history, setHistory] = useState<StoredVoiceReport[]>([]);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [isDeveloper, setIsDeveloper] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,12 +56,14 @@ export default function VoiceHealthPage() {
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
-  useEffect(() => {
-    if (user) {
-      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+  const isDeveloper = useMemo(() => {
+    if (!user) return false;
+    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+    if (typeof window !== 'undefined') {
       const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      setIsDeveloper(isActualDeveloper && devModeEnabled);
+      return isActualDeveloper && devModeEnabled;
     }
+    return false;
   }, [user]);
 
   useEffect(() => {
@@ -163,7 +163,7 @@ export default function VoiceHealthPage() {
           toast({
             variant: 'destructive',
             title: language === 'kn' ? 'ತಪ್ಪು ಅಥವಾ ಖಾಲಿ ಧ್ವನಿ' : 'Incorrect or Empty Audio',
-            description: language === 'kn' ? 'ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪಠಿಸಿ.' : 'Please recite the mantra clearly for analysis.',
+            description: language === 'kn' ? 'ದಯವಿಟ್ಟು ಮಂತ್ರವನ್ನು ಮತ್ತೊಮ್ಮೆ ಸರಿಯಾಗಿ ಪಠಿಸಿ.' : 'Please recite the mantra correctly for analysis.',
           });
         }
       };

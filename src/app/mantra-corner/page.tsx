@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -28,7 +28,6 @@ export default function MantraCornerPage() {
   const router = useRouter();
 
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [isDeveloper, setIsDeveloper] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -38,6 +37,16 @@ export default function MantraCornerPage() {
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
+
+  const isDeveloper = useMemo(() => {
+    if (!user) return false;
+    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+    if (typeof window !== 'undefined') {
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      return isActualDeveloper && devModeEnabled;
+    }
+    return false;
+  }, [user]);
 
   const lessons: Lesson[] = [
     {
@@ -63,14 +72,6 @@ export default function MantraCornerPage() {
       contentEn: 'Detailed info on how to sync Hanuman mantras with breathing to increase Prana energy.',
     }
   ];
-
-  useEffect(() => {
-    if (user) {
-      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
-      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      setIsDeveloper(isActualDeveloper && devModeEnabled);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (!isUserLoading && !isPremium && !isDeveloper) {
