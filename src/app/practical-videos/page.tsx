@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
 interface PracticalVideo {
   id: string;
@@ -53,6 +54,7 @@ export default function PracticalVideosPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
@@ -88,6 +90,17 @@ export default function PracticalVideosPage() {
     }
   }, [isPremium, isAuthLoading, isProfileLoading, isDeveloper]);
 
+  const handleWatchVideo = (url: string) => {
+    if (!url || url === '#') {
+      toast({
+        title: language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon',
+        description: t('videosComingSoon'),
+      });
+      return;
+    }
+    window.open(url, '_blank');
+  };
+
   if (isAuthLoading || isProfileLoading) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
@@ -96,6 +109,8 @@ export default function PracticalVideosPage() {
       </div>
     );
   }
+
+  const hasContent = (uploadedVideos && uploadedVideos.length > 0) || staticVideos.length > 0;
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8 pb-32">
@@ -118,6 +133,16 @@ export default function PracticalVideosPage() {
         </p>
       </header>
 
+      {!hasContent && !assetsLoading && (
+        <Card className="p-12 text-center border-dashed border-2 border-primary/20 bg-primary/5">
+          <div className="bg-primary/10 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Video className="h-10 w-10 text-primary/40" />
+          </div>
+          <h2 className="text-2xl font-headline font-bold text-primary mb-2">{t('contentComingSoon')}</h2>
+          <p className="text-muted-foreground">{t('videosComingSoon')}</p>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {/* Uploaded Videos */}
         {uploadedVideos && uploadedVideos.map((video) => (
@@ -139,11 +164,9 @@ export default function PracticalVideosPage() {
               <CardDescription>{new Date(video.uploadDate).toLocaleDateString()}</CardDescription>
             </CardHeader>
             <CardFooter className="p-4 pt-0 mt-auto">
-              <Button asChild className="w-full gap-2 font-bold" variant="secondary">
-                <a href={video.url} target="_blank" rel="noopener noreferrer">
-                  <Play className="h-4 w-4" />
-                  {t('watchVideo')}
-                </a>
+              <Button onClick={() => handleWatchVideo(video.url)} className="w-full gap-2 font-bold" variant="secondary">
+                <Play className="h-4 w-4" />
+                {t('watchVideo')}
               </Button>
             </CardFooter>
           </Card>
@@ -176,7 +199,7 @@ export default function PracticalVideosPage() {
               </CardTitle>
             </CardHeader>
             <CardFooter className="p-4 pt-0 mt-auto">
-              <Button className="w-full gap-2 font-bold" variant="secondary">
+              <Button onClick={() => handleWatchVideo(video.videoUrl)} className="w-full gap-2 font-bold" variant="secondary">
                 <Play className="h-4 w-4" />
                 {t('watchVideo')}
               </Button>

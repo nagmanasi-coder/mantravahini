@@ -164,7 +164,7 @@ export const translations = {
     guruDikshaMode: "ವಿಧಾನ: ದೂರಸ್ಥ ಗುರು ದೀಕ್ಷಾ ಪ್ರಕ್ರಿಯೆ",
     guruDikshaFreeConditionsTitle: "ಉಚಿತ ದೀಕ್ಷೆ (ಷರತ್ತುಗಳು ಅನ್ವಯ)",
     guruDikshaFreeCondition1: "1. ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
-    guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು, ಗುರು ಪರಂಪರೆ ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
+    guruDikshaFreeCondition2: "2. ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು, ಗುರು ಪರಂಪರೆ och ಮಾನವೀಯತೆಗೆ ನಿಷ್ಠೆಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವುದು ಶಿಷ್ಯನ ಪ್ರಮುಖ ಕರ್ತವ್ಯ. ಇದು ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣದ ಒಂದು ಅವಿಭಾಜ್ಯ ಅಂಗ.",
     shishyaDutiesTitle: "ಶಿಷ್ಯನ ಕರ್ತವ್ಯಗಳು",
     shishyaDutiesSubtitle: "ಎರಡನೇ ಷರತ್ತಿನ ಮಹತ್ವ",
     shishyaDutiesContent: "ಗುರು ದೀಕ್ಷೆ ಪಡೆದ ನಂತರ, ಶಿಷ್ಯನಿಗೆ ಕೆಲವು ಜವಾಬ್ದಾರಿಗಳಿರುತ್ತವೆ. ಎರಡನೇ ಷರತ್ತಿನಲ್ಲಿ ತಿಳಿಸಿದಂತೆ, ಗುರು, ಗುರು ಪರಂಪರೆ och ಮಾನವೀಯತೆಗೆ ನಿಷ್ಠೆಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವುದು ಶಿಷ್ಯನ ಪ್ರಮುಖ ಕರ್ತವ್ಯ. ಇದು ಕೇವಲ ಒಂದು ಷರತ್ತಲ್ಲ, ಬದಲಿಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಪಯಣದ ಒಂದು ಅವಿಭಾಜ್ಯ ಅಂಗ. ಈ ಸೇವಾ ಮನೋಭಾವದಿಂದ ಮಾತ್ರ ಶಿಷ್ಯನು ಗುರುವಿನ ಸಂಪೂರ್ಣ ಕೃಪೆಗೆ ಪಾತ್ರನಾಗುತ್ತಾನೆ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕವಾಗಿ ಬೆಳೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.",
@@ -203,7 +203,7 @@ export const translations = {
     manualChakshuMantraDescription: "ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ. ಕೆಲವೇ ದಿನಗಳಲ್ಲಿ ಕಣ್ಣಿನ ಸಮಸ್ಯೆಗಳು ಸುಧಾರಿಸುತ್ತವೆ. ಪ್ರಮುಖ ಸೂಚನೆ: ಈ ಮಂತ್ರವು ನೀವು ಏಳು ಜನರಿಗೆ ಹಂಚಿಕೊಂಡಾಗ ಮಾತ್ರ ಪೂರ್ಣ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ.",
     loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
     painfulMemoriesTitle: "ನೋವಿನ ನೆನಪುಗಳಿಂದ ಮುಕ್ತಿ",
-    painfulMemoriesCardDescription: "ನೆನಪುಗಳ ಭಾವನಾತ್ಮಕ ನೋವನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಒಂದು ಅವಧಿ.",
+    painfulMemoriesCardDescription: "ನೆನಪುಗಳ ಭಾವನಾತ್ಮಕ ನೋವಿನ ತೀವ್ರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಒಂದು ಅವಧಿ.",
     painfulMemoriesCardContent: "ಈ ಒಂದು ನಿಮಿಷದ ಅವಧಿಯು ನೋವಿನ ನೆನಪುಗಳ ಭಾವನಾತ್ಮಕತೆಯಿಂದ ದೂರವಿರಲು ಸಹಾಯ ಮಾಡಲು ಒಂದು ಗಮನ ತಂತ್ರವನ್ನು ಬಳಸುತ್ತದೆ. ಪ್ರೀಮಿಯಂ ಬಳಕೆದಾರರಿಗೆ ಲಭ್ಯವಿದೆ.",
     startSession: "ಅವಧಿ ಪ್ರಾರಂಭಿಸಿ",
     painfulMemoriesInstructionsTitle: "ಸೂಚನೆಗಳು",
@@ -313,6 +313,7 @@ export const translations = {
     lessonDetails: "ಪಾಠದ ವಿವರಗಳು",
     watchVideo: "ವೀಕ್ಷಿಸಿ",
     premiumOnlyContent: "ಇದು ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಿಗೆ ಮಾತ್ರ ಲಭ್ಯವಿದೆ.",
+    contentComingSoon: "ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ... ವಿವರಗಳನ್ನು ಶೀಘ್ರದಲ್ಲೇ ನವೀಕರಿಸಲಾಗುತ್ತದೆ.",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -476,7 +477,7 @@ export const translations = {
     guruDikshaMode: "Mode: Distance Guru Diksha Process",
     guruDikshaFreeConditionsTitle: "Free Diksha (Conditions Apply)",
     guruDikshaFreeCondition1: "1. Must be a premium member of Mantravaahini.",
-    guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru, the Guru Tradition, and humanity with honesty.",
+    guruDikshaFreeCondition2: "2. Must be dedicated to serving the Guru, the Guru Tradition, and humanity with honesty. This is an integral part of the spiritual journey.",
     shishyaDutiesTitle: "Duties of a Disciple",
     shishyaDutiesSubtitle: "The Importance of the Second Condition",
     shishyaDutiesContent: "After receiving Guru Diksha, a disciple has certain responsibilities. As mentioned in the second condition, it is the foremost duty of the disciple to serve the Guru, the Guru tradition, and humanity with loyalty and honesty. This is not just a condition, but an integral part of the spiritual journey. Only with this attitude of service can the disciple receive the Guru's full grace and grow spiritually.",
@@ -625,5 +626,6 @@ export const translations = {
     lessonDetails: "Lesson Details",
     watchVideo: "Watch",
     premiumOnlyContent: "This content is exclusive to Premium members.",
+    contentComingSoon: "Coming Soon... Details will be updated soon.",
   }
 };

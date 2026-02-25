@@ -6,11 +6,12 @@ import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@
 import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { BookText, ShieldAlert, ArrowLeft, Eye, X, Loader2, BookOpen } from 'lucide-react';
+import { BookText, ShieldAlert, ArrowLeft, Eye, X, Loader2, BookOpen, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface PremiumBook {
   id: string;
@@ -31,7 +32,7 @@ const staticBooks: PremiumBook[] = [
     author: 'Nagaraja D',
     description: 'ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ.',
     descriptionEn: 'Practical methods to heal diseases through Hanuman Chalisa.',
-    pdfUrl: 'https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fhanuman-therapy-demo.pdf?alt=media',
+    pdfUrl: '#', // Set to # to show Coming Soon
   }
 ];
 
@@ -40,6 +41,7 @@ export default function PremiumLibraryPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [selectedBookUrl, setSelectedBookUrl] = useState<string | null>(null);
   const [selectedBookTitle, setSelectedBookTitle] = useState<string | null>(null);
@@ -77,6 +79,18 @@ export default function PremiumLibraryPage() {
     }
   }, [isPremium, isAuthLoading, isProfileLoading, isDeveloper]);
 
+  const handleOpenBook = (title: string, url: string) => {
+    if (!url || url === '#') {
+      toast({
+        title: language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon',
+        description: t('contentComingSoon'),
+      });
+      return;
+    }
+    setSelectedBookTitle(title);
+    setSelectedBookUrl(url);
+  };
+
   if (isAuthLoading || isProfileLoading) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
@@ -85,6 +99,8 @@ export default function PremiumLibraryPage() {
       </div>
     );
   }
+
+  const hasContent = (uploadedAssets && uploadedAssets.length > 0) || staticBooks.length > 0;
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8 pb-32">
@@ -107,6 +123,16 @@ export default function PremiumLibraryPage() {
         </p>
       </header>
 
+      {!hasContent && !assetsLoading && (
+        <Card className="p-12 text-center border-dashed border-2 border-primary/20 bg-primary/5">
+          <div className="bg-primary/10 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Sparkles className="h-10 w-10 text-primary/40" />
+          </div>
+          <h2 className="text-2xl font-headline font-bold text-primary mb-2">{t('contentComingSoon')}</h2>
+          <p className="text-muted-foreground">{language === 'kn' ? 'ನಾವು ನಿಮಗಾಗಿ ಉತ್ತಮ ಆಧ್ಯಾತ್ಮಿಕ ಪುಸ್ತಕಗಳನ್ನು ಸಿದ್ಧಪಡಿಸುತ್ತಿದ್ದೇವೆ.' : 'We are preparing great spiritual books for you.'}</p>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Uploaded Assets */}
         {uploadedAssets && uploadedAssets.map((asset) => (
@@ -122,10 +148,7 @@ export default function PremiumLibraryPage() {
               </div>
             </CardContent>
             <CardFooter className="bg-muted/30 p-4">
-              <Button onClick={() => {
-                setSelectedBookUrl(asset.url);
-                setSelectedBookTitle(asset.fileName);
-              }} className="w-full font-bold">
+              <Button onClick={() => handleOpenBook(asset.fileName, asset.url)} className="w-full font-bold">
                 <Eye className="mr-2 h-4 w-4" />
                 {t('readNow')}
               </Button>
@@ -146,10 +169,7 @@ export default function PremiumLibraryPage() {
               </p>
             </CardContent>
             <CardFooter className="bg-muted/30 p-4">
-              <Button onClick={() => {
-                setSelectedBookUrl(book.pdfUrl);
-                setSelectedBookTitle(language === 'kn' ? book.title : book.titleEn);
-              }} className="w-full font-bold">
+              <Button onClick={() => handleOpenBook(language === 'kn' ? book.title : book.titleEn, book.pdfUrl)} className="w-full font-bold">
                 <Eye className="mr-2 h-4 w-4" />
                 {t('readNow')}
               </Button>
