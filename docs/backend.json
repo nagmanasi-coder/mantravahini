@@ -23,6 +23,7 @@
       "description": "Metadata for digital files (audio, video, PDF, image).",
       "properties": {
         "id": { "type": "string" },
+        "title": { "type": "string", "description": "The user-facing display name of the asset." },
         "fileName": { "type": "string" },
         "fileType": { "type": "string", "enum": ["audio", "video", "document", "image"] },
         "mimeType": { "type": "string" },

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,7 +7,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@
 import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { Video, Play, ArrowLeft, Sparkles, Clock, Lock, Loader2 } from 'lucide-react';
+import { Video, Play, ArrowLeft, Clock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
@@ -20,6 +21,15 @@ interface PracticalVideo {
   duration: string;
   thumbnail: string;
   videoUrl: string;
+}
+
+interface Asset {
+  id: string;
+  title?: string;
+  fileName: string;
+  fileType: string;
+  url: string;
+  uploadDate: string;
 }
 
 const staticVideos: PracticalVideo[] = [
@@ -72,7 +82,7 @@ export default function PracticalVideosPage() {
     return query(collection(firestore, 'assets'), where('fileType', '==', 'video'));
   }, [firestore]);
 
-  const { data: uploadedVideos, isLoading: assetsLoading } = useCollection(videoAssetsQuery);
+  const { data: uploadedVideos, isLoading: assetsLoading } = useCollection<Asset>(videoAssetsQuery);
 
   const isDeveloper = useMemo(() => {
     if (!user) return false;
@@ -159,7 +169,7 @@ export default function PracticalVideosPage() {
             </div>
             <CardHeader className="p-4 bg-card">
               <CardTitle className="text-lg font-headline line-clamp-2">
-                {video.fileName}
+                {video.title || video.fileName}
               </CardTitle>
               <CardDescription>{new Date(video.uploadDate).toLocaleDateString()}</CardDescription>
             </CardHeader>

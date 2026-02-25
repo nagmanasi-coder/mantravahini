@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useRef, useMemo } from 'react';
@@ -31,13 +32,13 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus, FileAudio, Video, FileText, ImageIcon, Upload, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Trash2, Plus, FileAudio, Video, FileText, ImageIcon, Upload, Loader2, CheckCircle2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 interface Asset {
   id: string;
+  title?: string;
   fileName: string;
   fileType: 'audio' | 'video' | 'document' | 'image';
   mimeType: string;
@@ -48,6 +49,7 @@ interface Asset {
 
 const assetFormSchema = z.object({
   id: z.string().min(1, 'ID is required.'),
+  title: z.string().min(1, 'Display Title is required.'),
   fileName: z.string().min(1, 'File Name is required.'),
   fileType: z.enum(['audio', 'video', 'document', 'image']),
   mimeType: z.string().min(1, 'MIME Type is required.'),
@@ -96,6 +98,7 @@ export default function AdminAssetsPage() {
     resolver: zodResolver(assetFormSchema),
     defaultValues: {
       id: '',
+      title: '',
       fileName: '',
       fileType: 'audio',
       mimeType: '',
@@ -115,6 +118,18 @@ export default function AdminAssetsPage() {
     form.setValue('mimeType', file.type);
     form.setValue('sizeBytes', file.size);
     
+    // Clean Title from filename
+    const cleanTitle = file.name
+      .replace(/\.[^/.]+$/, "") // remove extension
+      .replace(/[-_]/g, " ") // replace dashes/underscores with spaces
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    if (!form.getValues('title')) {
+      form.setValue('title', cleanTitle);
+    }
+
     // Attempt to guess type
     if (file.type.startsWith('audio/')) form.setValue('fileType', 'audio');
     else if (file.type.startsWith('video/')) form.setValue('fileType', 'video');
@@ -246,7 +261,7 @@ export default function AdminAssetsPage() {
           <DialogHeader>
             <DialogTitle>Add Digital Asset</DialogTitle>
             <DialogDescription>
-              Select a file to upload to Firebase Storage or provide an external URL.
+              Select a file to upload or provide an external URL.
             </DialogDescription>
           </DialogHeader>
           
@@ -292,15 +307,28 @@ export default function AdminAssetsPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleAddAsset)} className="grid gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Title (Publicly Shown)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Swayam Chikitse - Acupressure..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset ID (Slug)</FormLabel>
+                      <FormLabel>Asset ID (Internal URL Slug)</FormLabel>
                       <FormControl>
-                        <Input placeholder="mantra-track-1" {...field} />
+                        <Input placeholder="swayam-chikitse-book" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -335,9 +363,9 @@ export default function AdminAssetsPage() {
                 name="fileName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>File Display Name</FormLabel>
+                    <FormLabel>Raw File Name (Storage Reference)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Powerful Kali Mantra.mp3" {...field} />
+                      <Input placeholder="Powerful Kali Mantra.mp3" {...field} readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -400,7 +428,7 @@ export default function AdminAssetsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Asset</TableHead>
+                <TableHead>Asset Title</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead>URL</TableHead>
@@ -427,7 +455,7 @@ export default function AdminAssetsPage() {
                 <TableRow key={asset.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium truncate max-w-[200px]">{asset.fileName}</span>
+                      <span className="font-bold truncate max-w-[200px]">{asset.title || asset.fileName}</span>
                       <span className="text-[10px] text-muted-foreground font-mono">{asset.id}</span>
                     </div>
                   </TableCell>

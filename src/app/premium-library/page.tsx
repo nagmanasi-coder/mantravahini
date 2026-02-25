@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,7 +7,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@
 import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { BookText, ShieldAlert, ArrowLeft, Eye, X, Loader2, BookOpen, Sparkles } from 'lucide-react';
+import { ShieldAlert, ArrowLeft, Eye, Loader2, BookOpen, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
@@ -23,6 +24,15 @@ interface PremiumBook {
   pdfUrl: string;
 }
 
+interface Asset {
+  id: string;
+  title?: string;
+  fileName: string;
+  fileType: string;
+  url: string;
+  uploadDate: string;
+}
+
 // Fallback books if no assets are uploaded yet
 const staticBooks: PremiumBook[] = [
   {
@@ -32,7 +42,7 @@ const staticBooks: PremiumBook[] = [
     author: 'Nagaraja D',
     description: 'ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ.',
     descriptionEn: 'Practical methods to heal diseases through Hanuman Chalisa.',
-    pdfUrl: '#', // Set to # to show Coming Soon
+    pdfUrl: '#', 
   }
 ];
 
@@ -53,6 +63,7 @@ export default function PremiumLibraryPage() {
   }, [firestore, user]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  
   const isPremium = userProfile?.subscriptionTier === 'premium';
 
   // Fetch uploaded PDF assets from Firestore metadata
@@ -61,7 +72,7 @@ export default function PremiumLibraryPage() {
     return query(collection(firestore, 'assets'), where('fileType', '==', 'document'));
   }, [firestore]);
 
-  const { data: uploadedAssets, isLoading: assetsLoading } = useCollection(libraryAssetsQuery);
+  const { data: uploadedAssets, isLoading: assetsLoading } = useCollection<Asset>(libraryAssetsQuery);
 
   const isDeveloper = useMemo(() => {
     if (!user) return false;
@@ -135,26 +146,33 @@ export default function PremiumLibraryPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Uploaded Assets */}
-        {uploadedAssets && uploadedAssets.map((asset) => (
-          <Card key={asset.id} className="flex flex-col overflow-hidden shadow-lg border-2 border-primary/20 hover:border-primary/40 transition-all bg-card">
-            <CardHeader className="bg-primary/10">
-              <CardTitle className="font-headline text-2xl text-primary">{asset.fileName}</CardTitle>
-              <CardDescription>{new Date(asset.uploadDate).toLocaleDateString()}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <BookOpen className="h-4 w-4" />
-                <span className="text-sm">Digital Edition</span>
-              </div>
-            </CardContent>
-            <CardFooter className="bg-muted/30 p-4">
-              <Button onClick={() => handleOpenBook(asset.fileName, asset.url)} className="w-full font-bold">
-                <Eye className="mr-2 h-4 w-4" />
-                {t('readNow')}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {uploadedAssets && uploadedAssets.map((asset) => {
+          // Specific logic for the Swayam Chikitse book requested by user
+          const displayTitle = asset.id === 'swayam-chikitse-paper-book-pdf' 
+            ? 'Swayam Chikitse - Acupressure, Traditional formula and Mudra'
+            : (asset.title || asset.fileName);
+
+          return (
+            <Card key={asset.id} className="flex flex-col overflow-hidden shadow-lg border-2 border-primary/20 hover:border-primary/40 transition-all bg-card">
+              <CardHeader className="bg-primary/10">
+                <CardTitle className="font-headline text-2xl text-primary">{displayTitle}</CardTitle>
+                <CardDescription>{new Date(asset.uploadDate).toLocaleDateString()}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 pt-6">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <BookOpen className="h-4 w-4" />
+                  <span className="text-sm">Digital Edition</span>
+                </div>
+              </CardContent>
+              <CardFooter className="bg-muted/30 p-4">
+                <Button onClick={() => handleOpenBook(displayTitle, asset.url)} className="w-full font-bold">
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('readNow')}
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
 
         {/* Static Starter Books */}
         {staticBooks.map((book) => (
