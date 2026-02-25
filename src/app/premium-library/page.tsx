@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
-import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { BookText, ShieldAlert, ArrowLeft, Eye, X } from 'lucide-react';
-import Link from 'next/link';
+import { BookText, ShieldAlert, ArrowLeft, Eye, X, Loader2, BookOpen } from 'lucide-react';
+import Link from 'next/navigation';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -19,8 +19,30 @@ interface PremiumBook {
   author: string;
   description: string;
   descriptionEn: string;
-  pdfUrl: string; // Internal static path or external secure link
+  pdfUrl: string;
 }
+
+// Fallback books if no assets are uploaded yet
+const staticBooks: PremiumBook[] = [
+  {
+    id: 'book-1',
+    title: 'ಹನುಮಾನ್ ಚಾಲೀಸಾ ಚಿಕಿತ್ಸೆ',
+    titleEn: 'Hanuman Chalisa Therapy',
+    author: 'Nagaraja D',
+    description: 'ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ.',
+    descriptionEn: 'Practical methods to heal diseases through Hanuman Chalisa.',
+    pdfUrl: '/manuals/hanuman-therapy.pdf',
+  },
+  {
+    id: 'book-2',
+    title: 'ಮಂತ್ರ ವಿಜ್ಞಾನ ರಹಸ್ಯಗಳು',
+    titleEn: 'Secrets of Mantra Science',
+    author: 'Nagaraja D',
+    description: 'ಮಂತ್ರಗಳ ಧ್ವನಿ ಕಂಪನ ಮತ್ತು ಅವುಗಳ ವೈಜ್ಞಾನಿಕ ಪರಿಣಾಮಗಳ ಬಗ್ಗೆ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ.',
+    descriptionEn: 'Complete information about sound vibrations of mantras and their scientific effects.',
+    pdfUrl: '/manuals/mantra-secrets.pdf',
+  }
+];
 
 export default function PremiumLibraryPage() {
   const { t, language } = useLanguage();
@@ -28,7 +50,8 @@ export default function PremiumLibraryPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
-  const [selectedBook, setSelectedBook] = useState<PremiumBook | null>(null);
+  const [selectedBookUrl, setSelectedBookUrl] = useState<string | null>(null);
+  const [selectedBookTitle, setSelectedBookTitle] = useState<string | null>(null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
@@ -38,7 +61,14 @@ export default function PremiumLibraryPage() {
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremium = userProfile?.subscriptionTier === 'premium';
-  const isUserLoading = isAuthLoading || (user && isProfileLoading);
+
+  // Fetch uploaded PDF assets
+  const libraryAssetsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'assets'), where('fileType', '==', 'document'));
+  }, [firestore]);
+
+  const { data: uploadedAssets, isLoading: assetsLoading } = useCollection(libraryAssetsQuery);
 
   const isDeveloper = useMemo(() => {
     if (!user) return false;
@@ -50,37 +80,17 @@ export default function PremiumLibraryPage() {
     return false;
   }, [user]);
 
-  const books: PremiumBook[] = [
-    {
-      id: 'book-1',
-      title: 'ಹನುಮಾನ್ ಚಾಲೀಸಾ ಚಿಕಿತ್ಸೆ',
-      titleEn: 'Hanuman Chalisa Therapy',
-      author: 'Nagaraja D',
-      description: 'ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ.',
-      descriptionEn: 'Practical methods to heal diseases through Hanuman Chalisa.',
-      pdfUrl: '/manuals/hanuman-therapy.pdf',
-    },
-    {
-      id: 'book-2',
-      title: 'ಮಂತ್ರ ವಿಜ್ಞಾನ ರಹಸ್ಯಗಳು',
-      titleEn: 'Secrets of Mantra Science',
-      author: 'Nagaraja D',
-      description: 'ಮಂತ್ರಗಳ ಧ್ವನಿ ಕಂಪನ ಮತ್ತು ಅವುಗಳ ವೈಜ್ಞಾನಿಕ ಪರಿಣಾಮಗಳ ಬಗ್ಗೆ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ.',
-      descriptionEn: 'Complete information about sound vibrations of mantras and their scientific effects.',
-      pdfUrl: '/manuals/mantra-secrets.pdf',
-    }
-  ];
-
   useEffect(() => {
-    if (!isUserLoading && !isPremium && !isDeveloper) {
+    if (!isAuthLoading && !isProfileLoading && !isPremium && !isDeveloper) {
       setShowUpgradeDialog(true);
     }
-  }, [isPremium, isUserLoading, isDeveloper]);
+  }, [isPremium, isAuthLoading, isProfileLoading, isDeveloper]);
 
-  if (isUserLoading) {
+  if (isAuthLoading || isProfileLoading) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
-        <p className="text-muted-foreground">{t('loading')}</p>
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+        <p className="text-muted-foreground mt-4">{t('loading')}</p>
       </div>
     );
   }
@@ -107,7 +117,33 @@ export default function PremiumLibraryPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {books.map((book) => (
+        {/* Uploaded Assets */}
+        {uploadedAssets && uploadedAssets.map((asset) => (
+          <Card key={asset.id} className="flex flex-col overflow-hidden shadow-lg border-2 border-primary/20 hover:border-primary/40 transition-all bg-card">
+            <CardHeader className="bg-primary/10">
+              <CardTitle className="font-headline text-2xl text-primary">{asset.fileName}</CardTitle>
+              <CardDescription>{new Date(asset.uploadDate).toLocaleDateString()}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pt-6">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <BookOpen className="h-4 w-4" />
+                <span className="text-sm">Digital Edition</span>
+              </div>
+            </CardContent>
+            <CardFooter className="bg-muted/30 p-4">
+              <Button onClick={() => {
+                setSelectedBookUrl(asset.url);
+                setSelectedBookTitle(asset.fileName);
+              }} className="w-full font-bold">
+                <Eye className="mr-2 h-4 w-4" />
+                {t('readNow')}
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+
+        {/* Static Starter Books */}
+        {staticBooks.map((book) => (
           <Card key={book.id} className="flex flex-col overflow-hidden shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all">
             <CardHeader className="bg-primary/5">
               <CardTitle className="font-headline text-2xl text-primary">{language === 'kn' ? book.title : book.titleEn}</CardTitle>
@@ -119,7 +155,10 @@ export default function PremiumLibraryPage() {
               </p>
             </CardContent>
             <CardFooter className="bg-muted/30 p-4">
-              <Button onClick={() => setSelectedBook(book)} className="w-full font-bold">
+              <Button onClick={() => {
+                setSelectedBookUrl(book.pdfUrl);
+                setSelectedBookTitle(language === 'kn' ? book.title : book.titleEn);
+              }} className="w-full font-bold">
                 <Eye className="mr-2 h-4 w-4" />
                 {t('readNow')}
               </Button>
@@ -128,24 +167,19 @@ export default function PremiumLibraryPage() {
         ))}
       </div>
 
-      <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
+      <Dialog open={!!selectedBookUrl} onOpenChange={(open) => !open && setSelectedBookUrl(null)}>
         <DialogContent className="max-w-5xl h-[90vh] p-0 overflow-hidden flex flex-col">
-          <DialogHeader className="p-4 bg-muted/50 border-b flex flex-row items-center justify-between">
-            <DialogTitle className="font-headline text-xl text-primary">
-              {selectedBook && (language === 'kn' ? selectedBook.title : selectedBook.titleEn)}
+          <DialogHeader className="p-4 bg-muted/50 border-b">
+            <DialogTitle className="font-headline text-xl text-primary truncate">
+              {selectedBookTitle}
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 bg-white relative">
-            {/* 
-              In a real app, you would use a library like react-pdf or a secure PDF viewer component.
-              For this prototype, we use an iframe pointing to the URL.
-              To prevent 'download', we use styles and parameters, though truly blocking download requires complex backend logic.
-            */}
-            {selectedBook && (
+            {selectedBookUrl && (
               <iframe
-                src={`${selectedBook.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                src={`${selectedBookUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                 className="w-full h-full border-none"
-                title={selectedBook.titleEn}
+                title="Book Viewer"
               />
             )}
             <div className="absolute top-0 right-0 p-4 pointer-events-none">
