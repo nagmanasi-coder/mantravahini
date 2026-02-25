@@ -1,20 +1,23 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Send, Bot, User, Trash2, ShieldAlert } from 'lucide-react';
+import { Sparkles, Send, Bot, User, Trash2, ShieldAlert, MessageCircleCode } from 'lucide-react';
 import { chatWithGuide } from '@/ai/flows/spiritual-guide-flow';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 interface Message {
   role: 'user' | 'model';
@@ -40,8 +43,12 @@ export default function AiGuidePage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
-  const isPremium = userProfile?.subscriptionTier === 'premium';
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ 
+    subscriptionTier?: 'free' | 'basic' | 'premium',
+    dailyAiMessages?: number,
+    lastAiMessageDate?: string
+  }>(userDocRef);
+
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
   const isDeveloper = useMemo(() => {
@@ -54,11 +61,20 @@ export default function AiGuidePage() {
     return false;
   }, [user]);
 
-  useEffect(() => {
-    if (!isUserLoading && !isPremium && !isDeveloper) {
-      setShowUpgradeDialog(true);
-    }
-  }, [isPremium, isUserLoading, isDeveloper]);
+  // Daily Limit Logic
+  const limits = { free: 5, basic: 10, premium: Infinity };
+  const tier = userProfile?.subscriptionTier || 'free';
+  const limit = limits[tier] || 5;
+
+  const getDailyCount = () => {
+    if (!userProfile?.lastAiMessageDate) return 0;
+    const today = new Date().toISOString().split('T')[0];
+    const storedDate = userProfile.lastAiMessageDate.split('T')[0];
+    return today === storedDate ? (userProfile.dailyAiMessages || 0) : 0;
+  };
+
+  const dailyCount = getDailyCount();
+  const messagesRemaining = limit === Infinity ? Infinity : limit - dailyCount;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -69,7 +85,7 @@ export default function AiGuidePage() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    if (!isPremium && !isDeveloper) {
+    if (!isDeveloper && messagesRemaining <= 0) {
       setShowUpgradeDialog(true);
       return;
     }
@@ -88,6 +104,14 @@ export default function AiGuidePage() {
       });
 
       setMessages([...newMessages, { role: 'model', content: result.response }]);
+
+      // Update usage count in Firestore
+      if (!isDeveloper && tier !== 'premium' && firestore && user) {
+        updateDocumentNonBlocking(doc(firestore, 'users', user.uid), {
+          dailyAiMessages: dailyCount + 1,
+          lastAiMessageDate: new Date().toISOString()
+        });
+      }
     } catch (error: any) {
       console.error('AI Chat Error:', error);
       toast({
@@ -113,14 +137,11 @@ export default function AiGuidePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
+    <div className="container mx-auto max-w-2xl px-4 py-8 pb-32">
       <UpgradeDialog 
         open={showUpgradeDialog} 
-        onOpenChange={(isOpen) => {
-          if (!isOpen) router.push('/');
-          setShowUpgradeDialog(isOpen);
-        }}
-        title={t('toastUpgradeRequiredTitle')}
+        onOpenChange={setShowUpgradeDialog}
+        title={t('toastDailyLimitTitle')}
         description={t('aiChatLimitReached')}
       />
 
@@ -133,14 +154,17 @@ export default function AiGuidePage() {
         </p>
       </header>
 
-      {!isPremium && !isDeveloper && (
+      {tier !== 'premium' && !isDeveloper && (
         <Card className="mb-6 bg-amber-50 border-amber-200">
           <CardContent className="p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-amber-800">
               <ShieldAlert className="h-5 w-5" />
-              <p className="text-sm font-medium">
-                {t('premiumPlanTitle')} feature
-              </p>
+              <div className="text-sm">
+                <p className="font-bold capitalize">{tier} Plan Limit</p>
+                <p className="opacity-80">
+                  {messagesRemaining} {t('aiChatFreeMessagesLeft')}
+                </p>
+              </div>
             </div>
             <Button asChild size="sm" variant="outline" className="border-amber-400 text-amber-800 hover:bg-amber-100">
               <Link href="/upgrade">{t('headerUpgrade')}</Link>
@@ -155,7 +179,14 @@ export default function AiGuidePage() {
             <div className="bg-primary/10 p-2 rounded-full">
               <Bot className="h-5 w-5 text-primary" />
             </div>
-            <CardTitle className="text-lg font-headline">{t('aiGuideTitle')}</CardTitle>
+            <div>
+              <CardTitle className="text-lg font-headline">{t('aiGuideTitle')}</CardTitle>
+              {limit !== Infinity && (
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                  {dailyCount} / {limit} Messages Used
+                </p>
+              )}
+            </div>
           </div>
           <Button variant="ghost" size="icon" onClick={clearChat} title="Clear Chat">
             <Trash2 className="h-4 w-4 text-muted-foreground" />

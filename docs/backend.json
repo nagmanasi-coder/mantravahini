@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Mantra": {
@@ -45,6 +46,8 @@
         "premiumCycleStartDate": { "type": ["string", "null"], "format": "date-time" },
         "referralCode": { "type": "string" },
         "referredBy": { "type": "string" },
+        "dailyAiMessages": { "type": "number", "description": "Count of AI messages sent today." },
+        "lastAiMessageDate": { "type": "string", "format": "date-time", "description": "Date of last AI interaction." },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]
