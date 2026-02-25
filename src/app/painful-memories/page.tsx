@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useNotifications } from '@/hooks/use-notifications';
 import {
   Table,
   TableBody,
@@ -174,6 +176,7 @@ export default function PainfulMemoriesPage() {
   const firestore = useFirestore();
   const { t } = useLanguage();
   const router = useRouter();
+  const { requestPermission, sendLocalNotification } = useNotifications();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -221,12 +224,14 @@ export default function PainfulMemoriesPage() {
     }
   }, [isPremiumUser, isUserLoading, isDeveloper, step]);
 
-  const handleStartSession = () => {
+  const handleStartSession = async () => {
+    await requestPermission();
     setStep('session');
   };
 
   const handleSessionEnd = () => {
     setStep('session_ended');
+    sendLocalNotification('notificationMemorySessionTitle', 'notificationMemorySessionBody');
   };
 
   const handleRatePain = () => {

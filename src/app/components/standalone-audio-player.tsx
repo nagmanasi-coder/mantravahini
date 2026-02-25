@@ -17,6 +17,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
 import { doc } from "firebase/firestore";
+import { useNotifications } from "@/hooks/use-notifications";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -30,6 +31,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { requestPermission, sendLocalNotification } = useNotifications();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -80,6 +82,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     };
     const handleEnded = () => {
       setIsPlaying(false);
+      sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       if (showTracker) {
         setStep('post_play');
       }
@@ -94,7 +97,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.removeEventListener("timeupdate", setAudioTime);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [mantra.url, showTracker]);
+  }, [mantra.url, showTracker, sendLocalNotification]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -106,11 +109,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
   }, [isPlaying]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPlaying(false);
       return;
     }
+
+    // Request notification permission on first play attempt
+    await requestPermission();
 
     if (showTracker && beforeScore === 0) {
       toast({
@@ -180,6 +186,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const updatedHistory = [...currentHistory, historyItem];
     localStorage.setItem('painReliefHistory', JSON.stringify(updatedHistory));
     
+    sendLocalNotification('notificationHealingSavedTitle', 'notificationHealingSavedBody');
     setStep('result');
     window.dispatchEvent(new Event('painHistoryUpdated'));
   };
