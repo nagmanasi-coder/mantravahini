@@ -3,13 +3,13 @@
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 import { useRouter } from "next/navigation";
 
@@ -31,16 +31,27 @@ export function UpgradeDialog({ open, onOpenChange, title, description }: Upgrad
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-xl sm:text-2xl font-headline text-primary">
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-base">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="sm:justify-start">
-          <Button onClick={handleUpgrade} className="w-full sm:w-auto">{t('upgradeButton')}</Button>
-          <AlertDialogAction onClick={() => onOpenChange(false)} variant="outline" className="w-full mt-2 sm:mt-0 sm:w-auto">{t('closeButton')}</AlertDialogAction>
+        <AlertDialogFooter className="flex flex-col gap-3 mt-6 sm:mt-4">
+          <AlertDialogAction 
+            onClick={handleUpgrade} 
+            className="w-full h-12 text-base font-bold order-1 sm:order-2"
+          >
+            {t('upgradeButton')}
+          </AlertDialogAction>
+          <AlertDialogCancel 
+            className="w-full h-12 text-base font-semibold mt-0 order-2 sm:order-1"
+          >
+            {t('closeButton')}
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
