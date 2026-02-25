@@ -1,4 +1,158 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useLanguage } from '@/context/language-context';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
+import { Video, Play, ArrowLeft, Sparkles, Clock, Lock } from 'lucide-react';
+import Link from 'next/link';
+import { UpgradeDialog } from '@/app/components/upgrade-dialog';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+interface PracticalVideo {
+  id: string;
+  title: string;
+  titleEn: string;
+  duration: string;
+  thumbnail: string;
+  videoUrl: string;
+}
 
 export default function PracticalVideosPage() {
-  return null;
+  const { t, language } = useLanguage();
+  const { user, isUserLoading: isAuthLoading } = useUser();
+  const firestore = useFirestore();
+  const router = useRouter();
+
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const isPremium = userProfile?.subscriptionTier === 'premium';
+  const isUserLoading = isAuthLoading || (user && isProfileLoading);
+
+  const videos: PracticalVideo[] = [
+    {
+      id: 'vid-1',
+      title: 'ನೋವು ನಿವಾರಕ ಮಂತ್ರದ ಸರಿಯಾದ ಬಳಕೆ',
+      titleEn: 'Correct Usage of Pain Relief Mantra',
+      duration: '5:24',
+      thumbnail: 'https://picsum.photos/seed/vid1/600/400',
+      videoUrl: '#',
+    },
+    {
+      id: 'vid-2',
+      title: 'ಚಾಕ್ಷುಷ ಮಂತ್ರ ಮತ್ತು ಕಣ್ಣಿನ ವ್ಯಾಯಾಮ',
+      titleEn: 'Chakshu Mantra and Eye Exercises',
+      duration: '8:12',
+      thumbnail: 'https://picsum.photos/seed/vid2/600/400',
+      videoUrl: '#',
+    },
+    {
+      id: 'vid-3',
+      title: 'ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ - ಪ್ರಾತ್ಯಕ್ಷಿಕೆ',
+      titleEn: 'Hanuman Mantra Therapy - Demo',
+      duration: '12:45',
+      thumbnail: 'https://picsum.photos/seed/vid3/600/400',
+      videoUrl: '#',
+    }
+  ];
+
+  useEffect(() => {
+    if (user) {
+      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDeveloper(isActualDeveloper && devModeEnabled);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!isUserLoading && !isPremium && !isDeveloper) {
+      setShowUpgradeDialog(true);
+    }
+  }, [isPremium, isUserLoading, isDeveloper]);
+
+  if (isUserLoading) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
+        <p className="text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto max-w-5xl px-4 py-8 pb-32">
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={(isOpen) => {
+          if (!isOpen) router.push('/');
+          setShowUpgradeDialog(isOpen);
+        }}
+        title={t('toastUpgradeRequiredTitle')}
+        description={t('premiumOnlyContent')}
+      />
+
+      <header className="mb-12 text-center animate-fade-in">
+        <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
+          {t('practicalVideosTitle')}
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          {t('practicalVideosSubtitle')}
+        </p>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {videos.map((video) => (
+          <Card key={video.id} className="overflow-hidden shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all flex flex-col group">
+            <div className="relative aspect-video w-full bg-black overflow-hidden">
+              <Image 
+                src={video.thumbnail} 
+                alt={video.titleEn} 
+                fill 
+                className="object-cover opacity-80 group-hover:scale-105 transition-transform"
+                data-ai-hint="spiritual video thumbnail"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-primary/90 rounded-full p-4 text-white shadow-2xl scale-100 group-hover:scale-110 transition-transform">
+                  <Play className="h-8 w-8 fill-white" />
+                </div>
+              </div>
+              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded font-mono flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {video.duration}
+              </div>
+            </div>
+            <CardHeader className="p-4 bg-card">
+              <CardTitle className="text-lg font-headline line-clamp-2">
+                {language === 'kn' ? video.title : video.titleEn}
+              </CardTitle>
+            </CardHeader>
+            <CardFooter className="p-4 pt-0 mt-auto">
+              <Button className="w-full gap-2 font-bold" variant="secondary">
+                <Play className="h-4 w-4" />
+                {t('watchVideo')}
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      <div className="mt-12 text-center">
+        <Button asChild variant="outline">
+          <Link href="/">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t('backButton')}
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
 }
