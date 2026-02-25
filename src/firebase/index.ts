@@ -3,7 +3,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore'
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
@@ -11,7 +11,22 @@ export function initializeFirebase() {
     // Initialize with the config object. This object reads from
     // environment variables, making it suitable for Vercel and local dev.
     const firebaseApp = initializeApp(firebaseConfig);
-    return getSdks(firebaseApp);
+    const sdks = getSdks(firebaseApp);
+
+    // Enable offline persistence for Firestore data
+    if (typeof window !== 'undefined') {
+      enableMultiTabIndexedDbPersistence(sdks.firestore).catch((err) => {
+        if (err.code === 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled in one tab at a time.
+          console.warn('Firestore persistence failed: Multiple tabs open');
+        } else if (err.code === 'unimplemented') {
+          // The current browser does not support all of the features required to enable persistence
+          console.warn('Firestore persistence failed: Browser not supported');
+        }
+      });
+    }
+
+    return sdks;
   }
 
   // If already initialized, return the SDKs with the already initialized App

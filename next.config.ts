@@ -8,6 +8,21 @@ const withPWA = pwa({
   skipWaiting: true,
   runtimeCaching: [
     {
+      // Explicitly cache audio files for offline playback
+      urlPattern: /.*\.(?:mp3|wav|ogg)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'mantra-audio-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+        },
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
+      },
+    },
+    {
       urlPattern: new RegExp('^https://(?:www\\.)?(?:googleapis|google|firebase|firebaseapp|accounts)\\.com/.*$'),
       handler: 'NetworkOnly',
     },
