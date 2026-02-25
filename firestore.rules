@@ -1,81 +1,105 @@
-
 /**
+ * FIRESTORE SECURITY RULES
+ * 
  * Core Philosophy:
- * This ruleset establishes a secure data model for the Mantravaahini app. It serves
- * public content (mantras) while protecting user-specific data.
- *
+ * This ruleset implements a public-read, admin-write model. The application is designed to 
+ * serve mantras and media assets to all users (including anonymous ones) while restricting 
+ * all management capabilities (create, update, delete) to verified administrators.
+ * 
  * Data Structure:
- * The data is organized into two main collections:
- * - /mantra_tracks: Stores all mantra track documents, which are public.
- * - /users: Stores user profile information, including subscription tier, which is protected.
+ * - /mantras/{mantraId}: Publicly accessible mantra metadata and content.
+ * - /assets/{assetId}: Publicly accessible metadata for digital media (audio, video, PDFs).
+ * - /admin_users/{userId}: A restricted collection used for Role-Based Access Control (RBAC).
+ * 
+ * Key Security Decisions:
+ * 1. Database-Backed Access Control (DBAC): Administrative privileges are determined by 
+ *    the existence of a document in the `/admin_users` collection ("Existence over Content").
+ * 2. Public Accessibility: Mantras and Assets are globally readable to support seamless 
+ *    unauthenticated playback and viewing.
+ * 3. Relational Integrity: On creation, we enforce that the document's internal 'id' 
+ *    field matches the Firestore document ID to ensure consistency for client-side lookups.
+ * 4. Prototyping Flexibility: While authorization is strictly enforced based on roles, 
+ *    data schema validation (types, optional fields) is omitted to allow for rapid development.
+ * 
+ * Denormalization for Authorization:
+ * This architecture uses a dedicated `/admin_users` collection to store roles. This avoids 
+ * complex nested queries. Security checks for admin actions use a performant `exists()` check.
  */
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // --- GLOBAL HELPER FUNCTIONS ---
+
     /**
-     * @description Allows public read-only access to all mantra tracks. All write operations are denied.
-     * @path        /mantra_tracks/{trackId}
-     * @principle   Secures pre-loaded, static content by making it publicly readable but non-modifiable by clients.
+     * @description Checks if the request is made by an authenticated user.
      */
-    match /mantra_tracks/{trackId} {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user is an administrator by verifying 
+     * the existence of their UID in the admin_users collection.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
+    }
+
+    /**
+     * @description Combines admin check with existence check for destructive/modifying operations.
+     */
+    function isExistingAdmin() {
+      return isAdmin() && resource != null;
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for the 'mantras' collection. Public read access; Admin-only write access.
+     * @path /mantras/{mantraId}
+     * @allow (get/list) Any user, including anonymous.
+     * @allow (create) Authenticated admin user providing matching 'id' in data.
+     * @deny (write) Any non-admin user or admins attempting to change the 'id' field.
+     * @principle Public consumption with administrative content management.
+     */
+    match /mantras/{mantraId} {
       allow get, list: if true;
-      allow write: if false;
+      allow create: if isAdmin() && request.resource.data.id == mantraId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
     }
 
     /**
-     * @description Defines access control for user profiles.
-     * @path        /users/{userId}
-     * @principle   Users own their data, but an admin role is required for privileged operations.
+     * @description Rules for the 'assets' collection. Stores metadata for PDF, video, audio, and image files.
+     * @path /assets/{assetId}
+     * @allow (get/list) Public access for media discovery.
+     * @allow (create) Admin uploading new asset metadata.
+     * @deny (delete) Non-admins attempting to remove media references.
+     * @principle Ensures media metadata is globally available but centrally managed.
      */
-    match /users/{userId} {
-      // The admin can read any document and list all documents.
-      // A regular user can only read their own document.
-      allow read, list: if isDeveloper();
-      allow read: if isOwner(userId);
-
-      // A user can create their own profile, but must start with the 'free' tier.
-      allow create: if isOwner(userId) && request.resource.data.subscriptionTier == 'free';
-      
-      // A user can update their profile, but cannot change their own subscription tier.
-      allow update: if isOwner(userId) && request.resource.data.subscriptionTier == resource.data.subscriptionTier;
-
-      // The developer has full write access for administrative tasks (e.g., granting subscriptions).
-      allow write: if isDeveloper();
+    match /assets/{assetId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == assetId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
     }
 
     /**
-     * @description Manages referral code mappings for the referral system.
-     * @path        /referralCodes/{code}
-     * @principle   Enables referral tracking by allowing users to create their own code mapping and letting any authenticated user look up a referrer.
+     * @description Rules for the 'admin_users' collection. Defines the system's administrators.
+     * @path /admin_users/{userId}
+     * @allow (get) Any signed-in user checking their own admin status.
+     * @allow (list) Only existing admins managing the staff list.
+     * @allow (write) Only existing admins can grant or revoke admin status to others.
+     * @principle Uses 'Existence over Content' for secure, database-backed role management.
      */
-    match /referralCodes/{code} {
-      // Allow any authenticated user to look up a referrer's UID from a code.
-      allow get: if request.auth != null;
-      
-      // Allow a user to create their own referral code mapping.
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      
-      // Disallow modification or deletion of referral codes to ensure integrity.
-      allow update, delete: if false;
-    }
-
-    // =====================================================================
-    // Helper Functions
-    // =====================================================================
-
-    /**
-     * Checks if the requesting user is the owner of the document.
-     */
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
-    /**
-     * Checks if the requesting user is the designated developer/admin.
-     */
-    function isDeveloper() {
-      return request.auth != null && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+    match /admin_users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isExistingAdmin();
+      allow delete: if isExistingAdmin();
     }
   }
 }
