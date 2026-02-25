@@ -1,8 +1,7 @@
-
 "use client"
 
 import Link from "next/link";
-import { AppWindow, Info, BookUser, BookText, MessageSquareQuote, HeartPulse } from "lucide-react";
+import { AppWindow, Info, BookUser, BookText, MessageSquareQuote, HeartPulse, GraduationCap } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 
 export function AppFooter() {
@@ -18,6 +17,10 @@ export function AppFooter() {
                     <Link href="/voice-health" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <HeartPulse className="h-4 w-4" />
                         <span>{language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ' : 'Vocal Prana'}</span>
+                    </Link>
+                    <Link href="/workshops" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                        <GraduationCap className="h-4 w-4" />
+                        <span>{t('workshops')}</span>
                     </Link>
                     <Link href="/our-apps" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <AppWindow className="h-4 w-4" />
