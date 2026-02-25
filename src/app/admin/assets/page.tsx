@@ -34,6 +34,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Trash2, Plus, FileAudio, Video, FileText, ImageIcon, Upload, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 
 interface Asset {
   id: string;
@@ -62,7 +63,7 @@ export default function AdminAssetsPage() {
   const { toast } = useToast();
 
   const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = useState(false);
-  const [isUploading, setIsAnalyzing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
@@ -136,7 +137,7 @@ export default function AdminAssetsPage() {
       return;
     }
 
-    setIsAnalyzing(true);
+    setIsUploading(true);
     setUploadProgress(0);
 
     try {
@@ -191,7 +192,7 @@ export default function AdminAssetsPage() {
     } catch (error: any) {
       toast({ variant: "destructive", title: "Upload Failed", description: error.message });
     } finally {
-      setIsAnalyzing(false);
+      setIsUploading(false);
     }
   };
 
