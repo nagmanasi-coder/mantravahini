@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Send, Bot, User, Trash2, ShieldAlert, MessageCircleCode } from 'lucide-react';
+import { Sparkles, Send, Bot, User, Trash2, ShieldAlert, MessageSquareQuote, Info, BookOpen, HelpCircle } from 'lucide-react';
 import { chatWithGuide } from '@/ai/flows/spiritual-guide-flow';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -82,23 +82,21 @@ export default function AiGuidePage() {
     }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessage = async (messageText: string) => {
+    if (!messageText.trim() || isLoading) return;
 
     if (!isDeveloper && messagesRemaining <= 0) {
       setShowUpgradeDialog(true);
       return;
     }
 
-    const userMessage = input.trim();
-    setInput('');
-    const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
+    const newMessages: Message[] = [...messages, { role: 'user', content: messageText }];
     setMessages(newMessages);
     setIsLoading(true);
 
     try {
       const result = await chatWithGuide({
-        message: userMessage,
+        message: messageText,
         language: language as 'kn' | 'en',
         history: messages,
       });
@@ -122,6 +120,17 @@ export default function AiGuidePage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    const text = input;
+    setInput('');
+    await sendMessage(text);
+  };
+
+  const handleSuggestionClick = (suggestionKey: keyof typeof translations.en) => {
+    sendMessage(t(suggestionKey));
   };
 
   const clearChat = () => {
@@ -193,15 +202,42 @@ export default function AiGuidePage() {
           </Button>
         </CardHeader>
         
-        <CardContent className="flex-1 p-0">
-          <ScrollArea className="h-full p-4">
+        <CardContent className="flex-1 p-0 flex flex-col">
+          <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
               {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-[400px] text-center space-y-4 text-muted-foreground">
+                <div className="flex flex-col items-center justify-center h-[400px] text-center space-y-6 text-muted-foreground">
                   <div className="bg-primary/5 p-6 rounded-full animate-pulse">
                     <Sparkles className="h-12 w-12 text-primary/40" />
                   </div>
                   <p className="max-w-xs">{t('aiChatWelcome')}</p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-sm px-4">
+                    <Button 
+                      variant="outline" 
+                      className="text-xs h-auto py-3 px-2 flex flex-col gap-2 hover:bg-primary/5 border-primary/20"
+                      onClick={() => handleSuggestionClick('aiChatSuggestApp')}
+                    >
+                      <Info className="h-4 w-4 text-primary" />
+                      {t('aiChatSuggestApp')}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="text-xs h-auto py-3 px-2 flex flex-col gap-2 hover:bg-primary/5 border-primary/20"
+                      onClick={() => handleSuggestionClick('aiChatSuggestMantras')}
+                    >
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      {t('aiChatSuggestMantras')}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="text-xs h-auto py-3 px-2 flex flex-col gap-2 hover:bg-primary/5 border-primary/20"
+                      onClick={() => handleSuggestionClick('aiChatSuggestOther')}
+                    >
+                      <HelpCircle className="h-4 w-4 text-primary" />
+                      {t('aiChatSuggestOther')}
+                    </Button>
+                  </div>
                 </div>
               )}
               {messages.map((msg, i) => (
