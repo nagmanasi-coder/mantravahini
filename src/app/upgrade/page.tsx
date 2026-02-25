@@ -36,8 +36,10 @@ export default function UpgradePage() {
 
   const premiumFeatures = [
     t('featureAllBasic'),
-    t('featureOfflineAccess'),
     t('featureAiChatbot'),
+    t('featureVocalPrana'),
+    t('featurePainfulMemories'),
+    t('featureOfflineAccess'),
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featureMantraChikitse'),

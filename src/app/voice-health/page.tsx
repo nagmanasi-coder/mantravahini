@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -12,6 +13,8 @@ import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-h
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { UpgradeDialog } from '@/app/components/upgrade-dialog';
+import { useRouter } from 'next/navigation';
 import {
   ChartContainer,
   ChartTooltip,
@@ -29,9 +32,10 @@ interface StoredVoiceReport extends VoiceAnalysisOutput {
 
 export default function VoiceHealthPage() {
   const { t, language } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -39,6 +43,8 @@ export default function VoiceHealthPage() {
   const [result, setResult] = useState<VoiceAnalysisOutput | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [history, setHistory] = useState<StoredVoiceReport[]>([]);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -48,8 +54,23 @@ export default function VoiceHealthPage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremium = userProfile?.subscriptionTier === 'premium';
+  const isUserLoading = isAuthLoading || (user && isProfileLoading);
+
+  useEffect(() => {
+    if (user) {
+      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDeveloper(isActualDeveloper && devModeEnabled);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!isUserLoading && !isPremium && !isDeveloper) {
+      setShowUpgradeDialog(true);
+    }
+  }, [isPremium, isUserLoading, isDeveloper]);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('voiceHealthHistory');
@@ -66,6 +87,11 @@ export default function VoiceHealthPage() {
   }, []);
 
   const startRecording = async () => {
+    if (!isPremium && !isDeveloper) {
+      setShowUpgradeDialog(true);
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -191,7 +217,6 @@ export default function VoiceHealthPage() {
     { key: 'ajna', color: 'bg-indigo-500', icon: '🟣' },
   ] as const;
 
-  // Comparison logic for latest two sessions
   const wellnessTrend = useMemo(() => {
     if (history.length < 2) return null;
     const latest = history[0].metrics.physicalVitality;
@@ -204,8 +229,26 @@ export default function VoiceHealthPage() {
     };
   }, [history, language]);
 
+  if (isUserLoading) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
+        <p className="text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8 pb-32">
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={(isOpen) => {
+          if (!isOpen) router.push('/');
+          setShowUpgradeDialog(isOpen);
+        }}
+        title={t('toastUpgradeRequiredTitle')}
+        description={t('vocalPranaCheckupTitle') + " is a Premium Feature."}
+      />
+
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
           {t('vocalPranaCheckupTitle')}
@@ -215,7 +258,7 @@ export default function VoiceHealthPage() {
         </p>
       </header>
 
-      {!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53' && (
+      {!isPremium && !isDeveloper && (
         <Card className="mb-6 bg-amber-50 border-amber-200">
           <CardContent className="p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-amber-800">
@@ -264,7 +307,6 @@ export default function VoiceHealthPage() {
                   ) : (
                     <Button 
                       onClick={startRecording} 
-                      disabled={(!isPremium && user?.uid !== 'LPBTRz3AMafKtZVgzJWm5Aisxc53') || isAnalyzing} 
                       className="h-16 w-16 rounded-full"
                     >
                       <Mic className="h-8 w-8" />

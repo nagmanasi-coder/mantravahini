@@ -14,6 +14,8 @@ import { chatWithGuide } from '@/ai/flows/spiritual-guide-flow';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { UpgradeDialog } from '@/app/components/upgrade-dialog';
+import { useRouter } from 'next/navigation';
 
 interface Message {
   role: 'user' | 'model';
@@ -22,14 +24,16 @@ interface Message {
 
 export default function AiGuidePage() {
   const { t, language } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [chatCount, setChatCount] = useState(0);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -38,15 +42,23 @@ export default function AiGuidePage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremium = userProfile?.subscriptionTier === 'premium';
+  const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
   useEffect(() => {
-    const savedCount = localStorage.getItem('aiChatCount');
-    if (savedCount) {
-      setChatCount(parseInt(savedCount, 10));
+    if (user) {
+      const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDeveloper(isActualDeveloper && devModeEnabled);
     }
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (!isUserLoading && !isPremium && !isDeveloper) {
+      setShowUpgradeDialog(true);
+    }
+  }, [isPremium, isUserLoading, isDeveloper]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -57,12 +69,8 @@ export default function AiGuidePage() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    if (!isPremium && chatCount >= 5) {
-      toast({
-        variant: 'destructive',
-        title: t('toastUpgradeRequiredTitle'),
-        description: t('aiChatLimitReached'),
-      });
+    if (!isPremium && !isDeveloper) {
+      setShowUpgradeDialog(true);
       return;
     }
 
@@ -80,12 +88,6 @@ export default function AiGuidePage() {
       });
 
       setMessages([...newMessages, { role: 'model', content: result.response }]);
-      
-      if (!isPremium) {
-        const newCount = chatCount + 1;
-        setChatCount(newCount);
-        localStorage.setItem('aiChatCount', newCount.toString());
-      }
     } catch (error: any) {
       console.error('AI Chat Error:', error);
       toast({
@@ -102,8 +104,26 @@ export default function AiGuidePage() {
     setMessages([]);
   };
 
+  if (isUserLoading) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
+        <p className="text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={(isOpen) => {
+          if (!isOpen) router.push('/');
+          setShowUpgradeDialog(isOpen);
+        }}
+        title={t('toastUpgradeRequiredTitle')}
+        description={t('aiChatLimitReached')}
+      />
+
       <header className="mb-8 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
           {t('aiGuideTitle')}
@@ -113,13 +133,13 @@ export default function AiGuidePage() {
         </p>
       </header>
 
-      {!isPremium && (
+      {!isPremium && !isDeveloper && (
         <Card className="mb-6 bg-amber-50 border-amber-200">
           <CardContent className="p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-amber-800">
               <ShieldAlert className="h-5 w-5" />
               <p className="text-sm font-medium">
-                {t('aiChatFreeMessagesLeft')}: <span className="font-bold">{Math.max(0, 5 - chatCount)}</span>
+                {t('premiumPlanTitle')} feature
               </p>
             </div>
             <Button asChild size="sm" variant="outline" className="border-amber-400 text-amber-800 hover:bg-amber-100">
@@ -210,13 +230,13 @@ export default function AiGuidePage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={t('aiChatPlaceholder')}
-              disabled={isLoading || (!isPremium && chatCount >= 5)}
+              disabled={isLoading}
               className="flex-1 bg-background"
             />
             <Button 
               type="submit" 
               size="icon" 
-              disabled={isLoading || !input.trim() || (!isPremium && chatCount >= 5)}
+              disabled={isLoading || !input.trim()}
               className="bg-primary hover:bg-primary/90"
             >
               <Send className="h-4 w-4" />
