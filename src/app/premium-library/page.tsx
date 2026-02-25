@@ -31,16 +31,7 @@ const staticBooks: PremiumBook[] = [
     author: 'Nagaraja D',
     description: 'ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವ ಪ್ರಾಯೋಗಿಕ ವಿಧಾನ.',
     descriptionEn: 'Practical methods to heal diseases through Hanuman Chalisa.',
-    pdfUrl: '/manuals/hanuman-therapy.pdf',
-  },
-  {
-    id: 'book-2',
-    title: 'ಮಂತ್ರ ವಿಜ್ಞಾನ ರಹಸ್ಯಗಳು',
-    titleEn: 'Secrets of Mantra Science',
-    author: 'Nagaraja D',
-    description: 'ಮಂತ್ರಗಳ ಧ್ವನಿ ಕಂಪನ ಮತ್ತು ಅವುಗಳ ವೈಜ್ಞಾನಿಕ ಪರಿಣಾಮಗಳ ಬಗ್ಗೆ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ.',
-    descriptionEn: 'Complete information about sound vibrations of mantras and their scientific effects.',
-    pdfUrl: '/manuals/mantra-secrets.pdf',
+    pdfUrl: 'https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fhanuman-therapy-demo.pdf?alt=media',
   }
 ];
 
@@ -62,7 +53,7 @@ export default function PremiumLibraryPage() {
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremium = userProfile?.subscriptionTier === 'premium';
 
-  // Fetch uploaded PDF assets
+  // Fetch uploaded PDF assets from Firestore metadata
   const libraryAssetsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'assets'), where('fileType', '==', 'document'));
@@ -177,7 +168,7 @@ export default function PremiumLibraryPage() {
           <div className="flex-1 bg-white relative">
             {selectedBookUrl && (
               <iframe
-                src={`${selectedBookUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedBookUrl)}&embedded=true`}
                 className="w-full h-full border-none"
                 title="Book Viewer"
               />

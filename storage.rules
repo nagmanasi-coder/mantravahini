@@ -1,20 +1,18 @@
 // --- FIREBASE STORAGE SECURITY RULES ---
-// Updated: 2024-05-21 14:00 (Force update for Developer permissions)
+// Updated: 2024-05-21 15:30 (Updated for cross-origin PDF viewing)
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Helper function to check if the user is the primary developer
     function isDeveloper() {
       return request.auth != null && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
 
-    // Rules for the assets folder
     match /assets/{allPaths=**} {
-      // Allow public read access so premium content can be consumed
+      // Public read access is necessary for embedded viewers and audio players
       allow read: if true;
       
-      // Explicitly allow developer to write/create/delete
+      // Write access restricted to the developer
       allow write, create, delete: if isDeveloper();
     }
   }
