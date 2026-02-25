@@ -7,7 +7,7 @@ import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { BookText, ShieldAlert, ArrowLeft, Eye, X, Loader2, BookOpen } from 'lucide-react';
-import Link from 'next/navigation';
+import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

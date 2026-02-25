@@ -1,5 +1,5 @@
 // --- FIREBASE STORAGE SECURITY RULES ---
-// Updated: 2024-05-20
+// Updated: 2024-05-21 14:00 (Force update for Developer permissions)
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -14,8 +14,8 @@ service firebase.storage {
       // Allow public read access so premium content can be consumed
       allow read: if true;
       
-      // Only the developer can upload or delete files
-      allow write: if isDeveloper();
+      // Explicitly allow developer to write/create/delete
+      allow write, create, delete: if isDeveloper();
     }
   }
 }
