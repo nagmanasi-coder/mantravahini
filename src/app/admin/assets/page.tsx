@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useCollection, useFirestore, useUser, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
@@ -30,7 +30,8 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus, FileAudio, Video, FileText, ImageIcon } from 'lucide-react';
+import { Trash2, Plus, FileAudio, Video, FileText, ImageIcon, Upload, Loader2, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface Asset {
   id: string;
@@ -47,7 +48,7 @@ const assetFormSchema = z.object({
   fileName: z.string().min(1, 'File Name is required.'),
   fileType: z.enum(['audio', 'video', 'document', 'image']),
   mimeType: z.string().min(1, 'MIME Type is required.'),
-  url: z.string().url('Please enter a valid URL.'),
+  url: z.string().min(1, 'URL or File Data is required.'),
   sizeBytes: z.coerce.number().min(0),
 });
 
@@ -59,6 +60,8 @@ export default function AdminAssetsPage() {
 
   const [isDeveloper, setIsDeveloper] = useState(false);
   const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
     if (!userLoading) {
@@ -89,6 +92,47 @@ export default function AdminAssetsPage() {
     },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "File Too Large",
+        description: "Direct Firestore uploads are limited to 1MB. Please use a smaller file or a public URL.",
+      });
+      return;
+    }
+
+    setIsProcessingFile(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      
+      // Auto-populate fields
+      form.setValue('fileName', file.name);
+      form.setValue('mimeType', file.type);
+      form.setValue('sizeBytes', file.size);
+      form.setValue('url', base64);
+      
+      // Attempt to guess type
+      if (file.type.startsWith('audio/')) form.setValue('fileType', 'audio');
+      else if (file.type.startsWith('video/')) form.setValue('fileType', 'video');
+      else if (file.type.startsWith('image/')) form.setValue('fileType', 'image');
+      else if (file.type === 'application/pdf') form.setValue('fileType', 'document');
+
+      // Auto-generate ID if empty
+      if (!form.getValues('id')) {
+        form.setValue('id', file.name.toLowerCase().replace(/[^a-z0-9]/g, '-'));
+      }
+
+      setIsProcessingFile(false);
+      toast({ title: "File Ready", description: "Metadata populated. You can now save the asset." });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleAddAsset = (values: z.infer<typeof assetFormSchema>) => {
     if (!firestore) return;
     const assetDocRef = doc(firestore, 'assets', values.id);
@@ -109,7 +153,7 @@ export default function AdminAssetsPage() {
     
     form.reset();
     setIsAddAssetDialogOpen(false);
-    toast({ title: "Asset Added", description: "Asset metadata has been saved successfully." });
+    toast({ title: "Asset Saved", description: "Asset has been stored in Firestore." });
   };
 
   const handleDeleteAsset = (assetId: string) => {
@@ -149,7 +193,7 @@ export default function AdminAssetsPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-headline font-bold text-primary">Asset Management</h1>
-          <p className="text-muted-foreground">Manage metadata for audios, videos, PDFs, and images.</p>
+          <p className="text-muted-foreground">Manage digital files stored directly in Firestore.</p>
         </div>
         <Button onClick={() => setIsAddAssetDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -158,13 +202,38 @@ export default function AdminAssetsPage() {
       </div>
 
       <Dialog open={isAddAssetDialogOpen} onOpenChange={setIsAddAssetDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Digital Asset</DialogTitle>
             <DialogDescription>
-              Register a new asset URL and metadata in Firestore.
+              Upload a file or provide a URL to store in Firestore.
             </DialogDescription>
           </DialogHeader>
+          
+          <div 
+            className="group relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 transition-colors hover:bg-muted/50 cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isProcessingFile ? (
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            ) : (
+              <Upload className="h-10 w-10 text-muted-foreground group-hover:text-primary transition-colors" />
+            )}
+            <p className="mt-2 text-sm font-semibold">
+              {isProcessingFile ? "Reading file..." : "Click here to upload file directly"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Max 1MB for direct Firestore storage
+            </p>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              onChange={handleFileChange} 
+              accept="audio/*,video/*,image/*,application/pdf"
+            />
+          </div>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleAddAsset)} className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -187,7 +256,7 @@ export default function AdminAssetsPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select type" />
@@ -223,9 +292,9 @@ export default function AdminAssetsPage() {
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Public URL</FormLabel>
+                    <FormLabel>URL or Base64 Data</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://storage.googleapis.com/..." {...field} />
+                      <Input placeholder="https://... or auto-filled" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -259,8 +328,19 @@ export default function AdminAssetsPage() {
                   )}
                 />
               </div>
+
+              {form.watch('sizeBytes') > 1024 * 1024 && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    This file exceeds the 1MB Firestore limit. It may fail to save.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <DialogFooter>
-                <Button type="submit">Save Asset</Button>
+                <Button type="submit" disabled={isProcessingFile}>Save Asset</Button>
               </DialogFooter>
             </form>
           </Form>
@@ -299,7 +379,7 @@ export default function AdminAssetsPage() {
                 <TableRow key={asset.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium">{asset.fileName}</span>
+                      <span className="font-medium truncate max-w-[200px]">{asset.fileName}</span>
                       <span className="text-[10px] text-muted-foreground font-mono">{asset.id}</span>
                     </div>
                   </TableCell>
