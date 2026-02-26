@@ -26,6 +26,7 @@ import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useNotifications } from "@/hooks/use-notifications";
 import {
   ChartContainer,
   ChartTooltip,
@@ -46,6 +47,7 @@ export default function Home() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { checkAndNotifyPainMantraReminder } = useNotifications();
   
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
@@ -69,8 +71,19 @@ export default function Home() {
     };
     loadHistory();
     window.addEventListener('painHistoryUpdated', loadHistory);
-    return () => window.removeEventListener('painHistoryUpdated', loadHistory);
-  }, []);
+    
+    // Check for reminder after 2 seconds of app load
+    const reminderTimer = setTimeout(() => {
+      if (userProfile?.subscriptionTier === 'free' || !userProfile) {
+        checkAndNotifyPainMantraReminder();
+      }
+    }, 2000);
+
+    return () => {
+      window.removeEventListener('painHistoryUpdated', loadHistory);
+      clearTimeout(reminderTimer);
+    };
+  }, [checkAndNotifyPainMantraReminder, userProfile]);
 
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;

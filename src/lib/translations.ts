@@ -74,7 +74,7 @@ export const translations = {
     hanumanTherapyFeeDetails: "ಕಾಯಿಲೆ, ಅದರ ತೀವ್ರತೆ ಮತ್ತು ವಯಸ್ಸನ್ನು ಆಧರಿಸಿ ಶುಲ್ಕವು ಬದಲಾಗುತ್ತದೆ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ och ಕಾರ್ಯವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ. ಉಚಿತವಾಗಿ 👇",
     freeHealingTitle: "ಉಚಿತ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ",
     freeHealingCondition1: "ಮಂತ್ರವಾಹಿನಿಯ ಪ್ರೀಮಿಯಂ ಸದಸ್ಯರಾಗಿರಬೇಕು.",
-    freeHealingCondition2: "ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು ಮತ್ತು ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
+    freeHealingCondition2: "ಪ್ರಾಮಾಣಿಕತೆಯಿಂದ ಗುರು och ಮಾನವೀಯತೆಯ ಸೇವೆಗೆ ಸಮರ್ಪಿತರಾಗಿರಬೇಕು.",
     contact: "ಸಂಪರ್ಕಿಸಿ",
     ourAppsTitle: "ನಮ್ಮ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು",
     ourAppsSubtitle: "ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಅಭ್ಯಾಸಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ನಮ್ಮ ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಸಂಗ್ರಹವನ್ನು ಅನ್ವೇಷಿಸಿ.",
@@ -274,7 +274,7 @@ export const translations = {
     talkToAiGuide: "AI ದೈವಿಕ ಮಾರ್ಗದರ್ಶಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ",
     chakra_muladhara: "ಮೂಲಾಧಾರ",
     chakra_svadhishthana: "ಸ್ವಾಧಿಷ್ಠಾನ",
-    chakra_manipura: "ಮಣಿಪುರ",
+    chakra_manipura: "ಮೂನಾಂತರ",
     chakra_anahata: "ಅನಾಹತ",
     chakra_vishuddha: "ವಿಶುದ್ಧ",
     chakra_ajna: "ಆಜ್ಞಾ",
@@ -330,6 +330,8 @@ export const translations = {
     notificationHealingSavedBody: "ನಿಮ್ಮ ಪ್ರಗತಿಯನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ದಾಖಲಿಸಲಾಗಿದೆ.",
     notificationMemorySessionTitle: "ನೆನಪು ಗುಣಮುಖವಾಗಿದೆ",
     notificationMemorySessionBody: "ನೀವು ಭಾವನಾತ್ಮಕ ಹೊರೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಕಡಿಮೆ ಮಾಡಿದ್ದೀರಿ.",
+    notificationPainMantraReminderTitle: "ನೋವು ನಿವಾರಣೆ ನೆನಪು",
+    notificationPainMantraReminderBody: "ಇಂದು ನಿಮ್ಮ ನೋವನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಮಂತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಿ!",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -658,5 +660,7 @@ export const translations = {
     notificationHealingSavedBody: "Your progress has been recorded in your profile.",
     notificationMemorySessionTitle: "Memory Healed",
     notificationMemorySessionBody: "You have successfully reduced the emotional charge.",
+    notificationPainMantraReminderTitle: "Pain Relief Reminder",
+    notificationPainMantraReminderBody: "Don't forget to play your pain relief mantra today to reduce your pain!",
   }
 };
