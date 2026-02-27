@@ -13,6 +13,7 @@ import { z } from 'genkit';
 import OpenAI from 'openai';
 
 // Initialize the OpenAI client for Sarvam AI with the required subscription key header
+// Root Cause Fix: Explicitly sending 'api-subscription-key' header which Sarvam AI mandates.
 const client = new OpenAI({
   apiKey: process.env.SARVAM_AI_API_KEY || '',
   baseURL: 'https://api.sarvam.ai/v1',
@@ -65,7 +66,7 @@ const spiritualGuideFlow = ai.defineFlow(
       4. Activation: If healing is discussed, mention contacting the center at 7022070287 for personalized activation.
       5. Integrity: Do not invent rituals. Stick to the provided app context.`;
 
-    const messages: any[] = [
+    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
       {
         role: 'system',
         content: systemPrompt,
@@ -90,7 +91,7 @@ const spiritualGuideFlow = ai.defineFlow(
 
     try {
       if (!process.env.SARVAM_AI_API_KEY) {
-        throw new Error('Missing Sarvam AI API Key');
+        throw new Error('API_KEY_MISSING');
       }
 
       const response = await client.chat.completions.create({
@@ -103,14 +104,14 @@ const spiritualGuideFlow = ai.defineFlow(
       const responseText = response.choices[0]?.message?.content;
 
       if (!responseText) {
-        throw new Error('The AI guide was unable to generate a response.');
+        throw new Error('EMPTY_RESPONSE');
       }
 
       return { response: responseText };
     } catch (error: any) {
-      console.error('Sarvam AI Error:', error);
+      console.error('Sarvam AI Error:', error?.message || error);
       
-      // Return a friendly error instead of throwing to prevent "Server Components render" box
+      // Return a friendly error instead of throwing to prevent generic crash UI
       const errorMsg = input.language === 'kn' 
         ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ." 
         : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments.";
