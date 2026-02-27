@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -13,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
@@ -22,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
   premiumCycleStartDate?: string | null;
+  referralCode?: string;
 };
 
 export function UserProfile() {
@@ -91,6 +93,7 @@ export function UserProfile() {
   };
 
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+  const isPremiumUser = userProfile?.subscriptionTier === 'premium';
   const remainingDays = isPaidUser ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
 
   if (!isMounted || loading) {
@@ -148,6 +151,17 @@ export function UserProfile() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isPremiumUser && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/referral">
+                <Share2 className="mr-2 h-4 w-4" />
+                <span>{t('referAndEarn')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {isActualDeveloper && (
           <>
             <DropdownMenuItem asChild>
