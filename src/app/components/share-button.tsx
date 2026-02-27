@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Share2 } from "lucide-react";
@@ -19,13 +18,14 @@ export function ShareButton() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string; isPremium?: boolean; subscriptionTier?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ referralCode?: string; subscriptionTier?: string }>(userDocRef);
 
   const handleShare = async () => {
-    const baseUrl = window.location.origin;
+    // Always use the published production domain for sharing
+    const baseUrl = "https://mantravahini.vercel.app";
     const referralCode = userProfile?.referralCode;
     const isPremium = userProfile?.subscriptionTier === 'premium';
-    const shareUrl = isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.origin;
+    const shareUrl = isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : baseUrl;
     
     const shareData = {
       title: t('appTitle'),

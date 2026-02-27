@@ -67,8 +67,9 @@ export default function ReferralPage() {
   }, [isPremium, isDeveloper, isUserLoading]);
 
   const referralLink = useMemo(() => {
-    if (typeof window === 'undefined' || !userProfile?.referralCode) return '';
-    return `${window.location.origin}?ref=${userProfile.referralCode}`;
+    if (!userProfile?.referralCode) return '';
+    // Use the published production domain for shared links
+    return `https://mantravahini.vercel.app?ref=${userProfile.referralCode}`;
   }, [userProfile?.referralCode]);
 
   const handleCopy = () => {

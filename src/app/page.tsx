@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -97,9 +96,10 @@ export default function Home() {
   };
 
   const handleShare = async () => {
-    const baseUrl = window.location.origin;
+    // Always use the published production domain for sharing
+    const baseUrl = "https://mantravahini.vercel.app";
     const referralCode = userProfile?.referralCode;
-    const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.origin;
+    const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : baseUrl;
 
     const shareData = {
       title: t('appTitle'),
