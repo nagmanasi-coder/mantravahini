@@ -1,13 +1,15 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, TrendingDown, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { Mic, Square, RotateCcw, Activity, ShieldAlert, Sparkles, TrendingUp, TrendingDown, HeartPulse, Zap, Sun, Brain, Flame, History, ChevronRight, AlertCircle, ArrowUpRight, ArrowDownRight, Minus, Clock } from 'lucide-react';
 import { analyzeVoiceHealth, type VoiceAnalysisOutput } from '@/ai/flows/voice-health-analysis-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -43,16 +45,22 @@ export default function VoiceHealthPage() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [history, setHistory] = useState<StoredVoiceReport[]>([]);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [countdown, setCountdown] = useState<string>('');
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ 
+    subscriptionTier?: 'free' | 'basic' | 'premium',
+    lastVocalPranaDate?: string 
+  }>(userDocRef);
+
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
@@ -65,6 +73,48 @@ export default function VoiceHealthPage() {
     }
     return false;
   }, [user]);
+
+  // Weekly Limit Logic
+  const canPerformCheckup = useMemo(() => {
+    if (isDeveloper) return true;
+    if (!userProfile?.lastVocalPranaDate) return true;
+    
+    const lastDate = new Date(userProfile.lastVocalPranaDate);
+    const nextDate = new Date(lastDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return new Date() >= nextDate;
+  }, [userProfile, isDeveloper]);
+
+  useEffect(() => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    if (!canPerformCheckup && userProfile?.lastVocalPranaDate) {
+      const updateCountdown = () => {
+        const lastDate = new Date(userProfile.lastVocalPranaDate!);
+        const nextDate = new Date(lastDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const diff = nextDate.getTime() - new Date().getTime();
+
+        if (diff <= 0) {
+          setCountdown('');
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      };
+
+      updateCountdown();
+      countdownRef.current = setInterval(updateCountdown, 1000);
+    }
+
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [canPerformCheckup, userProfile]);
 
   useEffect(() => {
     if (!isUserLoading && !isPremium && !isDeveloper) {
@@ -89,6 +139,15 @@ export default function VoiceHealthPage() {
   const startRecording = async () => {
     if (!isPremium && !isDeveloper) {
       setShowUpgradeDialog(true);
+      return;
+    }
+
+    if (!canPerformCheckup) {
+      toast({
+        variant: 'destructive',
+        title: t('vocalPranaWaitTitle'),
+        description: t('vocalPranaWaitDesc') + ' ' + countdown,
+      });
       return;
     }
 
@@ -146,15 +205,23 @@ export default function VoiceHealthPage() {
         setIsAnalyzing(false);
 
         if (analysis.isMantraMatch && analysis.metrics.physicalVitality > 0) {
+          const timestamp = new Date().toISOString();
           const newReport: StoredVoiceReport = {
             ...analysis,
             id: crypto.randomUUID(),
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
           };
           const updatedHistory = [newReport, ...history].slice(0, 20);
           setHistory(updatedHistory);
           localStorage.setItem('voiceHealthHistory', JSON.stringify(updatedHistory));
           
+          // Update last checkup date in Firestore
+          if (!isDeveloper && firestore && user) {
+            updateDocumentNonBlocking(doc(firestore, 'users', user.uid), {
+              lastVocalPranaDate: timestamp
+            });
+          }
+
           toast({
             title: 'Analysis Complete',
             description: 'Your Health and Prana Report is ready.',
@@ -274,10 +341,28 @@ export default function VoiceHealthPage() {
         </Card>
       )}
 
+      {isPremium && !canPerformCheckup && !isDeveloper && (
+        <Card className="mb-6 bg-blue-50 border-blue-200">
+          <CardContent className="p-4 flex flex-col items-center text-center gap-3">
+            <div className="flex items-center gap-2 text-blue-800">
+              <Clock className="h-5 w-5" />
+              <p className="font-bold">{t('vocalPranaWaitTitle')}</p>
+            </div>
+            <p className="text-sm text-blue-700">{t('vocalPranaWaitDesc')}</p>
+            <div className="bg-white/50 px-6 py-2 rounded-full font-mono text-xl font-bold text-blue-900 border border-blue-200">
+              {countdown}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-12">
         {/* Recording Section */}
         <section className="space-y-6">
-          <Card className="border-2 border-primary/20 shadow-xl overflow-hidden">
+          <Card className={cn(
+            "border-2 border-primary/20 shadow-xl overflow-hidden transition-opacity",
+            (!canPerformCheckup && !isDeveloper && !isRecording) ? "opacity-50" : "opacity-100"
+          )}>
             <CardHeader className="bg-muted/30">
               <CardTitle className="text-xl font-headline flex items-center gap-2">
                 <Activity className="h-5 w-5 text-primary" />
@@ -308,13 +393,14 @@ export default function VoiceHealthPage() {
                     <Button 
                       onClick={startRecording} 
                       className="h-16 w-16 rounded-full"
+                      disabled={!canPerformCheckup && !isDeveloper}
                     >
                       <Mic className="h-8 w-8" />
                     </Button>
                   )}
                 </div>
                 <p className="text-sm font-mono font-bold">
-                  {isRecording ? `${recordingTime}s Recording...` : audioBlob ? t('vibrationAnalyzed') : t('tapMicToStart')}
+                  {isRecording ? `${recordingTime}s Recording...` : audioBlob ? t('vibrationAnalyzed') : (!canPerformCheckup && !isDeveloper) ? t('vocalPranaWaitTitle') : t('tapMicToStart')}
                 </p>
               </div>
             </CardContent>

@@ -50,6 +50,7 @@
         "fcmToken": { "type": "string", "description": "Token for push notifications." },
         "dailyAiMessages": { "type": "number" },
         "lastAiMessageDate": { "type": "string", "format": "date-time" },
+        "lastVocalPranaDate": { "type": "string", "format": "date-time", "description": "Last time Vocal Prana analysis was performed." },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]
