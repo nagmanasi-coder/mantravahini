@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -111,6 +110,7 @@ export function UserProfile() {
   }
 
   const isActualDeveloper = user.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+  const showReferralInMenu = isPremiumUser || (isActualDeveloper && isDevMode);
 
   return (
     <DropdownMenu>
@@ -151,7 +151,7 @@ export function UserProfile() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {isPremiumUser && (
+        {showReferralInMenu && (
           <>
             <DropdownMenuItem asChild>
               <Link href="/referral">

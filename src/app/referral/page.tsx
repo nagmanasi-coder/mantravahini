@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -41,21 +40,31 @@ export default function ReferralPage() {
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
 
-  // Generate a referral code if missing for premium users
+  const isDeveloper = useMemo(() => {
+    if (!user) return false;
+    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
+    if (typeof window !== 'undefined') {
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      return isActualDeveloper && devModeEnabled;
+    }
+    return false;
+  }, [user]);
+
+  // Generate a referral code if missing for premium users or developers
   useEffect(() => {
-    if (isPremium && !userProfile?.referralCode && firestore && user) {
+    if ((isPremium || isDeveloper) && !userProfile?.referralCode && firestore && user) {
       const generatedCode = user.uid.substring(0, 6).toUpperCase();
       updateDocumentNonBlocking(doc(firestore, 'users', user.uid), {
         referralCode: generatedCode
       });
     }
-  }, [isPremium, userProfile?.referralCode, firestore, user]);
+  }, [isPremium, isDeveloper, userProfile?.referralCode, firestore, user]);
 
   useEffect(() => {
-    if (!isUserLoading && !isPremium) {
+    if (!isUserLoading && !isPremium && !isDeveloper) {
       setShowUpgradeDialog(true);
     }
-  }, [isPremium, isUserLoading]);
+  }, [isPremium, isDeveloper, isUserLoading]);
 
   const referralLink = useMemo(() => {
     if (typeof window === 'undefined' || !userProfile?.referralCode) return '';
