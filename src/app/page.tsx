@@ -72,7 +72,6 @@ export default function Home() {
     loadHistory();
     window.addEventListener('painHistoryUpdated', loadHistory);
     
-    // Check for reminder after 2 seconds of app load
     const reminderTimer = setTimeout(() => {
       if (userProfile?.subscriptionTier === 'free' || !userProfile) {
         checkAndNotifyPainMantraReminder();
@@ -100,7 +99,7 @@ export default function Home() {
   const handleShare = async () => {
     const baseUrl = window.location.origin;
     const referralCode = userProfile?.referralCode;
-    const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+    const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.origin;
 
     const shareData = {
       title: t('appTitle'),
@@ -108,33 +107,36 @@ export default function Home() {
       url: shareUrl,
     };
 
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
       } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error("Error sharing:", error);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not share the app at this moment.",
-          });
+        if (error.name === 'AbortError' || error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
+          console.warn("Share suppressed by browser policy or user cancellation.");
+          return;
         }
+        
+        console.warn("Navigator share failed, attempting copy fallback:", error);
+        copyFallback(shareData.url);
       }
     } else {
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        toast({
-          title: "Copied to clipboard",
-          description: "App link has been copied to your clipboard.",
-        });
-      } catch (error) {
-         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not copy link to clipboard.",
-        });
-      }
+      copyFallback(shareData.url);
+    }
+  };
+
+  const copyFallback = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link Copied",
+        description: "App link has been copied to your clipboard.",
+      });
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not share or copy link.",
+      });
     }
   };
 

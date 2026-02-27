@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Share2 } from "lucide-react";
@@ -18,12 +19,13 @@ export function ShareButton() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string; isPremium?: boolean }>(userDocRef);
+  const { data: userProfile } = useDoc<{ referralCode?: string; isPremium?: boolean; subscriptionTier?: string }>(userDocRef);
 
   const handleShare = async () => {
     const baseUrl = window.location.origin;
     const referralCode = userProfile?.referralCode;
-    const shareUrl = userProfile?.isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.href;
+    const isPremium = userProfile?.subscriptionTier === 'premium';
+    const shareUrl = isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : window.location.origin;
     
     const shareData = {
       title: t('appTitle'),
@@ -31,35 +33,37 @@ export function ShareButton() {
       url: shareUrl,
     };
 
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
       } catch (error: any) {
-        // Silently fail if the user cancels the share dialog.
-        if (error.name === 'AbortError') {
+        // Handle common cases silently to avoid developer overlays
+        if (error.name === 'AbortError' || error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
+          console.warn("Share operation was cancelled or blocked by browser policy.");
           return;
         }
-        console.error("Error sharing:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not share the app at this moment.",
-        });
+        
+        console.warn("Share failed, falling back to clipboard:", error);
+        copyToClipboard(shareData.url);
       }
     } else {
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        toast({
-          title: "Copied to clipboard",
-          description: "App link has been copied to your clipboard.",
-        });
-      } catch (error) {
-         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not copy link to clipboard.",
-        });
-      }
+      copyToClipboard(shareData.url);
+    }
+  };
+
+  const copyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: t('shareAppButton'),
+        description: "App link has been copied to your clipboard.",
+      });
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not copy link to clipboard.",
+      });
     }
   };
 
