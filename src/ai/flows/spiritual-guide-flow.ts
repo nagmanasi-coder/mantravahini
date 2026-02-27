@@ -12,10 +12,13 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import OpenAI from 'openai';
 
-// Initialize the OpenAI client for Sarvam AI
+// Initialize the OpenAI client for Sarvam AI with the required subscription key header
 const client = new OpenAI({
   apiKey: process.env.SARVAM_AI_API_KEY || '',
   baseURL: 'https://api.sarvam.ai/v1',
+  defaultHeaders: {
+    'api-subscription-key': process.env.SARVAM_AI_API_KEY || '',
+  }
 });
 
 const ChatInputSchema = z.object({
@@ -70,7 +73,9 @@ const spiritualGuideFlow = ai.defineFlow(
     ];
 
     if (input.history && input.history.length > 0) {
-      input.history.forEach(h => {
+      // Limit history to last 6 messages to keep context window small and avoid token limits
+      const recentHistory = input.history.slice(-6);
+      recentHistory.forEach(h => {
         messages.push({
           role: h.role === 'model' ? 'assistant' : 'user',
           content: h.content,
@@ -84,23 +89,33 @@ const spiritualGuideFlow = ai.defineFlow(
     });
 
     try {
+      if (!process.env.SARVAM_AI_API_KEY) {
+        throw new Error('Missing Sarvam AI API Key');
+      }
+
       const response = await client.chat.completions.create({
         model: 'sarvam-m',
         messages: messages,
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 500,
       });
 
       const responseText = response.choices[0]?.message?.content;
 
       if (!responseText) {
-        throw new Error('The AI guide was unable to generate a response. Please check your Sarvam AI API key or dashboard.');
+        throw new Error('The AI guide was unable to generate a response.');
       }
 
       return { response: responseText };
     } catch (error: any) {
       console.error('Sarvam AI Error:', error);
-      throw new Error(`Failed to contact the Divine Guide: ${error.message}`);
+      
+      // Return a friendly error instead of throwing to prevent "Server Components render" box
+      const errorMsg = input.language === 'kn' 
+        ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ." 
+        : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments.";
+      
+      return { response: errorMsg };
     }
   }
 );
