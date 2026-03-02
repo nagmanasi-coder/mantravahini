@@ -8,12 +8,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -40,11 +41,13 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -57,9 +60,9 @@ export default function LoginPage() {
   const handlePasswordReset = async () => {
     setError(null);
     const email = form.getValues('email');
-    const isEmailValid = await form.trigger('email'); // Manually trigger validation
+    const isEmailValid = await form.trigger('email');
     if (!isEmailValid) {
-        return; // Don't proceed if email is invalid
+        return;
     }
 
     try {
@@ -75,15 +78,44 @@ export default function LoginPage() {
 
   const handleEmailAuth = async (values: z.infer<typeof loginSchema>) => {
     setError(null);
+    setIsLoading(true);
     try {
+      let user;
       if (isSigningUp) {
-        await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const result = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        user = result.user;
       } else {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        const result = await signInWithEmailAndPassword(auth, values.email, values.password);
+        user = result.user;
       }
+
+      // Ensure profile exists in Firestore
+      if (firestore && user) {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(userDocRef);
+        
+        if (!docSnap.exists()) {
+          const referralCode = localStorage.getItem('referralCode');
+          const newUserProfile = {
+            uid: user.uid,
+            displayName: user.displayName || values.email.split('@')[0],
+            email: user.email,
+            photoURL: user.photoURL || '',
+            subscriptionTier: 'free',
+            referredBy: referralCode || null,
+            createdAt: new Date().toISOString(),
+          };
+          await setDoc(userDocRef, newUserProfile);
+          // Clear referral after use
+          localStorage.removeItem('referralCode');
+        }
+      }
+
       router.push('/');
     } catch (err: any) {
       setError(getFirebaseErrorMessage(err.code));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -135,6 +167,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="name@example.com"
                         {...field}
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -154,6 +187,7 @@ export default function LoginPage() {
                                 variant="link"
                                 className="p-0 h-auto text-sm font-normal"
                                 onClick={handlePasswordReset}
+                                disabled={isLoading}
                             >
                                 Forgot Password?
                             </Button>
@@ -165,6 +199,7 @@ export default function LoginPage() {
                           type={showPassword ? 'text' : 'password'}
                           placeholder="••••••••"
                           {...field}
+                          disabled={isLoading}
                         />
                         <Button
                           type="button"
@@ -172,6 +207,7 @@ export default function LoginPage() {
                           size="icon"
                           className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
                           onClick={() => setShowPassword((prev) => !prev)}
+                          disabled={isLoading}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -191,8 +227,8 @@ export default function LoginPage() {
               {error && (
                 <p className="text-sm font-medium text-destructive">{error}</p>
               )}
-              <Button type="submit" className="w-full">
-                {isSigningUp ? 'Create Account' : 'Sign In'}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Processing...' : (isSigningUp ? 'Create Account' : 'Sign In')}
               </Button>
             </form>
           </Form>
@@ -207,6 +243,7 @@ export default function LoginPage() {
                 setError(null);
                 form.reset();
               }}
+              disabled={isLoading}
             >
               {isSigningUp ? 'Sign In' : 'Sign Up'}
             </Button>
