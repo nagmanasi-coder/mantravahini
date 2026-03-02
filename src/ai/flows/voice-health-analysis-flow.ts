@@ -3,19 +3,12 @@
  * @fileOverview Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
  * 
  * This flow uses a prioritized two-stage analysis:
- * 1. Primary: Sarvam STT (transcription) + Sarvam-M (LLM reasoning).
+ * 1. Primary: Sarvam STT (transcription) + Sarvam-M REST API (LLM reasoning).
  * 2. Fallback: Gemini 1.5 Flash (Direct audio vibration analysis).
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import OpenAI from 'openai';
-
-// Initialize the OpenAI client for Sarvam AI reasoning
-const sarvamClient = new OpenAI({
-  apiKey: process.env.SARVAM_AI_API_KEY || '',
-  baseURL: 'https://api.sarvam.ai/v1',
-});
 
 const ChakraSchema = z.object({
   score: z.number().describe("Energy level 0-100."),
@@ -62,8 +55,9 @@ export async function analyzeVoiceHealth(input: VoiceAnalysisInput): Promise<Voi
  */
 async function transcribeWithSarvam(audioDataUri: string): Promise<string> {
   try {
+    const apiKey = process.env.SARVAM_AI_API_KEY;
     const base64 = audioDataUri.split(',')[1];
-    if (!base64) return '';
+    if (!base64 || !apiKey) return '';
     
     const buffer = Buffer.from(base64, 'base64');
     const formData = new FormData();
@@ -74,7 +68,7 @@ async function transcribeWithSarvam(audioDataUri: string): Promise<string> {
     const response = await fetch('https://api.sarvam.ai/v1/speech-to-text', {
       method: 'POST',
       headers: {
-        'api-subscription-key': process.env.SARVAM_AI_API_KEY || '',
+        'api-subscription-key': apiKey,
       },
       body: formData,
     });
@@ -94,9 +88,12 @@ async function transcribeWithSarvam(audioDataUri: string): Promise<string> {
 }
 
 /**
- * Uses Sarvam-M to generate health report based on verified transcription.
+ * Uses Sarvam-M REST API to generate health report.
  */
 async function analyzeWithSarvamM(transcript: string, language: 'kn' | 'en'): Promise<VoiceAnalysisOutput> {
+  const apiKey = process.env.SARVAM_AI_API_KEY;
+  if (!apiKey) throw new Error("API_KEY_MISSING");
+
   const systemPrompt = `You are the Physical Vocal Health and Chakra Analyst for Mantravaahini.
     The user has successfully recited the mantra "Om Hum Hanumate Namah". 
     Verified Transcript: "${transcript}"
@@ -110,16 +107,26 @@ async function analyzeWithSarvamM(transcript: string, language: 'kn' | 'en'): Pr
     CRITICAL: You must return valid JSON matching the requested schema.
     Language: ${language === 'kn' ? 'Kannada' : 'English'}.`;
 
-  const response = await sarvamClient.chat.completions.create({
-    model: 'sarvam-m',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: 'Generate my Vocal Prana health report based on my successful recitation.' }
-    ],
-    response_format: { type: 'json_object' },
+  const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-subscription-key': apiKey,
+    },
+    body: JSON.stringify({
+      model: 'sarvam-m',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: 'Generate my Vocal Prana health report.' }
+      ],
+      response_format: { type: 'json_object' },
+    }),
   });
 
-  const content = response.choices[0]?.message?.content;
+  if (!response.ok) throw new Error(`Sarvam-M failed with status ${response.status}`);
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error('Sarvam-M failed to generate content');
   
   const parsed = JSON.parse(content);
@@ -183,20 +190,17 @@ const voiceHealthFlow = ai.defineFlow(
     }
 
     try {
-      // 1. PRIMARY PATH: Sarvam STT + Sarvam-M
+      // 1. PRIMARY PATH: Sarvam STT + Sarvam-M REST
       const sarvamTranscript = await transcribeWithSarvam(input.audioDataUri);
       
       if (verifyMantra(sarvamTranscript)) {
         try {
-          // Attempt Sarvam-M reasoning first
           return await analyzeWithSarvamM(sarvamTranscript, input.language);
         } catch (sarvamMError) {
-          console.warn('Sarvam-M failed, falling back to Gemini for analysis...');
+          console.warn('Sarvam-M failed, falling back to Gemini...');
           return await analyzeWithGemini(input.audioDataUri, input.language);
         }
       } else {
-        // Mantra verify failed via Sarvam STT, but Sarvam might be less accurate than Gemini for audio.
-        // Let's try Gemini as a fallback for the WHOLE process if Sarvam says no.
         console.log('Sarvam STT did not verify mantra, trying Gemini fallback...');
         const geminiResult = await analyzeWithGemini(input.audioDataUri, input.language);
         if (geminiResult.isMantraMatch) return geminiResult;
@@ -206,7 +210,6 @@ const voiceHealthFlow = ai.defineFlow(
 
     } catch (globalError: any) {
       console.error('Voice Flow Error:', globalError);
-      // FINAL FALLBACK: Attempt Gemini if Sarvam STT failed entirely
       try {
         return await analyzeWithGemini(input.audioDataUri, input.language);
       } catch (e) {

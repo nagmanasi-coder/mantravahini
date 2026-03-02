@@ -2,24 +2,13 @@
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
  *
- * - chatWithGuide - Handles communication with the spiritual guide using Sarvam AI.
+ * - chatWithGuide - Handles communication with the spiritual guide using Sarvam AI REST API.
  * - ChatInput - Input schema for the chat.
  * - ChatOutput - Output schema for the chat response.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import OpenAI from 'openai';
-
-// Initialize the OpenAI client for Sarvam AI with the required subscription key header
-// Root Cause Fix: Explicitly sending 'api-subscription-key' header which Sarvam AI mandates.
-const client = new OpenAI({
-  apiKey: process.env.SARVAM_AI_API_KEY || '',
-  baseURL: 'https://api.sarvam.ai/v1',
-  defaultHeaders: {
-    'api-subscription-key': process.env.SARVAM_AI_API_KEY || '',
-  }
-});
 
 const ChatInputSchema = z.object({
   message: z.string().describe('The user message to the spiritual guide.'),
@@ -94,18 +83,35 @@ const spiritualGuideFlow = ai.defineFlow(
     });
 
     try {
-      if (!process.env.SARVAM_AI_API_KEY) {
+      const apiKey = process.env.SARVAM_AI_API_KEY;
+      if (!apiKey) {
+        console.error("CRITICAL: SARVAM_AI_API_KEY is missing in server environment.");
         throw new Error('API_KEY_MISSING');
       }
 
-      const response = await client.chat.completions.create({
-        model: 'sarvam-m',
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 500,
+      // Use direct fetch to the Sarvam AI REST API for highest reliability with custom headers
+      const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-subscription-key': apiKey,
+        },
+        body: JSON.stringify({
+          model: 'sarvam-m',
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 500,
+        }),
       });
 
-      const responseText = response.choices[0]?.message?.content;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Sarvam AI API Error (${response.status}):`, errorText);
+        throw new Error(`API_FAIL_${response.status}`);
+      }
+
+      const data = await response.json();
+      const responseText = data.choices?.[0]?.message?.content;
 
       if (!responseText) {
         throw new Error('EMPTY_RESPONSE');
@@ -113,12 +119,12 @@ const spiritualGuideFlow = ai.defineFlow(
 
       return { response: responseText };
     } catch (error: any) {
-      console.error('Sarvam AI Error:', error?.message || error);
+      console.error('AI Guide Connectivity Failure:', error?.message || error);
       
-      // Return a friendly error instead of throwing to prevent generic crash UI
+      // Return a localized friendly message instead of crashing
       const errorMsg = input.language === 'kn' 
-        ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ." 
-        : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments.";
+        ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ: 7022070287." 
+        : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments or contact the center: 7022070287.";
       
       return { response: errorMsg };
     }
