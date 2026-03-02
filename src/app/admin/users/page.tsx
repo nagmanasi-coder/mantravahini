@@ -4,8 +4,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { useCollection, useFirestore, useUser, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useCollection, useFirestore, useUser, useDoc, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Table,
@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Search, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface UserProfile {
   uid: string;
@@ -51,6 +61,7 @@ interface UserProfile {
 
 interface AdminUser {
   id: string; // userId
+  uid?: string; // some docs might use uid field
   grantedAt: string;
 }
 
@@ -66,29 +77,34 @@ export default function AdminUsersPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [isDeveloper, setIsDeveloper] = useState(false);
-  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+
+  // Use a listener for the admin status of the current user
+  const adminMarkerRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'admin_users', user.uid);
+  }, [firestore, user]);
+  const { data: adminMarker, isLoading: adminCheckLoading } = useDoc<AdminUser>(adminMarkerRef);
+
+  const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+  const hasAdminAccess = isDeveloper || !!adminMarker;
+
   useEffect(() => {
-    if (!userLoading) {
-      const isActualDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-      setIsDeveloper(isActualDeveloper);
-      if (!user?.uid || !isActualDeveloper) {
-        router.push('/');
-      }
+    if (!userLoading && !adminCheckLoading && !hasAdminAccess) {
+      router.push('/');
     }
-  }, [user, userLoading, router]);
+  }, [user, userLoading, adminCheckLoading, hasAdminAccess, router]);
 
   const usersCollection = useMemoFirebase(() => {
-    if (!firestore || !isDeveloper) return null;
+    if (!firestore || !hasAdminAccess) return null;
     return collection(firestore, 'users');
-  }, [firestore, isDeveloper]);
+  }, [firestore, hasAdminAccess]);
 
   const adminsCollection = useMemoFirebase(() => {
-    if (!firestore || !isDeveloper) return null;
+    if (!firestore || !hasAdminAccess) return null;
     return collection(firestore, 'admin_users');
-  }, [firestore, isDeveloper]);
+  }, [firestore, hasAdminAccess]);
 
   const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersCollection);
   const { data: adminMarkers } = useCollection<AdminUser>(adminsCollection);
@@ -128,6 +144,7 @@ export default function AdminUsersPage() {
     }
     
     updateDocumentNonBlocking(userDocRef, updateData);
+    toast({ title: "Tier Updated", description: `${userToUpdate.displayName} is now on the ${tier} plan.` });
   };
   
   const handleCommissionChange = (userToUpdate: UserProfile, commissionRate: number) => {
@@ -143,8 +160,8 @@ export default function AdminUsersPage() {
     }
     updateDocumentNonBlocking(userDocRef, { referralCommissionRate: commissionRate });
     toast({
-        title: "Commission Rate Updated",
-        description: `${userToUpdate.displayName}'s commission rate has been set to ${commissionRate}%.`,
+        title: "Commission Updated",
+        description: `${userToUpdate.displayName}'s rate is now ${commissionRate}%.`,
     });
   };
 
@@ -153,24 +170,35 @@ export default function AdminUsersPage() {
     const adminDocRef = doc(firestore, 'admin_users', targetUid);
     
     if (isCurrentlyAdmin) {
-      deleteDoc(adminDocRef).catch(console.error);
-      toast({ title: "Admin Access Revoked", description: `Revoked admin privileges for ${getUserDisplayName(targetUid)}.` });
+      deleteDocumentNonBlocking(adminDocRef);
+      toast({ title: "Access Revoked", description: `Removed admin privileges for ${getUserDisplayName(targetUid)}.` });
     } else {
-      setDoc(adminDocRef, { uid: targetUid, grantedAt: new Date().toISOString() }).catch(console.error);
-      toast({ title: "Admin Access Granted", description: `${getUserDisplayName(targetUid)} is now an Administrator.` });
+      const data = { uid: targetUid, grantedAt: new Date().toISOString() };
+      setDoc(adminDocRef, data)
+        .catch(async (err) => {
+           errorEmitter.emit('permission-error', new FirestorePermissionError({
+             path: adminDocRef.path,
+             operation: 'create',
+             requestResourceData: data
+           }));
+        });
+      toast({ title: "Access Granted", description: `${getUserDisplayName(targetUid)} is now an Admin.` });
     }
+  };
+
+  const handleDeleteUser = (u: UserProfile) => {
+    if (!firestore) return;
+    const userDocRef = doc(firestore, 'users', u.uid);
+    deleteDocumentNonBlocking(userDocRef);
+    toast({ title: "User Deleted", description: `${u.displayName}'s profile has been removed.` });
   };
 
   const form = useForm<z.infer<typeof addUserFormSchema>>({
     resolver: zodResolver(addUserFormSchema),
-    defaultValues: {
-      uid: '',
-      displayName: '',
-      email: '',
-    },
+    defaultValues: { uid: '', displayName: '', email: '' },
   });
 
-  const handleAddUser = (values: z.infer<typeof addUserFormSchema>) => {
+  const handleAddUserManual = (values: z.infer<typeof addUserFormSchema>) => {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', values.uid);
     const newUserProfile = {
@@ -182,16 +210,16 @@ export default function AdminUsersPage() {
 
     setDoc(userDocRef, newUserProfile)
       .catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: userDocRef.path,
           operation: 'create',
           requestResourceData: newUserProfile,
-        });
-        errorEmitter.emit('permission-error', permissionError);
+        }));
       });
     
     form.reset();
     setIsAddUserDialogOpen(false);
+    toast({ title: "User Created", description: "Manual profile creation successful." });
   };
   
   const calculateRemainingDays = (startDateString?: string | null): number | null => {
@@ -205,21 +233,12 @@ export default function AdminUsersPage() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
-  if (userLoading || !isDeveloper) {
+  if (userLoading || adminCheckLoading || !hasAdminAccess) {
     return (
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <Card>
-          <CardHeader>
-            <CardTitle>User Management</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-1/4" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          </CardContent>
+          <CardHeader><CardTitle>Loading User Management...</CardTitle></CardHeader>
+          <CardContent><div className="space-y-4"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div></CardContent>
         </Card>
       </div>
     );
@@ -230,55 +249,21 @@ export default function AdminUsersPage() {
       <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add New User Manually</DialogTitle>
-            <DialogDescription>
-              This is usually handled automatically during signup. Use this only for special cases.
-            </DialogDescription>
+            <DialogTitle>Add User Override</DialogTitle>
+            <DialogDescription>Manual creation for special cases.</DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleAddUser)} className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="uid"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User ID (UID)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Firebase User ID" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Display Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Jane Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="user@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Create User</Button>
-              </DialogFooter>
+            <form onSubmit={form.handleSubmit(handleAddUserManual)} className="grid gap-4 py-4">
+              <FormField control={form.control} name="uid" render={({ field }) => (
+                <FormItem><FormLabel>User ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="displayName" render={({ field }) => (
+                <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="email" render={({ field }) => (
+                <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <DialogFooter><Button type="submit">Create</Button></DialogFooter>
             </form>
           </Form>
         </DialogContent>
@@ -288,7 +273,7 @@ export default function AdminUsersPage() {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="text-3xl font-headline text-primary">User Management</CardTitle>
-            <CardDescription>View, promote, and manage your spiritual community members.</CardDescription>
+            <CardDescription>Select actions below to upgrade or manage your spiritual community.</CardDescription>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-64">
@@ -300,7 +285,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button onClick={() => setIsAddUserDialogOpen(true)} variant="outline">Add New</Button>
+            <Button onClick={() => setIsAddUserDialogOpen(true)} variant="outline">Manual Add</Button>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -308,32 +293,19 @@ export default function AdminUsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>Admin</TableHead>
-                <TableHead>Referred By</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Referrer</TableHead>
                 <TableHead>Comm %</TableHead>
-                <TableHead>Tier</TableHead>
-                <TableHead>Expiry</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {usersLoading && (
-                <>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                      <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    </TableRow>
-                  ))}
-                </>
+                <TableRow><TableCell colSpan={6} className="text-center py-8"><Skeleton className="h-8 w-full" /></TableCell></TableRow>
               )}
               {filteredUsers.map((u) => {
-                const isAdmin = adminMarkers?.some(a => a.id === u.uid) || u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+                const isAdmin = adminMarkers?.some(a => (a.id === u.uid || a.uid === u.uid)) || u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
                 const isPaidUser = u.subscriptionTier === 'basic' || u.subscriptionTier === 'premium';
                 const daysLeft = isPaidUser ? calculateRemainingDays(u.premiumCycleStartDate) : null;
                 
@@ -367,42 +339,58 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <Input
                         type="number"
-                        defaultValue={u.referralCommissionRate ?? 0}
+                        defaultValue={u.referralCommissionRate ?? 10}
                         onBlur={(e) => handleCommissionChange(u, parseFloat(e.target.value))}
                         className="w-16 h-8 text-xs px-1"
-                        min="0"
-                        max="100"
                       />
                     </TableCell>
                     <TableCell>
-                       <Badge variant={u.subscriptionTier === 'premium' ? 'default' : u.subscriptionTier === 'basic' ? 'secondary' : 'outline'} className="capitalize text-[10px]">
-                        {u.subscriptionTier || 'free'}
-                      </Badge>
+                       <div className="flex flex-col gap-1">
+                         <Select
+                            value={u.subscriptionTier || 'free'}
+                            onValueChange={(value) => handleSubscriptionChange(u, value as any)}
+                          >
+                            <SelectTrigger className="w-24 h-8 text-xs">
+                              <SelectValue placeholder="Tier" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="free">Free</SelectItem>
+                              <SelectItem value="basic">Basic</SelectItem>
+                              <SelectItem value="premium">Premium</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {daysLeft !== null && <span className="text-[9px] text-primary font-bold">{daysLeft} days left</span>}
+                       </div>
                     </TableCell>
-                    <TableCell className="text-[10px]">
-                      {daysLeft !== null ? `${daysLeft}d` : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                       <Select
-                          value={u.subscriptionTier || 'free'}
-                          onValueChange={(value) => handleSubscriptionChange(u, value as any)}
-                        >
-                          <SelectTrigger className="w-24 h-8 text-xs">
-                            <SelectValue placeholder="Tier" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="free">Free</SelectItem>
-                            <SelectItem value="basic">Basic</SelectItem>
-                            <SelectItem value="premium">Premium</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    <TableCell>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete User?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently remove <strong>{u.displayName}</strong>'s profile and data. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteUser(u)} className="bg-destructive hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 )
               })}
               {!usersLoading && filteredUsers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
                     No users found matching your search.
                   </TableCell>
                 </TableRow>
