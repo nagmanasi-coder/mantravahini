@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -101,9 +102,10 @@ export function UserProfile() {
   
   if (!user) {
     return (
-      <Button asChild variant="ghost" size="icon">
-        <Link href="/login">
-          <LogIn />
+      <Button asChild variant="outline" className="h-9 px-3 border-primary/20 hover:bg-primary/5">
+        <Link href="/login" className="flex items-center gap-2">
+          <LogIn className="h-4 w-4 text-primary" />
+          <span className="text-xs font-bold uppercase tracking-tight text-primary">{t('loginRegister')}</span>
         </Link>
       </Button>
     );
