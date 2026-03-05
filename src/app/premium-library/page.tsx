@@ -196,34 +196,37 @@ export default function PremiumLibraryPage() {
       </div>
 
       <Dialog open={!!selectedBookUrl} onOpenChange={(open) => !open && setSelectedBookUrl(null)}>
-        <DialogContent className="max-w-full sm:max-w-5xl w-full h-[100dvh] sm:h-[90vh] p-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-none sm:border">
-          <DialogHeader className="p-4 bg-muted/50 border-b flex flex-row items-center justify-between space-y-0">
-            <DialogTitle className="font-headline text-lg text-primary truncate pr-8">
+        <DialogContent className="max-w-full sm:max-w-5xl w-full h-[100dvh] sm:h-[90vh] p-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-none sm:border bg-background">
+          <DialogHeader className="p-4 bg-muted/50 border-b flex flex-row items-center justify-between space-y-0 shrink-0">
+            <DialogTitle className="font-headline text-base sm:text-lg text-primary truncate pr-2">
               {selectedBookTitle}
             </DialogTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pr-8">
                <Button 
-                variant="ghost" 
-                size="icon" 
+                variant="outline" 
+                size="sm" 
                 onClick={() => window.open(selectedBookUrl!, '_blank')}
                 title="Open in new tab"
-                className="h-8 w-8"
+                className="h-8 px-2 text-[10px] uppercase font-bold"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-3 w-3 mr-1" />
+                {language === 'kn' ? 'ಪೂರ್ಣ ಸ್ಕ್ರೀನ್' : 'Full Screen'}
               </Button>
             </div>
           </DialogHeader>
-          <div className="flex-1 bg-white relative">
+          <div className="flex-1 bg-white relative w-full h-full overflow-hidden">
             {selectedBookUrl && (
               <iframe
                 src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedBookUrl)}&embedded=true`}
-                className="w-full h-full border-none"
+                className="absolute inset-0 w-full h-full border-none shadow-inner"
                 title="Book Viewer"
-                style={{ minHeight: '100%' }}
+                allowFullScreen
               />
             )}
-            <div className="absolute top-0 right-0 p-4 pointer-events-none">
-               <div className="bg-primary/80 text-white text-[10px] px-2 py-1 rounded-bl-lg font-bold">{t('inAppReaderOnly')}</div>
+            <div className="absolute top-0 right-0 p-2 pointer-events-none z-10">
+               <div className="bg-primary/90 text-white text-[9px] px-2 py-1 rounded-bl-lg font-bold shadow-sm uppercase tracking-tighter">
+                 {t('inAppReaderOnly')}
+               </div>
             </div>
           </div>
         </DialogContent>
