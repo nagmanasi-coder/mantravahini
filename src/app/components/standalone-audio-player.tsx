@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useRef, useState, useEffect, type MouseEvent } from "react";
+import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2 } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,15 +50,22 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [hasMediaError, setHasMediaError] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
+  // Fix: Removed window.location.origin to avoid SSR hydration errors.
+  // Root-relative paths (starting with /) are automatically resolved by the browser.
+  const audioSrc = mantra.url || "";
+
   useEffect(() => {
     const isActualDeveloper = user?.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
-    const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-    setIsDeveloper(isActualDeveloper && devModeEnabled);
+    if (typeof window !== 'undefined') {
+      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      setIsDeveloper(isActualDeveloper && devModeEnabled);
+    }
   }, [user]);
 
 
@@ -66,10 +73,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const audio = audioRef.current;
     if (!audio) return;
     
-    const newSrc = mantra.url.startsWith('http') ? mantra.url : `${window.location.origin}${mantra.url}`;
-    if (audio.src !== newSrc) {
-        audio.src = newSrc;
-    }
+    setHasMediaError(false);
 
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
@@ -87,31 +91,50 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         setStep('post_play');
       }
     };
+    const handleError = () => {
+      setHasMediaError(true);
+      setIsPlaying(false);
+      console.warn("Mantra audio source missing or invalid:", mantra.url);
+    };
 
     audio.addEventListener("loadeddata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("loadeddata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, [mantra.url, showTracker, sendLocalNotification]);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || hasMediaError) return;
     if (isPlaying) {
-      audio.play().catch(e => console.error("Playback failed", e));
+      audio.play().catch(e => {
+        console.warn("Playback failed", e);
+        setIsPlaying(false);
+      });
     } else {
       audio.pause();
     }
-  }, [isPlaying]);
+  }, [isPlaying, hasMediaError]);
 
   const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPlaying(false);
+      return;
+    }
+
+    if (hasMediaError) {
+      toast({
+        variant: "destructive",
+        title: "Audio Unavailable",
+        description: language === 'kn' ? "ಕ್ಷಮಿಸಿ, ಈ ಮಂತ್ರದ ಧ್ವನಿ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ." : "Sorry, this mantra's audio is currently unavailable.",
+      });
       return;
     }
 
@@ -226,6 +249,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </div>
           )}
 
+          {hasMediaError && (
+            <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3 border border-destructive/20 animate-fade-in">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <p className="text-sm font-bold">
+                {language === 'kn' ? "ಧ್ವನಿ ಕಡತ ಲಭ್ಯವಿಲ್ಲ." : "Mantra audio source is missing."}
+              </p>
+            </div>
+          )}
+
           {showTracker && step === 'pre_play' && (
             <div className="space-y-4 pt-4 border-t animate-fade-in">
               <div className="flex justify-between items-center">
@@ -244,7 +276,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                   {t('pleaseRateToStart')}
                 </p>
               )}
-              <Button onClick={handlePlayPause} disabled={beforeScore === 0} className="w-full h-12 text-lg font-bold">
+              <Button onClick={handlePlayPause} disabled={beforeScore === 0 || hasMediaError} className="w-full h-12 text-lg font-bold">
                 <Play className="mr-2 h-5 w-5" />
                 {t('startHealing')}
               </Button>
@@ -328,7 +360,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         </CardContent>
         {!showTracker && (
            <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')}>
+            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
               {isPlaying ? (
                 <Pause className="h-8 w-8" />
               ) : (
@@ -337,7 +369,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </Button>
           </CardFooter>
         )}
-      <audio ref={audioRef} preload="metadata" />
+      <audio ref={audioRef} src={audioSrc} preload="metadata" />
     </Card>
   );
 }
