@@ -38,15 +38,15 @@
     },
     {
       "id": "kali-mantra-infographic",
-      "description": "Infographic for Kali Mantra for pain relief",
+      "description": "Infographic for Kali Mantra for pain relief showing water method",
       "imageUrl": "/kali-mantra-pain.png",
-      "imageHint": "infographic ritual"
+      "imageHint": "water ripple"
     },
     {
       "id": "chakshu-mantra-infographic",
-      "description": "Infographic for Chakshu Mantra for eye problems",
-      "imageUrl": "/chaksu-mantra.png",
-      "imageHint": "infographic ritual"
+      "description": "Girl listening to mantra with headphones for eye health and focus",
+      "imageUrl": "https://picsum.photos/seed/meditation/600/400",
+      "imageHint": "girl headphones"
     },
     {
       "id": "hair-oil-product",

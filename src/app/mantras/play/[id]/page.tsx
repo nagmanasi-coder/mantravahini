@@ -34,6 +34,13 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
     setShowUpgradeDialog(true);
   };
 
+  // Determine the best image based on the mantra ID or category
+  const getMantraImageId = (id: number) => {
+    if (id === 1) return 'kali-mantra-infographic'; // Water method
+    if (id === 2 || id === 17) return 'chakshu-mantra-infographic'; // Headphone method
+    return 'hanuman-healing'; // Default spiritual image
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center p-6 animate-fade-in">
       <UpgradeDialog 
@@ -47,8 +54,8 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
         <StandaloneAudioPlayer 
           mantra={mantra} 
           onUpgradeRequest={handleUpgradeRequest}
-          showTracker={mantra.category === 'disease'}
-          imageId={mantra.category === 'disease' ? 'kali-mantra-infographic' : 'hanuman-healing'}
+          showTracker={mantra.category === 'disease' && mantra.id === 1}
+          imageId={getMantraImageId(mantra.id)}
         />
 
         {(mantra.description || mantra.description_en) && (
