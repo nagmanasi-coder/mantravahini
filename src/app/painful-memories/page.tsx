@@ -55,57 +55,62 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
   const dotRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>();
   const pos = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
+  const timeLeftRef = useRef(60);
 
   useEffect(() => {
-    if (!hasStarted || timeLeft <= 0) return;
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         const next = prev - 1;
-        return next < 0 ? 0 : next;
+        if (next <= 0) {
+          clearInterval(interval);
+          // Trigger the end sequence
+          onSessionEnd();
+          return 0;
+        }
+        return next;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [hasStarted, timeLeft]);
+  }, [hasStarted, onSessionEnd]);
 
   useEffect(() => {
-    if (hasStarted && timeLeft === 0) {
-      onSessionEnd();
-    }
-  }, [timeLeft, hasStarted, onSessionEnd]);
-
-  useEffect(() => {
-    if (!hasStarted || timeLeft <= 0) {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      return;
-    }
-
-    const container = containerRef.current;
-    if (!container) return;
-
-    pos.current.x = container.clientWidth / 2;
-    pos.current.y = container.clientHeight / 2;
-    
-    const angle = Math.random() * Math.PI * 2;
-    pos.current.vx = Math.cos(angle);
-    pos.current.vy = Math.sin(angle);
+    if (!hasStarted) return;
 
     const animate = () => {
-      if (timeLeft <= 0) return;
+      if (timeLeftRef.current <= 0) return;
+
+      const container = containerRef.current;
+      if (!container) return;
+
+      // Initialize position on first frame
+      if (pos.current.x === 0) {
+        pos.current.x = container.clientWidth / 2;
+        pos.current.y = container.clientHeight / 2;
+        const angle = Math.random() * Math.PI * 2;
+        pos.current.vx = Math.cos(angle);
+        pos.current.vy = Math.sin(angle);
+      }
 
       let speed = 4;
-      if (timeLeft <= 50) speed = 8;
-      if (timeLeft <= 40) speed = 14;
-      if (timeLeft <= 30) speed = 22;
+      if (timeLeftRef.current <= 50) speed = 8;
+      if (timeLeftRef.current <= 40) speed = 14;
+      if (timeLeftRef.current <= 30) speed = 22;
 
       pos.current.x += pos.current.vx * speed;
       pos.current.y += pos.current.vy * speed;
 
-      if (pos.current.x <= 20 || pos.current.x >= container.clientWidth - 20) {
+      const buffer = 20;
+      if (pos.current.x <= buffer || pos.current.x >= container.clientWidth - buffer) {
         pos.current.vx *= -1;
       }
-      if (pos.current.y <= 20 || pos.current.y >= container.clientHeight - 20) {
+      if (pos.current.y <= buffer || pos.current.y >= container.clientHeight - buffer) {
         pos.current.vy *= -1;
       }
 
@@ -120,7 +125,7 @@ const MovingDot = ({ onSessionEnd }: { onSessionEnd: () => void }) => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [hasStarted, timeLeft]);
+  }, [hasStarted]);
 
   return (
     <div 
@@ -230,8 +235,15 @@ export default function PainfulMemoriesPage() {
   };
 
   const handleSessionEnd = () => {
-    setStep('session_ended');
-    sendLocalNotification('notificationMemorySessionTitle', 'notificationMemorySessionBody');
+    // Slight delay to allow for clean unmounting of animation loop
+    setTimeout(() => {
+      setStep('session_ended');
+      try {
+        sendLocalNotification('notificationMemorySessionTitle', 'notificationMemorySessionBody');
+      } catch (e) {
+        console.warn("Notification failed, but app continues:", e);
+      }
+    }, 100);
   };
 
   const handleRatePain = () => {

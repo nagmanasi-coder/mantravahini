@@ -16,20 +16,31 @@ export function useNotifications() {
   const requestPermission = useCallback(async () => {
     if (typeof window === 'undefined' || !('Notification' in window)) return false;
     
-    if (Notification.permission === 'granted') return true;
-    
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
+    try {
+      if (Notification.permission === 'granted') return true;
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    } catch (e) {
+      console.warn("Notification permission request failed:", e);
+      return false;
+    }
   }, []);
 
   const sendLocalNotification = useCallback((titleKey: any, bodyKey: any) => {
     if (typeof window === 'undefined' || !('Notification' in window)) return;
     
     if (Notification.permission === 'granted') {
-      new Notification(t(titleKey), {
-        body: t(bodyKey),
-        icon: '/favicon.svg',
-      });
+      try {
+        // Many mobile browsers (Chrome Android, iOS) do not support the Notification constructor.
+        // They require ServiceWorkerRegistration.showNotification().
+        // We wrap this in try-catch to prevent client-side exceptions that crash the app.
+        new Notification(t(titleKey), {
+          body: t(bodyKey),
+          icon: '/favicon.svg',
+        });
+      } catch (e) {
+        console.warn("Standard Notification constructor failed. This is expected on most mobile browsers:", e);
+      }
     }
   }, [t]);
 
