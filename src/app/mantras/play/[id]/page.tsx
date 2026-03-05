@@ -1,24 +1,50 @@
 'use client';
 
-import { use } from 'react';
+import { use, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
-import { mantras } from '@/lib/mantras';
+import { mantras, type Mantra } from '@/lib/mantras';
 import { StandaloneAudioPlayer } from '@/app/components/standalone-audio-player';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Info, Sparkles, BookOpen, HeartPulse, Zap } from 'lucide-react';
+import { ArrowLeft, Home, Info, Sparkles, HeartPulse, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
+interface AssetData {
+  id: string;
+  url: string;
+  fileType: string;
+}
 
 export default function MantraPlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { t, language } = useLanguage();
+  const firestore = useFirestore();
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeContent, setUpgradeContent] = useState({ title: '', description: '' });
 
   const mantraId = parseInt(id);
-  const mantra = mantras.find(m => m.id === mantraId);
+  const baseMantra = mantras.find(m => m.id === mantraId);
+
+  // Fetch cloud asset if linked
+  const assetRef = useMemoFirebase(() => {
+    if (!firestore || !baseMantra?.assetId) return null;
+    return doc(firestore, 'assets', baseMantra.assetId);
+  }, [firestore, baseMantra?.assetId]);
+
+  const { data: assetData } = useDoc<AssetData>(assetRef);
+
+  // Merge storage URL into mantra if available
+  const mantra = useMemo(() => {
+    if (!baseMantra) return null;
+    if (assetData?.url) {
+      return { ...baseMantra, url: assetData.url };
+    }
+    return baseMantra;
+  }, [baseMantra, assetData]);
 
   if (!mantra) {
     return (
