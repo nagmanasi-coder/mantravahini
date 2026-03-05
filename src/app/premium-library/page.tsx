@@ -7,7 +7,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@
 import { doc, collection, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, ArrowLeft, Eye, Loader2, BookOpen, Sparkles } from 'lucide-react';
+import { ShieldAlert, ArrowLeft, Eye, Loader2, BookOpen, Sparkles, ExternalLink, X } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
@@ -147,8 +147,6 @@ export default function PremiumLibraryPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Uploaded Assets */}
         {uploadedAssets && uploadedAssets.map((asset) => {
-          // Specific logic for the Swayam Chikitse book requested by user
-          // We use translation key for this specific asset ID
           const displayTitle = asset.id === 'swayam-chikitse-paper-book-pdf' 
             ? t('swayamChikitseBookTitle' as any)
             : (asset.title || asset.fileName);
@@ -198,11 +196,22 @@ export default function PremiumLibraryPage() {
       </div>
 
       <Dialog open={!!selectedBookUrl} onOpenChange={(open) => !open && setSelectedBookUrl(null)}>
-        <DialogContent className="max-w-5xl h-[90vh] p-0 overflow-hidden flex flex-col">
-          <DialogHeader className="p-4 bg-muted/50 border-b">
-            <DialogTitle className="font-headline text-xl text-primary truncate">
+        <DialogContent className="max-w-full sm:max-w-5xl w-full h-[100dvh] sm:h-[90vh] p-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-none sm:border">
+          <DialogHeader className="p-4 bg-muted/50 border-b flex flex-row items-center justify-between space-y-0">
+            <DialogTitle className="font-headline text-lg text-primary truncate pr-8">
               {selectedBookTitle}
             </DialogTitle>
+            <div className="flex items-center gap-2">
+               <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => window.open(selectedBookUrl!, '_blank')}
+                title="Open in new tab"
+                className="h-8 w-8"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </div>
           </DialogHeader>
           <div className="flex-1 bg-white relative">
             {selectedBookUrl && (
@@ -210,6 +219,7 @@ export default function PremiumLibraryPage() {
                 src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedBookUrl)}&embedded=true`}
                 className="w-full h-full border-none"
                 title="Book Viewer"
+                style={{ minHeight: '100%' }}
               />
             )}
             <div className="absolute top-0 right-0 p-4 pointer-events-none">
