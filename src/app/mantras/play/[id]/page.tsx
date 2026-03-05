@@ -5,11 +5,11 @@ import { useLanguage } from '@/context/language-context';
 import { mantras } from '@/lib/mantras';
 import { StandaloneAudioPlayer } from '@/app/components/standalone-audio-player';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Info, Sparkles } from 'lucide-react';
+import { ArrowLeft, Home, Info, Sparkles, BookOpen, HeartPulse, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function MantraPlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -41,6 +41,10 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
     return 'hanuman-healing'; // Default spiritual image
   };
 
+  const currentMethod = language === 'kn' ? mantra.method : mantra.method_en;
+  const currentBenefits = language === 'kn' ? mantra.benefits : mantra.benefits_en;
+  const currentAbout = language === 'kn' ? mantra.description : mantra.description_en;
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center p-6 animate-fade-in">
       <UpgradeDialog 
@@ -58,19 +62,55 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
           imageId={getMantraImageId(mantra.id)}
         />
 
-        {(mantra.description || mantra.description_en) && (
-          <Card className="border-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 text-primary font-bold mb-4">
-                <Info className="h-5 w-5" />
-                <span>{language === 'kn' ? 'ಮಂತ್ರದ ಬಗ್ಗೆ' : 'About this Mantra'}</span>
-              </div>
-              <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
-                {language === 'kn' ? mantra.description : mantra.description_en}
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        <div className="grid gap-6">
+          {currentMethod && (
+            <Card className="border-primary/20 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-primary font-headline text-xl">
+                  <Zap className="h-5 w-5" />
+                  {t('methodTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  {currentMethod}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentBenefits && (
+            <Card className="border-primary/20 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-primary font-headline text-xl">
+                  <HeartPulse className="h-5 w-5" />
+                  {t('benefitsTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  {currentBenefits}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentAbout && (
+            <Card className="border-primary/10 bg-muted/10">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-primary font-headline text-lg">
+                  <Info className="h-5 w-5" />
+                  {t('aboutMantraTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed italic">
+                  {currentAbout}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center py-12 border-t border-primary/10">
           <Button asChild variant="outline" size="lg">
