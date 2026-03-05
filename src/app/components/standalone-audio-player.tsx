@@ -56,8 +56,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
-  // Fix: Removed window.location.origin to avoid SSR hydration errors.
-  // Root-relative paths (starting with /) are automatically resolved by the browser.
   const audioSrc = mantra.url || "";
 
   useEffect(() => {
@@ -79,9 +77,19 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       if(isFinite(audio.duration)) setDuration(audio.duration);
     }
     const setAudioTime = () => {
-      setCurrentTime(audio.currentTime);
+      const time = audio.currentTime;
+      setCurrentTime(time);
       if(isFinite(audio.duration) && audio.duration > 0) {
-        setProgress((audio.currentTime / audio.duration) * 100);
+        setProgress((time / audio.duration) * 100);
+      }
+
+      // Specialized Logic: Mute first 5 seconds of Bhairava Mantra (ID 17)
+      if (mantra.id === 17) {
+        if (time < 5 && !audio.muted) {
+          audio.muted = true;
+        } else if (time >= 5 && audio.muted) {
+          audio.muted = false;
+        }
       }
     };
     const handleEnded = () => {
@@ -108,7 +116,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [mantra.url, showTracker, sendLocalNotification]);
+  }, [mantra.url, mantra.id, showTracker, sendLocalNotification]);
 
   useEffect(() => {
     const audio = audioRef.current;
