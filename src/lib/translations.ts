@@ -1,4 +1,3 @@
-
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -64,7 +63,7 @@ export const translations = {
     healingTitle: "ಮಂತ್ರ ಚಿಕಿತ್ಸೆ - ಹನುಮನಿದ್ದಲ್ಲಿ ರೋಗಕ್ಕೆ ಜಾಗವೆಲ್ಲಿ?",
     healingSubtitle: "ಹನುಮಾನ್ ಚಾಲೀಸಾದ ತಾಂತ್ರಿಕ ವಿಧಾನದಿಂದ ದೀರ್ಘಕಾಲದ ರೋಗಗಳ ನಿವಾರಣೆ",
     hanumanTherapyTitle: "ಹನುಮಾನ್ ಮಂತ್ರ ಚಿಕಿತ್ಸೆ",
-    hanumanTherapyDescription: "ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಗೆ och ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ.",
+    hanumanTherapyDescription: "ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಗೆ ಮತ್ತು ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ.",
     healingInfo1: "ಈ ವಿಧಾನವು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಶಕ್ತಿಯನ್ನು ಬಳಿಸಿ, ದೀರ್ಘಕಾಲದ ದೈಹಿಕ ಮತ್ತು ಮಾನಸಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಗುಣಪಡಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
     healingInfo2: "ಇದು ಸಂಧಿವಾತ, ಮಧುಮೇಹ, ಮತ್ತು ಇತರ ದೀರ್ಘಕಾಲದ ರೋಗಗಳಿಗೆ ಪರಿಣಾಮಕಾರಿ,  ಇದು ಹನುಮಾನ್ ಚಾಲೀಸಾದ ಮೂಲಕ ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತ ಮನುಕುಲಕ್ಕೆ ನೀಡಿರುವ ವಚನ.",
     hanumanDoha: "ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ",
@@ -154,8 +153,8 @@ export const translations = {
     contactToActivate: "ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕಿಸಿ",
     free: "ಉಚಿತ",
     manageUsers: "ಬಳಕೆದಾರರನ್ನು ನಿರ್ವಹಿಸಿ",
-    referAndEarn: "ಶಿಫಾರಸು ಮಾಡಿ ಮತ್ತು ಸಂಪಾದಿಸಿ",
-    referralTitle: "ಶಿಫಾರಸು ಮಾಡಿ ಮತ್ತು ಸಂಪಾದಿಸಿ",
+    referAndEarn: "ಶಿಫಾರಸು ಮಾಡಿ and ಸಂಪಾದಿಸಿ",
+    referralTitle: "ಶಿಫಾರಸು ಮಾಡಿ and ಸಂಪಾದಿಸಿ",
     referralSubtitle: "ಮಂತ್ರವಾಹಿನಿಯನ್ನು ನಿಮ್ಮ ಸ್ನೇಹಿತರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ ಮತ್ತು ಬಹುಮಾನಗಳನ್ನು ಗೆಲ್ಲಿರಿ.",
     yourReferralLink: "ನಿಮ್ಮ ಶಿಫಾರಸು ಲಿಂಕ್",
     copyLink: "ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ",
@@ -353,9 +352,14 @@ export const translations = {
     manualVocalPranaDescription: "ಧ್ವನಿ ಕಂಪನಗಳನ್ನು ಬಳಸಿ ವಾರಕ್ಕೊಮ್ಮೆ ನಿಮ್ಮ ದೈಹಿಕ ಆರೋಗ್ಯ, ಮಾನಸಿಕ ಶಕ್ತಿ ಮತ್ತು ಪ್ರಾಣ ಮಟ್ಟವನ್ನು ವಿಶ್ಲೇಷಿಸಿ.",
     manualPainfulMemoriesTitle: "ನೋವಿನ ನೆನಪುಗಳಿಂದ ಮುಕ್ತಿ",
     manualPainfulMemoriesDescription: "ನೋವಿನ ಹಳೆಯ ನೆನಪುಗಳ ಭಾವನಾತ್ಮಕ ತೀವ್ರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಕಣ್ಣಿನ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಧಿವೇಶನ.",
-    manualReferralTitle: "ಶಿಫಾರಸು ಮಾಡಿ ಮತ್ತು ಸಂಪಾದಿಸಿ",
+    manualReferralTitle: "ಶಿಫಾರಸು ಮಾಡಿ and ಸಂಪಾದಿಸಿ",
     manualReferralDescription: "ನಿಮ್ಮ ಅನನ್ಯ ಲಿಂಕ್ ಬಳಸಿ ಸ್ನೇಹಿತರನ್ನು ಮಂತ್ರವಾಹಿನಿಗೆ ಆಹ್ವಾನಿಸಿ ಮತ್ತು ಅವರು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿದಾಗ ಕಮಿಷನ್ ಸಂಪಾದಿಸಿ.",
     loginRegister: "ನೋಂದಣಿ / ಲಾಗಿನ್",
+    mantraHubTitle: "ಮಂತ್ರ ಸಂಗ್ರಹಗಳು",
+    healthyLifeTitle: "ಜೀವನದ ಸಮಸ್ಯೆಗಳಿಗೆ (Healthy Life)",
+    healthyBodyTitle: "ಕಾಯಿಲೆಗಳಿಗೆ (Healthy Body & Mind)",
+    backToMain: "ಮುಖ್ಯ ಪುಟಕ್ಕೆ",
+    backToMantras: "ಮಂತ್ರ ಸಂಗ್ರಹಕ್ಕೆ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -710,5 +714,10 @@ export const translations = {
     manualReferralTitle: "Refer & Earn Rewards",
     manualReferralDescription: "Invite friends to Mantravaahini using your unique link and earn commissions when they upgrade.",
     loginRegister: "Register / Login",
+    mantraHubTitle: "Mantra Collections",
+    healthyLifeTitle: "For Life Problems (Healthy Life)",
+    healthyBodyTitle: "For Diseases (Healthy Body & Mind)",
+    backToMain: "Back to Home",
+    backToMantras: "Back to Collections",
   }
 };

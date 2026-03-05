@@ -1,0 +1,97 @@
+'use client';
+
+import { use } from 'react';
+import { useLanguage } from '@/context/language-context';
+import { mantras } from '@/lib/mantras';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Play, Music, Lock, ChevronRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Badge } from '@/components/ui/badge';
+
+export default function MantraListPage({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = use(params);
+  const { t, language } = useLanguage();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
+  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+
+  const filteredMantras = mantras.filter(m => m.category === category);
+  const categoryTitle = category === 'life' ? t('healthyLifeTitle') : t('healthyBodyTitle');
+
+  return (
+    <div className="min-h-screen bg-background p-6 flex flex-col items-center">
+      <div className="w-full max-w-3xl space-y-8 animate-fade-in">
+        <header className="text-center space-y-4 pt-12 pb-8 border-b-2 border-primary/10">
+          <h1 className="text-3xl sm:text-4xl font-headline font-bold text-primary">
+            {categoryTitle}
+          </h1>
+          <p className="text-muted-foreground">
+            {filteredMantras.length} {language === 'kn' ? 'ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳು ಲಭ್ಯವಿದೆ' : 'Activated Mantras Available'}
+          </p>
+        </header>
+
+        <div className="grid gap-4">
+          {filteredMantras.map((mantra) => (
+            <Link key={mantra.id} href={`/mantras/play/${mantra.id}`}>
+              <Card className="hover:border-primary/50 transition-all hover:shadow-md group">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors">
+                      <Music className="h-5 w-5" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-bold text-lg leading-tight">
+                        {language === 'kn' ? mantra.name : mantra.name_en}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        {mantra.tier === 'paid' && !isPaidUser ? (
+                          <Badge variant="outline" className="text-[10px] uppercase text-amber-600 border-amber-200">
+                            <Lock className="h-2 w-2 mr-1" />
+                            Premium
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
+                            Ready
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors" />
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+          <Button asChild variant="outline" size="lg">
+            <Link href="/mantras">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t('backToMantras')}
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="lg">
+            <Link href="/">
+              {t('backToMain')}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="flex justify-center pt-12 pb-8 opacity-30">
+           <Sparkles className="h-8 w-8 text-primary" />
+        </div>
+      </div>
+    </div>
+  );
+}

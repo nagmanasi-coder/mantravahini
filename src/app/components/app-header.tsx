@@ -7,20 +7,26 @@ import { useLanguage } from "@/context/language-context";
 import { Button } from "@/components/ui/button";
 import { UserProfile } from "./auth/UserProfile";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export function AppHeader() {
     const { t, toggleLanguage } = useLanguage();
     const [canInstall, setCanInstall] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         // This check ensures we're on the client side
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        // A simple check if the app is not running in standalone mode.
         // A more robust implementation might use the 'beforeinstallprompt' event.
         if (!isStandalone) {
           setCanInstall(true);
         }
     }, []);
+
+    // Focused experience: Hide header on mantra collection pages
+    if (pathname?.startsWith('/mantras')) {
+      return null;
+    }
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
