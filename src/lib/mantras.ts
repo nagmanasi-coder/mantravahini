@@ -62,7 +62,7 @@ export const mantras: Mantra[] = [
     name: 'ಸರ್ವ ಭಯ ಮತ್ತು ಸಂಕಷ್ಟ ನಿವಾರಣಾ ಭೈರವ ಮಂತ್ರ', 
     name_en: 'Bhairava Mantra for Removal of All Fear & Troubles',
     url: '/bhairava-mantra.mp3',
-    assetId: 'bhairava-mantra',
+    assetId: 'bhairava-avesha-mamtra-mp3',
     method: 'ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಮಂತ್ರವನ್ನು ಕೇಳಿ.',
     method_en: 'Listen to the mantra twice a day using headphones or earphones.',
     benefits: 'ಎಲ್ಲಾ ರೀತಿಯ ಭಯ, ಆತಂಕ ಮತ್ತು ಜೀವನದ ಸಂಕಷ್ಟಗಳ ನಿವಾರಣೆ. ಮಾನಸಿಕ ಸ್ಥೈರ್ಯ.',
