@@ -37,6 +37,16 @@ export const mantras: Mantra[] = [
     category: "disease"
   },
   { 
+    id: 17, 
+    name: 'ಸರ್ವ ಭಯ ಮತ್ತು ಸಂಕಷ್ಟ ನಿವಾರಣಾ ಭೈರವ ಮಂತ್ರ', 
+    name_en: 'Bhairava Mantra for Removal of All Fear & Troubles',
+    url: '/audio/bhairava-mantra.mp3',
+    description: 'ಈ ಮಂತ್ರವನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ಕೇಳಿ. ಇದು ಎಲ್ಲಾ ರೀತಿಯ ಭಯ, ಆತಂಕ ಮತ್ತು ಜೀವನದ ಸಂಕಷ್ಟಗಳನ್ನು ನಿವಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಪೂರ್ಣ ನಂಬಿಕೆಯಿಂದ ಮುಂದುವರಿಸಿ.',
+    description_en: 'Listen to this mantra twice a day using headphones or earphones. It helps in removing all types of fear, anxiety, and life\'s obstacles. Continue with complete faith.',
+    tier: "paid",
+    category: "life"
+  },
+  { 
     id: 11, 
     name: 'ಶತ್ರು ಮತ್ತು ಹಿತಶತ್ರು ನಿವಾರಣಾ ಬಗಲಾಮುಖಿ ಮಂತ್ರ', 
     name_en: 'Bagalamukhi Mantra for Enemy & Hidden Enemy Removal',
