@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link";
@@ -25,10 +26,6 @@ export function AppFooter() {
                     <Link href="/ai-guide" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <MessageSquareQuote className="h-4 w-4" />
                         <span>{t('aiGuideTitle')}</span>
-                    </Link>
-                    <Link href="/voice-health" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <HeartPulse className="h-4 w-4" />
-                        <span>{language === 'kn' ? 'ಧ್ವನಿ ಪ್ರಾಣ' : 'Vocal Prana'}</span>
                     </Link>
                     <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <BookOpen className="h-4 w-4" />

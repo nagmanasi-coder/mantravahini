@@ -37,7 +37,6 @@ export default function UpgradePage() {
   const premiumFeatures = [
     t('featureAllBasic'),
     t('featureAiChatbot'),
-    t('featureVocalPrana'),
     t('featurePremiumLibrary'),
     t('featurePracticalVideos'),
     t('featureWorkshops'),
@@ -48,7 +47,7 @@ export default function UpgradePage() {
   ];
 
   if (!isMounted) {
-    return null; // or a skeleton loader
+    return null; 
   }
 
   return (
@@ -65,7 +64,6 @@ export default function UpgradePage() {
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            {/* Free Plan */}
             <Card className="animate-fade-in-up flex flex-col h-full">
               <CardHeader>
                 <CardTitle className="font-headline text-2xl">{t('freePlanTitle')}</CardTitle>
@@ -86,7 +84,6 @@ export default function UpgradePage() {
               </CardFooter>
             </Card>
 
-            {/* Basic Plan */}
             <Card className="border-secondary border-2 shadow-lg animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.2s'}}>
               <CardHeader className="text-center">
                  <CardTitle className="font-headline text-3xl text-secondary-foreground">{t('basicPlanTitle')}</CardTitle>
@@ -115,7 +112,6 @@ export default function UpgradePage() {
               </CardFooter>
             </Card>
             
-            {/* Premium Plan */}
             <Card className="border-primary border-2 shadow-xl animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.4s'}}>
               <CardHeader className="text-center">
                 <div className="flex justify-center items-center gap-2">

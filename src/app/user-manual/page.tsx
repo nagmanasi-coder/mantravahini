@@ -16,13 +16,10 @@ export default function UserManualPage() {
 
   const handleDownloadPdf = async () => {
     const input = manualContentRef.current;
-    if (!input) {
-      console.error("Manual content not found");
-      return;
-    }
+    if (!input) return;
 
     const canvas = await html2canvas(input, {
-      scale: 2, // Higher scale for better quality
+      scale: 2,
       useCORS: true,
       backgroundColor: window.getComputedStyle(document.body).backgroundColor,
     });
@@ -156,15 +153,6 @@ export default function UserManualPage() {
                     </CardHeader>
                     <CardContent className="flex-grow">
                         <p className="text-sm text-muted-foreground leading-relaxed">{t('manualAiGuideDescription')}</p>
-                    </CardContent>
-                </Card>
-                <Card className="flex flex-col">
-                    <CardHeader className="flex-row items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full"><HeartPulse className="h-5 w-5 text-primary" /></div>
-                        <CardTitle className="text-lg">{t('manualVocalPranaTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <p className="text-sm text-muted-foreground leading-relaxed">{t('manualVocalPranaDescription')}</p>
                     </CardContent>
                 </Card>
                 <Card className="flex flex-col">

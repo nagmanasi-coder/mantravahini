@@ -45,8 +45,6 @@ const spiritualGuideFlow = ai.defineFlow(
       - App Focus: Pain-free life, spiritual growth, and health through mantras.
       - Core Mantras: Kali Mantra (body/joint pain), Chakshu Mantra (eye health).
       - Specialized Therapies: Hanuman Therapy (chronic diseases), Hanuman Prana Therapy (protection from untimely death).
-      - Advanced Healing Modules (Premium): 
-          * Vocal Prana Checkup: Weekly analysis of physical health, mental energy, and chakra balance using voice vibrations.
       - Products: Akshaya Cash Box (financial flow), Medicated Oils (Hair, Pain, Skin, Sexual Wellness).
       - Premium Benefits: Access to spiritual books library (Premium Library), practical demonstration videos, workshops, and the Divine Entity WhatsApp group.
       - Referral Program: Premium members can earn rewards and commissions by sharing their unique referral link.
@@ -55,7 +53,7 @@ const spiritualGuideFlow = ai.defineFlow(
       Instructions:
       1. Language: Always respond in ${input.language === 'kn' ? 'Kannada (ಕನ್ನಡ)' : 'English'}.
       2. Precision: Keep your response concise (maximum 3-4 sentences).
-      3. Relevance: Recommend specific app modules (Vocal Prana, etc.) or products only if directly relevant to the user's question.
+      3. Relevance: Recommend specific app modules or products only if directly relevant to the user's question.
       4. Activation: For deep healing, always guide users to contact the center at 7022070287 for personalized mantra activation.
       5. Integrity: Stick to the provided app context. Do not invent rituals or offer clinical medical advice outside of these spiritual healing frameworks.`;
 
@@ -85,11 +83,10 @@ const spiritualGuideFlow = ai.defineFlow(
     try {
       const apiKey = process.env.SARVAM_AI_API_KEY;
       if (!apiKey) {
-        console.error("CRITICAL: SARVAM_AI_API_KEY is missing in server environment.");
+        console.error("SARVAM_AI_API_KEY is missing.");
         throw new Error('API_KEY_MISSING');
       }
 
-      // Use direct fetch to the Sarvam AI REST API for highest reliability with custom headers
       const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -105,23 +102,14 @@ const spiritualGuideFlow = ai.defineFlow(
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Sarvam AI API Error (${response.status}):`, errorText);
         throw new Error(`API_FAIL_${response.status}`);
       }
 
       const data = await response.json();
       const responseText = data.choices?.[0]?.message?.content;
 
-      if (!responseText) {
-        throw new Error('EMPTY_RESPONSE');
-      }
-
-      return { response: responseText };
+      return { response: responseText || "No response" };
     } catch (error: any) {
-      console.error('AI Guide Connectivity Failure:', error?.message || error);
-      
-      // Return a localized friendly message instead of crashing
       const errorMsg = input.language === 'kn' 
         ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ: 7022070287." 
         : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments or contact the center: 7022070287.";
