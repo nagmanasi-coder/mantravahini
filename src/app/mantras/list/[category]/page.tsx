@@ -1,15 +1,17 @@
+
 'use client';
 
-import { use } from 'react';
+import { use, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { mantras } from '@/lib/mantras';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Play, Music, Lock, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, Play, Music, Lock, ChevronRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
+import { differenceInDays } from 'date-fns';
 
 export default function MantraListPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params);
@@ -22,8 +24,16 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ subscriptionTier?: string, createdAt?: string }>(userDocRef);
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+
+  // 7-Day Trial Logic
+  const isWithinTrial = useMemo(() => {
+    if (!userProfile?.createdAt) return false;
+    const createdDate = new Date(userProfile.createdAt);
+    const daysSinceCreation = differenceInDays(new Date(), createdDate);
+    return daysSinceCreation >= 0 && daysSinceCreation < 7;
+  }, [userProfile?.createdAt]);
 
   const filteredMantras = mantras.filter(m => m.category === category);
   const categoryTitle = category === 'life' ? t('healthyLifeTitle') : t('healthyBodyTitle');
@@ -38,12 +48,20 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
           <p className="text-muted-foreground">
             {filteredMantras.length} {language === 'kn' ? 'ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳು ಲಭ್ಯವಿದೆ' : 'Activated Mantras Available'}
           </p>
+          {isWithinTrial && !isPaidUser && (
+            <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+              <Sparkles className="h-3 w-3 mr-1" />
+              {t('trialAccess')}
+            </Badge>
+          )}
         </header>
 
         <div className="grid gap-4">
           {filteredMantras.map((mantra) => {
             // Specialized mantras like Anjaneya (ID 9) require personalized activation info
             const targetHref = mantra.id === 9 ? '/healing' : `/mantras/play/${mantra.id}`;
+            const isPremium = mantra.tier === 'paid';
+            const isUnlocked = isPaidUser || isWithinTrial || !isPremium;
             
             return (
               <Link key={mantra.id} href={targetHref}>
@@ -58,14 +76,15 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
                           {language === 'kn' ? mantra.name : mantra.name_en}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          {mantra.tier === 'paid' && !isPaidUser ? (
+                          {!isUnlocked ? (
                             <Badge variant="outline" className="text-[10px] uppercase text-amber-600 border-amber-200">
                               <Lock className="h-2 w-2 mr-1" />
                               Premium
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
-                              Ready
+                              <CheckCircle2 className="h-2 w-2 mr-1" />
+                              {isWithinTrial && isPremium && !isPaidUser ? 'Trial Access' : 'Ready'}
                             </Badge>
                           )}
                         </div>

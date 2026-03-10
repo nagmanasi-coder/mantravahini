@@ -363,6 +363,9 @@ export const translations = {
     methodTitle: "ಬಳಸುವ ವಿಧಾನ",
     benefitsTitle: "ಪ್ರಯೋಜನಗಳು",
     aboutMantraTitle: "ಮಂತ್ರದ ಬಗ್ಗೆ",
+    trialAccess: "೭ ದಿನಗಳ ಉಚಿತ ಪ್ರವೇಶ",
+    trialDaysLeft: "ಉಚಿತ ಪ್ರವೇಶ: {days} ದಿನಗಳು ಬಾಕಿ",
+    trialExpired: "ಉಚಿತ ಪ್ರವೇಶ ಅವಧಿ ಮುಗಿದಿದೆ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -725,5 +728,8 @@ export const translations = {
     methodTitle: "Method to Use",
     benefitsTitle: "Benefits",
     aboutMantraTitle: "About this Mantra",
+    trialAccess: "7-Day Free Access",
+    trialDaysLeft: "Free Access: {days} days left",
+    trialExpired: "Free Access Expired",
   }
 };

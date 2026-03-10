@@ -14,16 +14,18 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2 } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Clock } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { differenceInDays } from 'date-fns';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'basic' | 'premium';
   premiumCycleStartDate?: string | null;
   referralCode?: string;
+  createdAt?: string;
 };
 
 export function UserProfile() {
@@ -96,6 +98,19 @@ export function UserProfile() {
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
   const remainingDays = isPaidUser ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
 
+  // 7-Day Trial Calculation
+  const trialInfo = useMemo(() => {
+    if (!userProfile?.createdAt || isPaidUser) return null;
+    const createdDate = new Date(userProfile.createdAt);
+    const daysSinceCreation = differenceInDays(new Date(), createdDate);
+    const daysLeft = 7 - daysSinceCreation;
+    
+    if (daysLeft > 0) {
+      return { active: true, daysLeft };
+    }
+    return { active: false, daysLeft: 0 };
+  }, [userProfile?.createdAt, isPaidUser]);
+
   if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
@@ -135,11 +150,30 @@ export function UserProfile() {
             <p className="text-xs leading-none text-muted-foreground truncate">
               {user.email}
             </p>
+            
             {isPaidUser && remainingDays !== null && (
-                <p className="text-xs font-semibold leading-none text-primary/80 mt-1">
-                {remainingDays} days left
+                <p className="text-xs font-semibold leading-none text-primary/80 mt-1 flex items-center gap-1">
+                  <CheckCircle2 size={10} className="text-green-500" />
+                  {remainingDays} days left
                 </p>
             )}
+
+            {!isPaidUser && trialInfo && (
+              <div className="mt-2 p-2 rounded bg-primary/5 border border-primary/10">
+                {trialInfo.active ? (
+                  <p className="text-[10px] font-bold text-primary flex items-center gap-1 uppercase tracking-tight">
+                    <Sparkles size={10} />
+                    {t('trialDaysLeft').replace('{days}', String(trialInfo.daysLeft))}
+                  </p>
+                ) : (
+                  <p className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-tight">
+                    <Clock size={10} />
+                    {t('trialExpired')}
+                  </p>
+                )}
+              </div>
+            )}
+
             {!isActualDeveloper && (
               <div className="flex items-center gap-2 mt-2 pt-2 border-t">
                 <p className="text-[10px] text-muted-foreground font-mono truncate flex-1">

@@ -10,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { isToday } from "date-fns";
+import { isToday, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -38,8 +38,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium', createdAt?: string }>(userDocRef);
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+
+  // 7-Day Trial Logic
+  const isWithinTrial = useMemo(() => {
+    if (!userProfile?.createdAt) return false;
+    const createdDate = new Date(userProfile.createdAt);
+    const daysSinceCreation = differenceInDays(new Date(), createdDate);
+    return daysSinceCreation >= 0 && daysSinceCreation < 7;
+  }, [userProfile?.createdAt]);
 
   const [isDeveloper, setIsDeveloper] = useState(false);
   
@@ -164,6 +172,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
+    // 7-Day Trial Exception
+    if (isWithinTrial) {
+      setIsPlaying(true);
+      setStep('playing');
+      return;
+    }
+
     switch(mantra.tier) {
         case 'free':
             const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
@@ -231,9 +246,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        {mantra.tier === 'paid' && !isPaidUser && (
+        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && (
            <Badge variant="default" className="absolute top-4 right-4 z-10">
             {t('headerUpgrade')}
+          </Badge>
+        )}
+        {mantra.tier === 'paid' && !isPaidUser && isWithinTrial && (
+           <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
+            {t('trialAccess')}
           </Badge>
         )}
         {mantra.tier === 'free' && (
