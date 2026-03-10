@@ -49,6 +49,12 @@
       "imageHint": "girl headphones"
     },
     {
+      "id": "bhairava-image",
+      "description": "Fierce Kaala Bhairava form of Lord Shiva",
+      "imageUrl": "https://picsum.photos/seed/bhairava/800/600",
+      "imageHint": "fierce deity"
+    },
+    {
       "id": "hair-oil-product",
       "description": "Product image for hair oil",
       "imageUrl": "/Hair oil.png",

@@ -63,7 +63,8 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
   // Determine the best image based on the mantra ID or category
   const getMantraImageId = (id: number) => {
     if (id === 1) return 'kali-mantra-infographic'; // Water method
-    if (id === 2 || id === 17) return 'chakshu-mantra-infographic'; // Headphone method
+    if (id === 2) return 'chakshu-mantra-infographic'; // Headphone method
+    if (id === 17) return 'bhairava-image'; // Kaala Bhairava
     return 'hanuman-healing'; // Default spiritual image
   };
 
