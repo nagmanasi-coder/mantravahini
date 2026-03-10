@@ -169,15 +169,6 @@ export default function UserManualPage() {
                 </Card>
                 <Card className="flex flex-col">
                     <CardHeader className="flex-row items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full"><Brain className="h-5 w-5 text-primary" /></div>
-                        <CardTitle className="text-lg">{t('manualPainfulMemoriesTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <p className="text-sm text-muted-foreground leading-relaxed">{t('manualPainfulMemoriesDescription')}</p>
-                    </CardContent>
-                </Card>
-                <Card className="flex flex-col">
-                    <CardHeader className="flex-row items-center gap-3">
                         <div className="bg-primary/10 p-2 rounded-full"><Share2 className="h-5 w-5 text-primary" /></div>
                         <CardTitle className="text-lg">{t('manualReferralTitle')}</CardTitle>
                     </CardHeader>

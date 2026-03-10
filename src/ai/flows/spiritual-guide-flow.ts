@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
@@ -46,7 +47,6 @@ const spiritualGuideFlow = ai.defineFlow(
       - Specialized Therapies: Hanuman Therapy (chronic diseases), Hanuman Prana Therapy (protection from untimely death).
       - Advanced Healing Modules (Premium): 
           * Vocal Prana Checkup: Weekly analysis of physical health, mental energy, and chakra balance using voice vibrations.
-          * Painful Memories Module: A 60-second guided eye-tracking session to reduce emotional intensity of past memories.
       - Products: Akshaya Cash Box (financial flow), Medicated Oils (Hair, Pain, Skin, Sexual Wellness).
       - Premium Benefits: Access to spiritual books library (Premium Library), practical demonstration videos, workshops, and the Divine Entity WhatsApp group.
       - Referral Program: Premium members can earn rewards and commissions by sharing their unique referral link.
@@ -55,7 +55,7 @@ const spiritualGuideFlow = ai.defineFlow(
       Instructions:
       1. Language: Always respond in ${input.language === 'kn' ? 'Kannada (ಕನ್ನಡ)' : 'English'}.
       2. Precision: Keep your response concise (maximum 3-4 sentences).
-      3. Relevance: Recommend specific app modules (Vocal Prana, Painful Memories, etc.) or products only if directly relevant to the user's question.
+      3. Relevance: Recommend specific app modules (Vocal Prana, etc.) or products only if directly relevant to the user's question.
       4. Activation: For deep healing, always guide users to contact the center at 7022070287 for personalized mantra activation.
       5. Integrity: Stick to the provided app context. Do not invent rituals or offer clinical medical advice outside of these spiritual healing frameworks.`;
 

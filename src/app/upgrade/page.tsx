@@ -38,7 +38,6 @@ export default function UpgradePage() {
     t('featureAllBasic'),
     t('featureAiChatbot'),
     t('featureVocalPrana'),
-    t('featurePainfulMemories'),
     t('featurePremiumLibrary'),
     t('featurePracticalVideos'),
     t('featureWorkshops'),
