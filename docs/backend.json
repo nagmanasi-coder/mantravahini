@@ -90,7 +90,8 @@
         "quiz_question": { "type": "string" },
         "quiz_options": { "type": "array", "items": { "type": "string" } },
         "correct_answer": { "type": "string" },
-        "image_hint": { "type": "string" }
+        "image_hint": { "type": "string" },
+        "audioUrl": { "type": "string", "format": "uri", "description": "TTS generated audio link." }
       },
       "required": ["id", "moduleId", "courseId", "title"]
     }
