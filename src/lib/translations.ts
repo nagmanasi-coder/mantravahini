@@ -122,7 +122,7 @@ export const translations = {
     shareText: "ಹಂಚಿಕೊಳ್ಳಿ ಮತ್ತು ರೋಗ ಮುಕ್ತ ಸಮಾಜಕ್ಕೆ ಸಹಾಯ ಮಾಡಿ",
     language: "English",
     upgradeTitle: "ಪ್ರೀಮಿಯಂಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ",
-    upgradeSubtitle: "ಎಲ್ಲಾ ಶಕ್ತಿಶಾಲಿ ಮಂತ್ರಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
+    upgradeSubtitle: "ಅಪ್ಲಿಕೇಶನ್‌ನ ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
     freePlanTitle: "ಉಚಿತ ಯೋಜನೆ",
     freePlanDescription: "ಮೂಲ ವೈಶಿಷ್ಟ್ಯಗಳೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸಿ",
     basicPlanTitle: "ಮೂಲ ಯೋಜನೆ",
@@ -242,6 +242,7 @@ export const translations = {
     wrongAnswer: "ತಪ್ಪು ಉತ್ತರ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.",
     downloadCertificate: "ಪ್ರಮಾಣಪತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
     courseCompleted: "ಕೋರ್ಸ್ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",
+    completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -362,7 +363,7 @@ export const translations = {
     shareText: "Share and help a disease-free society",
     language: "ಕನ್ನಡ",
     upgradeTitle: "Upgrade to Premium",
-    upgradeSubtitle: "Unlock All Powerful Mantras",
+    upgradeSubtitle: "Unlock all features of the app",
     freePlanTitle: "Free Plan",
     freePlanDescription: "Get started with the basic features",
     basicPlanTitle: "Basic Plan",
@@ -482,5 +483,6 @@ export const translations = {
     wrongAnswer: "Wrong answer. Try again.",
     downloadCertificate: "Download Certificate",
     courseCompleted: "Course Completed Successfully!",
+    completed: "Completed",
   }
 };
