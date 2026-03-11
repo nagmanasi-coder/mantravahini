@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2, Layers } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2, Layers, AlertCircle } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { generateLessonAudio } from '@/ai/flows/tts-flow';
 import { cn } from '@/lib/utils';
@@ -252,13 +252,17 @@ export default function AdminWorkshopBuilderPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Price (₹)</Label>
+              <Label>Price per Level (₹)</Label>
               <Input 
                 type="number" 
                 placeholder="0 for free" 
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
+              <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                This price will apply to each of the 3 generated variants.
+              </p>
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label>Base Description</Label>
