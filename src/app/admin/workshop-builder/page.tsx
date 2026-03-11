@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -11,9 +10,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function AdminWorkshopBuilderPage() {
   const { user, isUserLoading } = useUser();
@@ -183,5 +183,3 @@ export default function AdminWorkshopBuilderPage() {
     </div>
   );
 }
-
-import Link from 'next/link';
