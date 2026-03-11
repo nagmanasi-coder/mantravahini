@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -12,9 +13,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2, Layers, AlertCircle } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2, Layers, AlertCircle, ImageIcon } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { generateLessonAudio } from '@/ai/flows/tts-flow';
+import { generateLessonImage } from '@/ai/flows/image-generation-flow';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -65,7 +67,12 @@ export default function AdminWorkshopBuilderPage() {
     const charCount = content.length;
     const estimatedTokensPerRun = Math.ceil(charCount / 4);
     const totalInputTokens = estimatedTokensPerRun * 3;
-    const costUsd = ((totalInputTokens / 1000000) * 0.15) + (0.005 * 3); 
+    
+    // Cost breakdown: 
+    // - Input tokens (approx $0.15 / 1M)
+    // - Audio generation (approx $0.60 / 1M)
+    // - Image generation (approx $0.005 / image - 10 images total)
+    const costUsd = ((totalInputTokens / 1000000) * 0.15) + (0.005 * 3) + (0.01 * 10); 
     const costInr = costUsd * 83;
 
     return {
@@ -170,6 +177,9 @@ export default function AdminWorkshopBuilderPage() {
             const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
             
             let audioUrl = '';
+            let imageUrl = '';
+
+            // 1. Generate Audio (TTS)
             try {
               const ttsResult = await generateLessonAudio({
                 text: `${les.title}. ${les.concept}. Activity: ${les.activity}`,
@@ -183,19 +193,34 @@ export default function AdminWorkshopBuilderPage() {
               console.warn("TTS Generation failed for lesson:", lessonId, ttsErr);
             }
 
+            // 2. Generate Image (Imagen 4)
+            try {
+              const imageResult = await generateLessonImage({
+                prompt: les.image_hint,
+                lessonTitle: les.title,
+              });
+              
+              const imageRef = ref(storage, `course-images/${lessonId}.png`);
+              await uploadString(imageRef, imageResult.imageDataUri, 'data_url');
+              imageUrl = await getDownloadURL(imageRef);
+            } catch (imgErr) {
+              console.warn("Image Generation failed for lesson:", lessonId, imgErr);
+            }
+
             const lessonRef = doc(firestore, 'lessons', lessonId);
             await setDoc(lessonRef, {
               ...les,
               id: lessonId,
               moduleId,
               courseId,
-              audioUrl
+              audioUrl,
+              imageUrl
             });
           }
         }
       }
 
-      toast({ title: "Workshops Published!", description: "AI has successfully created Beginner, Intermediate, and Advanced courses with individual pricing." });
+      toast({ title: "Workshops Published!", description: "AI has successfully created Beginner, Intermediate, and Advanced courses with audio, interactive diagrams, and pricing." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
@@ -223,14 +248,14 @@ export default function AdminWorkshopBuilderPage() {
           <GraduationCap className="h-10 w-10" />
           AI Workshop Builder
         </h1>
-        <p className="text-muted-foreground mt-2">Upload one file to generate 3 difficulty levels automatically.</p>
+        <p className="text-muted-foreground mt-2">Upload one file to generate 3 difficulty levels with audio & diagrams.</p>
       </header>
 
       <div className="grid gap-8">
         <Card className="shadow-xl border-2 border-primary/10">
           <CardHeader>
             <CardTitle>Course Metadata</CardTitle>
-            <CardDescription>Enter details. You can set different prices for each level.</CardDescription>
+            <CardDescription>Enter details. AI will generate Beginner, Intermediate, and Advanced variants.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
             <div className="space-y-2">
@@ -305,7 +330,7 @@ export default function AdminWorkshopBuilderPage() {
           </CardContent>
           <CardFooter className="bg-primary/5 p-4 flex items-center gap-3 text-sm font-bold text-primary">
             <Layers className="h-5 w-5" />
-            Note: AI will generate separate modules for Beginner, Intermediate, and Advanced.
+            Note: AI will generate 3 full course variants instantly.
           </CardFooter>
         </Card>
 
@@ -332,7 +357,7 @@ export default function AdminWorkshopBuilderPage() {
               <>
                 <FileUp className="h-10 w-10 text-muted-foreground mb-4" />
                 <p className="text-sm font-bold">Upload Textbook PDF</p>
-                <p className="text-xs text-muted-foreground mt-2">AI will process 200+ pages easily.</p>
+                <p className="text-xs text-muted-foreground mt-2">AI will process everything including audio & images.</p>
               </>
             )}
             <input 
@@ -348,9 +373,9 @@ export default function AdminWorkshopBuilderPage() {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileText className="h-5 w-5" />
-                Processing Strategy
+                Total Processing Strategy
               </CardTitle>
-              <CardDescription>Estimated cost for 3-tier generation.</CardDescription>
+              <CardDescription>Includes Summary, Multi-Level Logic, TTS & Diagrams.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea 
@@ -368,16 +393,22 @@ export default function AdminWorkshopBuilderPage() {
                       <span className="text-sm font-mono">{estimation.tokens.toLocaleString()}</span>
                     </div>
                     <div className="flex flex-col border-l pl-4">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">3-Level Creation Cost</span>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">3-Tier Creation Cost</span>
                       <div className="flex items-center gap-1 text-primary">
                         <Coins className="h-3 w-3" />
                         <span className="text-sm font-bold">${estimation.costUsd} (~₹{estimation.costInr})</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded uppercase tracking-tighter">
-                    <Mic2 className="h-3 w-3" />
-                    3x Multi-Level Generation
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded uppercase tracking-tighter">
+                      <ImageIcon className="h-3 w-3" />
+                      Interactive Diagram Generation
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded uppercase tracking-tighter">
+                      <Volume2 className="h-3 w-3" />
+                      Pre-Recorded Lesson Audio
+                    </div>
                   </div>
                 </div>
               )}
@@ -390,11 +421,11 @@ export default function AdminWorkshopBuilderPage() {
                 </div>
               ) : (
                 <div className="text-[10px] text-muted-foreground italic">
-                  Creates 3 Course variants instantly.
+                  Complete batch: 3 Difficulty Levels.
                 </div>
               )}
               <Button size="sm" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
-                {isLoading ? "Generating Multi-Levels..." : "Start Batch Generation"}
+                {isLoading ? "Building Pro Workshops..." : "Start Batch Generation"}
               </Button>
             </CardFooter>
           </Card>

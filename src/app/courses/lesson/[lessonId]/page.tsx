@@ -11,13 +11,18 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/context/language-context';
-import { ArrowLeft, ArrowRight, Sparkles, BookOpen, Brain, Lightbulb, CheckCircle2, XCircle, Volume2, MessageSquareQuote, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, BookOpen, Brain, Lightbulb, CheckCircle2, XCircle, Volume2, MessageSquareQuote, Send, Loader2, Search, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { askLessonDoubt } from '@/ai/flows/lesson-clarification-flow';
 import { cn } from '@/lib/utils';
+
+interface VisualKeypoint {
+  label: string;
+  description: string;
+}
 
 interface Lesson {
   id: string;
@@ -30,6 +35,8 @@ interface Lesson {
   correct_answer: string;
   image_hint?: string;
   audioUrl?: string;
+  imageUrl?: string;
+  visual_keypoints?: VisualKeypoint[];
 }
 
 export default function LessonDetailPage({ params }: { params: Promise<{ lessonId: string }> }) {
@@ -51,6 +58,9 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   
+  // Interactive Diagram state
+  const [selectedKeypoint, setSelectedKeypoint] = useState<VisualKeypoint | null>(null);
+
   // Clarification state
   const [doubtText, setDoubtText] = useState('');
   const [clarificationHistory, setClarificationHistory] = useState<{ q: string, a: string }[]>([]);
@@ -146,16 +156,59 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
               )}
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
-              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
-                <Image 
-                  src={`https://picsum.photos/seed/${lessonId}/600/400`} 
-                  alt="lesson image" 
-                  fill 
-                  className="object-cover opacity-80"
-                  data-ai-hint={lesson.image_hint || "learning school"}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              {/* AI Generated Interactive Diagram */}
+              <div className="relative space-y-4">
+                <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted border-2 border-primary/10">
+                  {lesson.imageUrl ? (
+                    <Image 
+                      src={lesson.imageUrl} 
+                      alt="lesson diagram" 
+                      fill 
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-primary/5">
+                      <Sparkles className="h-12 w-12 text-primary/20 animate-pulse" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    <Search className="h-3 w-3" />
+                    Interactive Diagram
+                  </div>
+                </div>
+
+                {/* Keypoint Explorer */}
+                {lesson.visual_keypoints && lesson.visual_keypoints.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {lesson.visual_keypoints.map((kp, idx) => (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "text-[10px] h-auto py-2 px-1 font-bold transition-all",
+                          selectedKeypoint?.label === kp.label ? "bg-primary text-white border-primary" : "hover:border-primary/50"
+                        )}
+                        onClick={() => setSelectedKeypoint(kp)}
+                      >
+                        {kp.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedKeypoint && (
+                  <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 animate-fade-in flex gap-3">
+                    <Info className="h-5 w-5 text-primary shrink-0 mt-1" />
+                    <div className="space-y-1">
+                      <p className="font-bold text-sm text-primary">{selectedKeypoint.label}</p>
+                      <p className="text-xs leading-relaxed italic">{selectedKeypoint.description}</p>
+                    </div>
+                  </div>
+                )}
               </div>
+
               <div className="p-4 bg-muted/30 rounded-lg border-l-4 border-primary">
                 <p className="text-lg leading-relaxed whitespace-pre-line font-medium">
                   {lesson.concept}

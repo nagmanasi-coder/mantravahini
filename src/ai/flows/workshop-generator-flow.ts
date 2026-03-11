@@ -4,7 +4,7 @@
  * @fileOverview AI Workshop Generator Flow.
  * 
  * Converts raw textbook content into structured workshop modules and lessons
- * tailored to specific educational levels.
+ * tailored to specific educational levels. Now includes interactive visual data.
  */
 
 import { ai } from '@/ai/genkit';
@@ -17,7 +17,11 @@ const LessonSchema = z.object({
   quiz_question: z.string().describe("A multiple-choice question"),
   quiz_options: z.array(z.string()).length(4).describe("4 options for the quiz"),
   correct_answer: z.string().describe("The exact text of the correct option"),
-  image_hint: z.string().describe("Two keywords for a placeholder image search"),
+  image_hint: z.string().describe("Detailed prompt for generating an educational diagram (Imagen 4)"),
+  visual_keypoints: z.array(z.object({
+    label: z.string().describe("Bilingual label for a part of the diagram"),
+    description: z.string().describe("Brief bilingual explanation of this specific part")
+  })).max(4).describe("Key parts of the image to explore interactively")
 });
 
 const ModuleSchema = z.object({
@@ -74,6 +78,7 @@ const workshopGeneratorFlow = ai.defineFlow(
         - Explanation (Concept): Exactly 3-4 lines of simple text per language.
         - Activity: A fun, practical thing for the student to DO right now based on the ${input.level} level.
         - Quiz: A testing question with 4 options appropriate for ${input.level} level students.
+        - Visual Keypoints: Identify 3-4 specific visual elements that would be in a diagram of this concept. Provide a name and explanation for each.
         - Tone: Encouraging, spiritual, and educational.
         
         Return the result as valid JSON matching the requested schema.`,
