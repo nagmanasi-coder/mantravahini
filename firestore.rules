@@ -49,26 +49,27 @@ service cloud.firestore {
     }
 
     /**
-     * @description Rules for 'mantras', 'assets', 'courses', 'modules', 'lessons'. Public read; Admin write.
+     * @description Public Content: mantras, assets, courses, modules, lessons.
+     * These are publicly readable to all users, but only writable by admins.
      */
     match /mantras/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin();
     }
     match /assets/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin();
     }
     match /courses/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin();
     }
     match /modules/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin();
     }
     match /lessons/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin();
     }
 

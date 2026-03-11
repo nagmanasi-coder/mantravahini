@@ -2,7 +2,6 @@
 {
   "entities": {
     "Mantra": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Mantra",
       "type": "object",
       "description": "Represents a specific mantra track available for playback.",
@@ -17,13 +16,12 @@
       "required": ["id", "title", "description", "assetId"]
     },
     "Asset": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Asset",
       "type": "object",
       "description": "Metadata for digital files (audio, video, PDF, image).",
       "properties": {
         "id": { "type": "string" },
-        "title": { "type": "string", "description": "The user-facing display name of the asset." },
+        "title": { "type": "string" },
         "fileName": { "type": "string" },
         "fileType": { "type": "string", "enum": ["audio", "video", "document", "image"] },
         "mimeType": { "type": "string" },
@@ -34,7 +32,6 @@
       "required": ["id", "fileName", "fileType", "mimeType", "url", "sizeBytes", "uploadDate"]
     },
     "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
       "type": "object",
       "description": "Stores user-specific data, settings, and subscription status.",
@@ -47,9 +44,6 @@
         "premiumCycleStartDate": { "type": ["string", "null"], "format": "date-time" },
         "referralCode": { "type": "string" },
         "referredBy": { "type": "string" },
-        "fcmToken": { "type": "string", "description": "Token for push notifications." },
-        "dailyAiMessages": { "type": "number" },
-        "lastAiMessageDate": { "type": "string", "format": "date-time" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]
@@ -63,7 +57,7 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "published": { "type": "boolean" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": { "type": "string" }
       },
       "required": ["id", "title"]
     },
@@ -102,70 +96,33 @@
     "providers": ["password", "anonymous"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": { "$ref": "#/backend/entities/UserProfile" },
-          "description": "Private user profiles.",
-          "params": [{ "name": "userId", "description": "The UID of the user." }]
-        }
-      },
-      {
-        "path": "/mantras/{mantraId}",
-        "definition": {
-          "entityName": "Mantra",
-          "schema": { "$ref": "#/backend/entities/Mantra" },
-          "description": "Public mantra tracks.",
-          "params": [{ "name": "mantraId", "description": "Unique identifier." }]
-        }
-      },
-      {
-        "path": "/assets/{assetId}",
-        "definition": {
-          "entityName": "Asset",
-          "schema": { "$ref": "#/backend/entities/Asset" },
-          "description": "Public media metadata.",
-          "params": [{ "name": "assetId", "description": "Unique identifier." }]
-        }
-      },
-      {
-        "path": "/courses/{courseId}",
-        "definition": {
-          "entityName": "Course",
-          "schema": { "$ref": "#/backend/entities/Course" },
-          "description": "Educational courses.",
-          "params": [{ "name": "courseId", "description": "Unique identifier." }]
-        }
-      },
-      {
-        "path": "/modules/{moduleId}",
-        "definition": {
-          "entityName": "Module",
-          "schema": { "$ref": "#/backend/entities/Module" },
-          "description": "Course modules.",
-          "params": [{ "name": "moduleId", "description": "Unique identifier." }]
-        }
-      },
-      {
-        "path": "/lessons/{lessonId}",
-        "definition": {
-          "entityName": "Lesson",
-          "schema": { "$ref": "#/backend/entities/Lesson" },
-          "description": "Interactive lessons.",
-          "params": [{ "name": "lessonId", "description": "Unique identifier." }]
-        }
-      },
-      {
-        "path": "/admin_users/{userId}",
-        "definition": {
-          "entityName": "AdminUser",
-          "description": "Marker collection for admin roles.",
-          "params": [{ "name": "userId", "description": "Admin UID." }]
-        }
-      }
-    ],
-    "reasoning": "Standard structure for a content-driven app. New educational collections added to support the AI Workshop Builder module with public read access."
+    "/users/{userId}": {
+      "schema": { "$ref": "#/backend/entities/UserProfile" },
+      "description": "Private user profiles."
+    },
+    "/mantras/{mantraId}": {
+      "schema": { "$ref": "#/backend/entities/Mantra" },
+      "description": "Public mantra tracks."
+    },
+    "/assets/{assetId}": {
+      "schema": { "$ref": "#/backend/entities/Asset" },
+      "description": "Public media metadata."
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/backend/entities/Course" },
+      "description": "Public educational courses."
+    },
+    "/modules/{moduleId}": {
+      "schema": { "$ref": "#/backend/entities/Module" },
+      "description": "Course modules."
+    },
+    "/lessons/{lessonId}": {
+      "schema": { "$ref": "#/backend/entities/Lesson" },
+      "description": "Interactive lessons."
+    },
+    "/admin_users/{userId}": {
+      "schema": "object",
+      "description": "Admin role markers."
+    }
   }
 }
