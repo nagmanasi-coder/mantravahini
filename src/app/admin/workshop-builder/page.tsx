@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -39,7 +38,12 @@ export default function AdminWorkshopBuilderPage() {
   const [courseTitle, setCourseTitle] = useState('');
   const [courseDescription, setCourseDescription] = useState('');
   const [language, setLanguage] = useState('kn');
-  const [price, setPrice] = useState('0');
+  
+  // Tiered Pricing
+  const [beginnerPrice, setBeginnerPrice] = useState('0');
+  const [intermediatePrice, setIntermediatePrice] = useState('0');
+  const [advancedPrice, setAdvancedPrice] = useState('0');
+  
   const [currentProcessingLevel, setCurrentProcessingLevel] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,15 +59,11 @@ export default function AdminWorkshopBuilderPage() {
     }
   }, [user, isUserLoading, isDeveloper, router]);
 
-  // Cost Estimation Logic (Includes Audio & Clarification buffer for 3 LEVELS)
   const estimation = useMemo(() => {
     if (!content.trim()) return { tokens: 0, costUsd: 0, costInr: 0 };
     
     const charCount = content.length;
     const estimatedTokensPerRun = Math.ceil(charCount / 4);
-    
-    // Pricing for Gemini 1.5 Flash (approx $0.15 per 1M input tokens)
-    // We multiply by 3 because we generate Beginner, Intermediate, and Advanced
     const totalInputTokens = estimatedTokensPerRun * 3;
     const costUsd = ((totalInputTokens / 1000000) * 0.15) + (0.005 * 3); 
     const costInr = costUsd * 83;
@@ -125,11 +125,15 @@ export default function AdminWorkshopBuilderPage() {
     setIsLoading(true);
     try {
       const levels: ('Beginner' | 'Intermediate' | 'Advanced')[] = ['Beginner', 'Intermediate', 'Advanced'];
+      const levelPrices = {
+        'Beginner': parseFloat(beginnerPrice) || 0,
+        'Intermediate': parseFloat(intermediatePrice) || 0,
+        'Advanced': parseFloat(advancedPrice) || 0,
+      };
 
       for (const level of levels) {
         setCurrentProcessingLevel(level);
         
-        // 1. Generate Course Structure for specific level
         const generated = await generateWorkshopLessons({
           content,
           title: courseTitle,
@@ -146,7 +150,7 @@ export default function AdminWorkshopBuilderPage() {
           title: `${courseTitle} (${level})`,
           description: courseDescription || `A comprehensive ${level} level workshop based on provided materials.`,
           language,
-          price: parseFloat(price) || 0,
+          price: levelPrices[level],
           level,
           published: true,
           createdAt: serverTimestamp(),
@@ -165,7 +169,6 @@ export default function AdminWorkshopBuilderPage() {
           for (const les of mod.lessons) {
             const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
             
-            // 2. Generate TTS Audio for Lesson
             let audioUrl = '';
             try {
               const ttsResult = await generateLessonAudio({
@@ -192,7 +195,7 @@ export default function AdminWorkshopBuilderPage() {
         }
       }
 
-      toast({ title: "Workshops Published!", description: "AI has successfully created Beginner, Intermediate, and Advanced courses." });
+      toast({ title: "Workshops Published!", description: "AI has successfully created Beginner, Intermediate, and Advanced courses with individual pricing." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
@@ -227,10 +230,10 @@ export default function AdminWorkshopBuilderPage() {
         <Card className="shadow-xl border-2 border-primary/10">
           <CardHeader>
             <CardTitle>Course Metadata</CardTitle>
-            <CardDescription>Enter basic details. AI will handle level-specific content.</CardDescription>
+            <CardDescription>Enter details. You can set different prices for each level.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
+          <CardContent className="grid gap-6">
+            <div className="space-y-2">
               <Label>Base Course Title</Label>
               <Input 
                 placeholder="e.g. Science Class 10: Human Eye" 
@@ -238,33 +241,60 @@ export default function AdminWorkshopBuilderPage() {
                 onChange={(e) => setCourseTitle(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Primary Language</Label>
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kn">Kannada</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="bilingual">Bilingual</SelectItem>
-                </SelectContent>
-              </Select>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label>Primary Language</Label>
+                <Select value={language} onValueChange={setLanguage}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kn">Kannada</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="bilingual">Bilingual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-4">
+                <Label>Individual Level Pricing (₹)</Label>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold w-24 text-muted-foreground uppercase">Beginner</span>
+                    <Input 
+                      type="number" 
+                      placeholder="0" 
+                      value={beginnerPrice}
+                      onChange={(e) => setBeginnerPrice(e.target.value)}
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold w-24 text-muted-foreground uppercase">Intermediate</span>
+                    <Input 
+                      type="number" 
+                      placeholder="0" 
+                      value={intermediatePrice}
+                      onChange={(e) => setIntermediatePrice(e.target.value)}
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold w-24 text-muted-foreground uppercase">Advanced</span>
+                    <Input 
+                      type="number" 
+                      placeholder="0" 
+                      value={advancedPrice}
+                      onChange={(e) => setAdvancedPrice(e.target.value)}
+                      className="h-8"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="space-y-2">
-              <Label>Price per Level (₹)</Label>
-              <Input 
-                type="number" 
-                placeholder="0 for free" 
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-              <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                This price will apply to each of the 3 generated variants.
-              </p>
-            </div>
-            <div className="space-y-2 sm:col-span-2">
               <Label>Base Description</Label>
               <Textarea 
                 placeholder="Brief summary of what this material covers..." 
