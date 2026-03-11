@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -10,10 +11,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2 } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Configure PDF.js worker
+import * as pdfjsLib from 'pdfjs-dist';
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 export default function AdminWorkshopBuilderPage() {
   const { user, isUserLoading } = useUser();
@@ -22,9 +28,15 @@ export default function AdminWorkshopBuilderPage() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
   const [content, setContent] = useState('');
   const [courseTitle, setCourseTitle] = useState('');
   const [courseDescription, setCourseDescription] = useState('');
+  const [language, setLanguage] = useState('kn');
+  const [price, setPrice] = useState('0');
+  const [level, setLevel] = useState('Beginner');
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isDeveloper = useMemo(() => {
     if (!user) return false;
@@ -36,6 +48,48 @@ export default function AdminWorkshopBuilderPage() {
       router.push('/');
     }
   }, [user, isUserLoading, isDeveloper, router]);
+
+  const extractTextFromPdf = async (file: File) => {
+    setIsExtracting(true);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n\n';
+      }
+      
+      setContent(fullText);
+      
+      // Auto-set title from filename if empty
+      if (!courseTitle) {
+        const cleanName = file.name.replace('.pdf', '').replace(/[-_]/g, ' ');
+        setCourseTitle(cleanName);
+      }
+      
+      toast({ title: "PDF Extracted", description: `Successfully extracted ${pdf.numPages} pages of text.` });
+    } catch (error: any) {
+      console.error("PDF extraction error:", error);
+      toast({ variant: "destructive", title: "Extraction Failed", description: "Could not read the PDF content. Please paste text manually." });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      extractTextFromPdf(file);
+    } else if (file) {
+      toast({ variant: "destructive", title: "Invalid File", description: "Please upload a valid PDF document." });
+    }
+  };
 
   const handleGenerate = async () => {
     if (!content.trim() || !courseTitle.trim()) {
@@ -49,7 +103,7 @@ export default function AdminWorkshopBuilderPage() {
       const generated = await generateWorkshopLessons({
         content,
         title: courseTitle,
-        language: 'kn' // Defaulting to include Kannada
+        language: language
       });
 
       if (!firestore) return;
@@ -61,6 +115,9 @@ export default function AdminWorkshopBuilderPage() {
         id: courseId,
         title: courseTitle,
         description: courseDescription,
+        language,
+        price: parseFloat(price) || 0,
+        level,
         published: true,
         createdAt: serverTimestamp(),
       });
@@ -88,7 +145,7 @@ export default function AdminWorkshopBuilderPage() {
         }
       }
 
-      toast({ title: "Workshop Published!", description: "AI has successfully converted your content into a course." });
+      toast({ title: "Workshop Published!", description: "AI has successfully converted your PDF into a course." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
@@ -114,17 +171,17 @@ export default function AdminWorkshopBuilderPage() {
           <GraduationCap className="h-10 w-10" />
           AI Workshop Builder
         </h1>
-        <p className="text-muted-foreground mt-2">Convert textbooks into interactive modules automatically.</p>
+        <p className="text-muted-foreground mt-2">Convert textbooks or PDFs into interactive modules automatically.</p>
       </header>
 
       <div className="grid gap-8">
         <Card className="shadow-xl border-2 border-primary/10">
           <CardHeader>
             <CardTitle>Course Metadata</CardTitle>
-            <CardDescription>Enter the basics for your new workshop.</CardDescription>
+            <CardDescription>Enter the details for your new workshop.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
+          <CardContent className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
               <Label>Course Title</Label>
               <Input 
                 placeholder="e.g. Science Class 10: Human Eye" 
@@ -133,6 +190,41 @@ export default function AdminWorkshopBuilderPage() {
               />
             </div>
             <div className="space-y-2">
+              <Label>Language</Label>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kn">Kannada (Primary)</SelectItem>
+                  <SelectItem value="en">English (Primary)</SelectItem>
+                  <SelectItem value="bilingual">Bilingual (Mixed)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Level</Label>
+              <Select value={level} onValueChange={setLevel}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Beginner">Beginner</SelectItem>
+                  <SelectItem value="Intermediate">Intermediate</SelectItem>
+                  <SelectItem value="Advanced">Advanced</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Price (₹)</Label>
+              <Input 
+                type="number" 
+                placeholder="0 for free" 
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
               <Label>Description</Label>
               <Textarea 
                 placeholder="Brief summary of the course..." 
@@ -143,42 +235,78 @@ export default function AdminWorkshopBuilderPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-xl border-2 border-primary/10 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Source Material
-            </CardTitle>
-            <CardDescription>Paste the textbook text or PDF content here. AI will detect chapters and create lessons.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea 
-              placeholder="Paste content here..." 
-              className="min-h-[300px] bg-background" 
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card 
+            className={cn(
+              "md:col-span-1 flex flex-col items-center justify-center border-2 border-dashed p-8 text-center cursor-pointer transition-colors hover:bg-primary/5",
+              isExtracting ? "bg-primary/5 border-primary" : "border-muted-foreground/20"
+            )}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isExtracting ? (
+              <div className="space-y-4">
+                <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+                <p className="text-sm font-bold">Extracting PDF...</p>
+              </div>
+            ) : content ? (
+              <div className="space-y-2">
+                <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto" />
+                <p className="text-sm font-bold">Content Ready</p>
+                <p className="text-[10px] text-muted-foreground">Click to replace PDF</p>
+              </div>
+            ) : (
+              <>
+                <FileUp className="h-10 w-10 text-muted-foreground mb-4" />
+                <p className="text-sm font-bold">Upload Textbook PDF</p>
+                <p className="text-xs text-muted-foreground mt-2">AI will automatically extract text from pages.</p>
+              </>
+            )}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept=".pdf" 
+              onChange={handleFileChange} 
             />
-          </CardContent>
-          <CardFooter className="bg-muted/30 p-6 flex justify-between items-center">
-            <div className="text-xs text-muted-foreground max-w-[60%]">
-              <p className="font-bold uppercase tracking-wider mb-1">AI Logic:</p>
-              <p>Gemini will divide this into logical modules, generate bilingual explanations, and create interactive quizzes for each lesson.</p>
-            </div>
-            <Button size="lg" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Build Modules
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+          </Card>
+
+          <Card className="md:col-span-2 shadow-xl border-2 border-primary/10 bg-primary/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="h-5 w-5" />
+                Source Content
+              </CardTitle>
+              <CardDescription>Extracted text or manually pasted material for AI processing.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea 
+                placeholder="Paste content here or upload a PDF..." 
+                className="min-h-[200px] bg-background" 
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </CardContent>
+            <CardFooter className="bg-muted/30 p-4 flex justify-between items-center">
+              <div className="text-[10px] text-muted-foreground">
+                <p className="font-bold uppercase mb-1">AI Strategy:</p>
+                <p>Convert to interactive lessons + quizzes.</p>
+              </div>
+              <Button size="sm" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate & Publish
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </div>
   );

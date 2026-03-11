@@ -57,6 +57,9 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "published": { "type": "boolean" },
+        "language": { "type": "string" },
+        "price": { "type": "number" },
+        "level": { "type": "string" },
         "createdAt": { "type": "string" }
       },
       "required": ["id", "title"]
