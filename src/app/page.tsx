@@ -269,7 +269,7 @@ export default function Home() {
                   <div className="space-y-1">
                     <CardTitle className="text-xl flex items-center gap-2">
                       <TrendingDown className="h-5 w-5 text-primary" />
-                      {t('physicalHealingProgressTitle')}
+                      {t('physicalHealingProgressTitle' as any) || 'Physical Healing Progress'}
                     </CardTitle>
                   </div>
                 </CardHeader>
