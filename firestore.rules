@@ -1,14 +1,10 @@
+
 /**
  * FIRESTORE SECURITY RULES
  * 
  * Core Philosophy:
- * This ruleset implements a public-read, admin-write model for content (mantras/assets)
+ * This ruleset implements a public-read, admin-write model for content (mantras/assets/courses)
  * and a private-read/write model for user data.
- * 
- * Key Security Decisions:
- * 1. Developer Override: The hardcoded developer UID has full administrative access.
- * 2. Database-Backed Access Control (DBAC): Roles are determined by existence in admin_users.
- * 3. User Privacy: Users can read and write their own profile data in the 'users' collection.
  */
 
 rules_version = '2';
@@ -23,7 +19,6 @@ service cloud.firestore {
 
     /**
      * @description Checks if the user is the primary developer.
-     * Update this UID when promoting a new account.
      */
     function isDeveloper() {
       return isSignedIn() && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
@@ -44,7 +39,6 @@ service cloud.firestore {
 
     /**
      * @description Rules for the 'users' collection.
-     * Users manage their own profiles. Admins can manage all.
      */
     match /users/{userId} {
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
@@ -55,23 +49,27 @@ service cloud.firestore {
     }
 
     /**
-     * @description Rules for 'mantras'. Public read; Admin write.
+     * @description Rules for 'mantras', 'assets', 'courses', 'modules', 'lessons'. Public read; Admin write.
      */
-    match /mantras/{mantraId} {
+    match /mantras/{id} {
       allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == mantraId;
-      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingAdmin();
+      allow write: if isAdmin();
     }
-
-    /**
-     * @description Rules for 'assets'. Public metadata discovery; Admin management.
-     */
-    match /assets/{assetId} {
+    match /assets/{id} {
       allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == assetId;
-      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingAdmin();
+      allow write: if isAdmin();
+    }
+    match /courses/{id} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+    match /modules/{id} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+    match /lessons/{id} {
+      allow get, list: if true;
+      allow write: if isAdmin();
     }
 
     /**
