@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { AppWindow, Info, BookUser, BookText, MessageSquareQuote, HeartPulse, GraduationCap, BookOpen, Video, Music } from "lucide-react";
+import { AppWindow, Info, BookText, MessageSquareQuote, GraduationCap, Video, Music, GraduationCap as School } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { usePathname } from "next/navigation";
 
@@ -10,8 +10,8 @@ export function AppFooter() {
     const { t, language } = useLanguage();
     const pathname = usePathname();
 
-    // Focused experience: Hide footer on mantra collection pages
-    if (pathname?.startsWith('/mantras')) {
+    // Focused experience: Hide footer on mantra collection pages or focused learning sessions
+    if (pathname?.startsWith('/mantras') || pathname?.includes('/lessons/')) {
       return null;
     }
 
@@ -23,13 +23,13 @@ export function AppFooter() {
                         <Music className="h-4 w-4" />
                         <span>{t('mantraHubTitle')}</span>
                     </Link>
+                    <Link href="/courses" className="flex items-center space-x-2 text-sm font-bold text-accent transition-colors hover:text-accent/80">
+                        <School className="h-4 w-4" />
+                        <span>{t('learningHubTitle' as any) || 'Learning Hub'}</span>
+                    </Link>
                     <Link href="/ai-guide" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <MessageSquareQuote className="h-4 w-4" />
                         <span>{t('aiGuideTitle')}</span>
-                    </Link>
-                    <Link href="/mantra-corner" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <BookOpen className="h-4 w-4" />
-                        <span>{t('practicalLessons')}</span>
                     </Link>
                     <Link href="/premium-library" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <BookText className="h-4 w-4" />

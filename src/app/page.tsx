@@ -6,8 +6,8 @@ import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { BannerAd } from "@/app/components/ads";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Brain, TrendingDown, MessageSquareQuote } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, MessageSquareQuote, GraduationCap as School } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -97,7 +97,6 @@ export default function Home() {
   };
 
   const handleShare = async () => {
-    // Always use the published production domain for sharing
     const baseUrl = "https://mantravahini.vercel.app";
     const referralCode = userProfile?.referralCode;
     const shareUrl = isPremiumUser && referralCode ? `${baseUrl}?ref=${referralCode}` : baseUrl;
@@ -113,11 +112,9 @@ export default function Home() {
         await navigator.share(shareData);
       } catch (error: any) {
         if (error.name === 'AbortError' || error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
-          console.warn("Share suppressed by browser policy or user cancellation.");
+          console.warn("Share suppressed by browser policy.");
           return;
         }
-        
-        console.warn("Navigator share failed, attempting copy fallback:", error);
         copyFallback(shareData.url);
       }
     } else {
@@ -149,14 +146,8 @@ export default function Home() {
   };
 
   const chartConfig = {
-    before: {
-      label: t('chartLegendBefore'),
-      color: "hsl(var(--muted-foreground))",
-    },
-    after: {
-      label: t('chartLegendAfter'),
-      color: "hsl(var(--primary))",
-    },
+    before: { label: t('chartLegendBefore'), color: "hsl(var(--muted-foreground))" },
+    after: { label: t('chartLegendAfter'), color: "hsl(var(--primary))" },
   } satisfies ChartConfig;
 
   const chartData = useMemo(() => {
@@ -181,38 +172,57 @@ export default function Home() {
             </p>
           </header>
 
-          <Card className={cn("mb-6 bg-primary/10 border-primary/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.2s" }}>
-            <Link href="/ai-guide">
-              <CardContent className="p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-primary/20 p-2 rounded-full">
-                    <MessageSquareQuote className="h-6 w-6 text-primary" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <Card className={cn("bg-primary/10 border-primary/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.1s" }}>
+              <Link href="/ai-guide">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/20 p-2 rounded-full">
+                      <MessageSquareQuote className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h2 className="font-headline text-lg font-bold text-primary">{t('talkToAiGuide')}</h2>
+                      <p className="text-[10px] text-muted-foreground">{t('aiGuideSubtitle')}</p>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h2 className="font-headline text-xl font-bold text-primary">{t('talkToAiGuide')}</h2>
-                    <p className="text-xs text-muted-foreground">{t('aiGuideSubtitle')}</p>
-                  </div>
-                </div>
-                <ArrowRight className="h-5 w-5 text-primary" />
-              </CardContent>
-            </Link>
-          </Card>
+                  <ArrowRight className="h-4 w-4 text-primary" />
+                </CardContent>
+              </Link>
+            </Card>
 
-          <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.4s" }}>
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
-                <Sparkles className="h-6 w-6" />
+            <Card className={cn("bg-accent/10 border-accent/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.2s" }}>
+              <Link href="/courses">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-accent/20 p-2 rounded-full">
+                      <School className="h-6 w-6 text-accent" />
+                    </div>
+                    <div className="text-left">
+                      <h2 className="font-headline text-lg font-bold text-accent">{t('learningHubTitle')}</h2>
+                      <p className="text-[10px] text-muted-foreground">{t('learningHubSubtitle')}</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-accent" />
+                </CardContent>
+              </Link>
+            </Card>
+          </div>
+
+          <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.3s" }}>
+            <CardHeader className="py-4">
+              <CardTitle className="font-headline text-xl flex items-center justify-center gap-2">
+                <Sparkles className="h-5 w-5" />
                 {t('activatedMantra')}
-                <Sparkles className="h-6 w-6" />
+                <Sparkles className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-lg font-semibold">{t('explorePower')}</p>
+            <CardContent className="pb-4">
+              <p className="font-semibold">{t('explorePower')}</p>
             </CardContent>
           </Card>
           
           <div className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ animationDelay: "0.6s" }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ animationDelay: "0.4s" }}>
                 {painMantra && (
                   <div className={cn(cardAnimation)}>
                      <StandaloneAudioPlayer 
@@ -222,7 +232,7 @@ export default function Home() {
                         showTracker={true}
                       />
                       <Card className="mt-4">
-                          <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-sm">
+                          <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-xs">
                             <p>{t('painReliefStep1')}</p>
                             <p>{t('painReliefStep2')}</p>
                             <p>{t('painReliefStep3')}</p>
@@ -240,7 +250,7 @@ export default function Home() {
                       imageId="chakshu-mantra-infographic"
                     />
                       <Card className="mt-4">
-                          <CardContent className="p-4 space-y-4 text-center text-sm">
+                          <CardContent className="p-4 space-y-4 text-center text-xs">
                               <p className="text-muted-foreground">
                                 {t('eyeProblemsInstruction')}
                               </p>
@@ -290,7 +300,7 @@ export default function Home() {
               </div>
             </div>
 
-            <Card className={cn("mt-4", cardAnimation)} style={{ animationDelay: "0.7s" }}>
+            <Card className={cn("mt-4", cardAnimation)} style={{ animationDelay: "0.6s" }}>
                 <CardContent className="p-6 text-center space-y-4">
                   <p className="font-semibold text-foreground text-lg">
                     {t('serviceToHumanity')}
@@ -355,10 +365,9 @@ export default function Home() {
               </Card>
           </div>
 
-
           <Card className={cn("mt-8 text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.2s" }}>
             <CardContent className="p-6">
-              <p className="font-semibold text-foreground">
+              <p className="font-semibold text-foreground text-sm italic">
                 {t('finalMessage')}
               </p>
             </CardContent>
@@ -367,7 +376,7 @@ export default function Home() {
           <Card className={cn("mt-8", cardAnimation)} style={{ animationDelay: "0.7s" }}>
             <CardFooter className="flex flex-col items-center justify-center gap-4 p-4">
                <div className="text-center">
-                <p>{t('contactForServices')}</p>
+                <p className="text-sm">{t('contactForServices')}</p>
                 <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
               </div>
               <Button asChild>
