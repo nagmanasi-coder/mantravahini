@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -12,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2 } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2, Layers } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { generateLessonAudio } from '@/ai/flows/tts-flow';
 import { cn } from '@/lib/utils';
@@ -39,7 +40,7 @@ export default function AdminWorkshopBuilderPage() {
   const [courseDescription, setCourseDescription] = useState('');
   const [language, setLanguage] = useState('kn');
   const [price, setPrice] = useState('0');
-  const [level, setLevel] = useState('Beginner');
+  const [currentProcessingLevel, setCurrentProcessingLevel] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -54,20 +55,21 @@ export default function AdminWorkshopBuilderPage() {
     }
   }, [user, isUserLoading, isDeveloper, router]);
 
-  // Cost Estimation Logic (Includes Audio & Clarification buffer)
+  // Cost Estimation Logic (Includes Audio & Clarification buffer for 3 LEVELS)
   const estimation = useMemo(() => {
     if (!content.trim()) return { tokens: 0, costUsd: 0, costInr: 0 };
     
     const charCount = content.length;
-    const estimatedTokens = Math.ceil(charCount / 4);
+    const estimatedTokensPerRun = Math.ceil(charCount / 4);
     
     // Pricing for Gemini 1.5 Flash (approx $0.15 per 1M input tokens)
-    // Plus a small buffer for TTS output tokens and on-the-fly clarifications
-    const costUsd = ((estimatedTokens / 1000000) * 0.15) + 0.005; 
+    // We multiply by 3 because we generate Beginner, Intermediate, and Advanced
+    const totalInputTokens = estimatedTokensPerRun * 3;
+    const costUsd = ((totalInputTokens / 1000000) * 0.15) + (0.005 * 3); 
     const costInr = costUsd * 83;
 
     return {
-      tokens: estimatedTokens,
+      tokens: totalInputTokens,
       costUsd: costUsd.toFixed(4),
       costInr: costInr.toFixed(2),
     };
@@ -122,68 +124,75 @@ export default function AdminWorkshopBuilderPage() {
 
     setIsLoading(true);
     try {
-      // 1. Generate Course Structure
-      const generated = await generateWorkshopLessons({
-        content,
-        title: courseTitle,
-        language: language
-      });
+      const levels: ('Beginner' | 'Intermediate' | 'Advanced')[] = ['Beginner', 'Intermediate', 'Advanced'];
 
-      if (!firestore || !storage) return;
-
-      const courseId = `course-${Date.now()}`;
-      const courseRef = doc(firestore, 'courses', courseId);
-      await setDoc(courseRef, {
-        id: courseId,
-        title: courseTitle,
-        description: courseDescription,
-        language,
-        price: parseFloat(price) || 0,
-        level,
-        published: true,
-        createdAt: serverTimestamp(),
-      });
-
-      for (const mod of generated.modules) {
-        const moduleId = `mod-${mod.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
-        const moduleRef = doc(firestore, 'modules', moduleId);
-        await setDoc(moduleRef, {
-          id: moduleId,
-          courseId,
-          title: mod.title,
-          order: mod.order
+      for (const level of levels) {
+        setCurrentProcessingLevel(level);
+        
+        // 1. Generate Course Structure for specific level
+        const generated = await generateWorkshopLessons({
+          content,
+          title: courseTitle,
+          language: language,
+          level: level
         });
 
-        for (const les of mod.lessons) {
-          const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
-          
-          // 2. Generate TTS Audio for Lesson (One-time creation)
-          let audioUrl = '';
-          try {
-            const ttsResult = await generateLessonAudio({
-              text: `${les.title}. ${les.concept}. Activity: ${les.activity}`,
-              language: language === 'en' ? 'en' : 'kn'
-            });
-            
-            const audioRef = ref(storage, `course-audio/${lessonId}.wav`);
-            await uploadString(audioRef, ttsResult.audioDataUri, 'data_url');
-            audioUrl = await getDownloadURL(audioRef);
-          } catch (ttsErr) {
-            console.warn("TTS Generation failed for lesson:", lessonId, ttsErr);
-          }
+        if (!firestore || !storage) return;
 
-          const lessonRef = doc(firestore, 'lessons', lessonId);
-          await setDoc(lessonRef, {
-            ...les,
-            id: lessonId,
-            moduleId,
+        const courseId = `course-${level.toLowerCase()}-${Date.now()}`;
+        const courseRef = doc(firestore, 'courses', courseId);
+        await setDoc(courseRef, {
+          id: courseId,
+          title: `${courseTitle} (${level})`,
+          description: courseDescription || `A comprehensive ${level} level workshop based on provided materials.`,
+          language,
+          price: parseFloat(price) || 0,
+          level,
+          published: true,
+          createdAt: serverTimestamp(),
+        });
+
+        for (const mod of generated.modules) {
+          const moduleId = `mod-${mod.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
+          const moduleRef = doc(firestore, 'modules', moduleId);
+          await setDoc(moduleRef, {
+            id: moduleId,
             courseId,
-            audioUrl
+            title: mod.title,
+            order: mod.order
           });
+
+          for (const les of mod.lessons) {
+            const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
+            
+            // 2. Generate TTS Audio for Lesson
+            let audioUrl = '';
+            try {
+              const ttsResult = await generateLessonAudio({
+                text: `${les.title}. ${les.concept}. Activity: ${les.activity}`,
+                language: language === 'en' ? 'en' : 'kn'
+              });
+              
+              const audioRef = ref(storage, `course-audio/${lessonId}.wav`);
+              await uploadString(audioRef, ttsResult.audioDataUri, 'data_url');
+              audioUrl = await getDownloadURL(audioRef);
+            } catch (ttsErr) {
+              console.warn("TTS Generation failed for lesson:", lessonId, ttsErr);
+            }
+
+            const lessonRef = doc(firestore, 'lessons', lessonId);
+            await setDoc(lessonRef, {
+              ...les,
+              id: lessonId,
+              moduleId,
+              courseId,
+              audioUrl
+            });
+          }
         }
       }
 
-      toast({ title: "Workshop Published!", description: "AI has successfully converted your materials into a course with pre-recorded audio." });
+      toast({ title: "Workshops Published!", description: "AI has successfully created Beginner, Intermediate, and Advanced courses." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
@@ -193,6 +202,7 @@ export default function AdminWorkshopBuilderPage() {
       toast({ variant: "destructive", title: "Generation Failed", description: error.message });
     } finally {
       setIsLoading(false);
+      setCurrentProcessingLevel(null);
     }
   };
 
@@ -210,18 +220,18 @@ export default function AdminWorkshopBuilderPage() {
           <GraduationCap className="h-10 w-10" />
           AI Workshop Builder
         </h1>
-        <p className="text-muted-foreground mt-2">Convert materials into interactive modules with pre-recorded AI audio.</p>
+        <p className="text-muted-foreground mt-2">Upload one file to generate 3 difficulty levels automatically.</p>
       </header>
 
       <div className="grid gap-8">
         <Card className="shadow-xl border-2 border-primary/10">
           <CardHeader>
             <CardTitle>Course Metadata</CardTitle>
-            <CardDescription>Enter the details for your new workshop.</CardDescription>
+            <CardDescription>Enter basic details. AI will handle level-specific content.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
-              <Label>Course Title</Label>
+              <Label>Base Course Title</Label>
               <Input 
                 placeholder="e.g. Science Class 10: Human Eye" 
                 value={courseTitle}
@@ -229,28 +239,15 @@ export default function AdminWorkshopBuilderPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>Primary Language</Label>
               <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="kn">Kannada (Primary)</SelectItem>
-                  <SelectItem value="en">English (Primary)</SelectItem>
-                  <SelectItem value="bilingual">Bilingual (Mixed)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Level</Label>
-              <Select value={level} onValueChange={setLevel}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Beginner">Beginner</SelectItem>
-                  <SelectItem value="Intermediate">Intermediate</SelectItem>
-                  <SelectItem value="Advanced">Advanced</SelectItem>
+                  <SelectItem value="kn">Kannada</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="bilingual">Bilingual</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -264,14 +261,18 @@ export default function AdminWorkshopBuilderPage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label>Description</Label>
+              <Label>Base Description</Label>
               <Textarea 
-                placeholder="Brief summary of the course..." 
+                placeholder="Brief summary of what this material covers..." 
                 value={courseDescription}
                 onChange={(e) => setCourseDescription(e.target.value)}
               />
             </div>
           </CardContent>
+          <CardFooter className="bg-primary/5 p-4 flex items-center gap-3 text-sm font-bold text-primary">
+            <Layers className="h-5 w-5" />
+            Note: AI will generate separate modules for Beginner, Intermediate, and Advanced.
+          </CardFooter>
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -297,7 +298,7 @@ export default function AdminWorkshopBuilderPage() {
               <>
                 <FileUp className="h-10 w-10 text-muted-foreground mb-4" />
                 <p className="text-sm font-bold">Upload Textbook PDF</p>
-                <p className="text-xs text-muted-foreground mt-2">AI will automatically extract text.</p>
+                <p className="text-xs text-muted-foreground mt-2">AI will process 200+ pages easily.</p>
               </>
             )}
             <input 
@@ -313,14 +314,14 @@ export default function AdminWorkshopBuilderPage() {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileText className="h-5 w-5" />
-                Source Content
+                Processing Strategy
               </CardTitle>
-              <CardDescription>Extracted text for AI processing.</CardDescription>
+              <CardDescription>Estimated cost for 3-tier generation.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea 
                 placeholder="Paste content here or upload a PDF..." 
-                className="min-h-[200px] bg-background" 
+                className="min-h-[150px] bg-background" 
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
@@ -329,44 +330,37 @@ export default function AdminWorkshopBuilderPage() {
                 <div className="bg-white/50 p-3 rounded-lg border flex flex-wrap gap-4 items-center justify-between animate-fade-in">
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">{t('estimatedTokens')}</span>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">Total Tokens</span>
                       <span className="text-sm font-mono">{estimation.tokens.toLocaleString()}</span>
                     </div>
                     <div className="flex flex-col border-l pl-4">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">Total Creation Cost</span>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">3-Level Creation Cost</span>
                       <div className="flex items-center gap-1 text-primary">
                         <Coins className="h-3 w-3" />
                         <span className="text-sm font-bold">${estimation.costUsd} (~₹{estimation.costInr})</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
-                    <Volume2 className="h-3 w-3" />
-                    INCLUDES PRE-RECORDED AUDIO
+                  <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded uppercase tracking-tighter">
+                    <Mic2 className="h-3 w-3" />
+                    3x Multi-Level Generation
                   </div>
                 </div>
               )}
             </CardContent>
             <CardFooter className="bg-muted/30 p-4 flex justify-between items-center">
-              <div className="text-[10px] text-muted-foreground flex flex-col gap-1">
-                <div className="flex items-center gap-1 font-bold uppercase">
-                  <Mic2 className="h-3 w-3" />
-                  AI Strategy:
+              {isLoading ? (
+                <div className="flex items-center gap-3">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <span className="text-sm font-bold">Processing: {currentProcessingLevel}...</span>
                 </div>
-                <p>Interactive lessons + Pre-recorded Audio + AI Clarification.</p>
-              </div>
+              ) : (
+                <div className="text-[10px] text-muted-foreground italic">
+                  Creates 3 Course variants instantly.
+                </div>
+              )}
               <Button size="sm" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Generate & Publish
-                  </>
-                )}
+                {isLoading ? "Generating Multi-Levels..." : "Start Batch Generation"}
               </Button>
             </CardFooter>
           </Card>
