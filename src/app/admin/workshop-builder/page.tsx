@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -13,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2 } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2, Mic2 } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { generateLessonAudio } from '@/ai/flows/tts-flow';
 import { cn } from '@/lib/utils';
@@ -55,7 +54,7 @@ export default function AdminWorkshopBuilderPage() {
     }
   }, [user, isUserLoading, isDeveloper, router]);
 
-  // Cost Estimation Logic
+  // Cost Estimation Logic (Includes Audio & Clarification buffer)
   const estimation = useMemo(() => {
     if (!content.trim()) return { tokens: 0, costUsd: 0, costInr: 0 };
     
@@ -63,7 +62,8 @@ export default function AdminWorkshopBuilderPage() {
     const estimatedTokens = Math.ceil(charCount / 4);
     
     // Pricing for Gemini 1.5 Flash (approx $0.15 per 1M input tokens)
-    const costUsd = (estimatedTokens / 1000000) * 0.15;
+    // Plus a small buffer for TTS output tokens and on-the-fly clarifications
+    const costUsd = ((estimatedTokens / 1000000) * 0.15) + 0.005; 
     const costInr = costUsd * 83;
 
     return {
@@ -157,7 +157,7 @@ export default function AdminWorkshopBuilderPage() {
         for (const les of mod.lessons) {
           const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
           
-          // 2. Generate TTS Audio for Lesson
+          // 2. Generate TTS Audio for Lesson (One-time creation)
           let audioUrl = '';
           try {
             const ttsResult = await generateLessonAudio({
@@ -183,10 +183,11 @@ export default function AdminWorkshopBuilderPage() {
         }
       }
 
-      toast({ title: "Workshop Published!", description: "AI has successfully converted your PDF into a course with audio." });
+      toast({ title: "Workshop Published!", description: "AI has successfully converted your materials into a course with pre-recorded audio." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
+      router.push('/courses');
     } catch (error: any) {
       console.error(error);
       toast({ variant: "destructive", title: "Generation Failed", description: error.message });
@@ -209,7 +210,7 @@ export default function AdminWorkshopBuilderPage() {
           <GraduationCap className="h-10 w-10" />
           AI Workshop Builder
         </h1>
-        <p className="text-muted-foreground mt-2">Convert textbooks into interactive modules with AI audio.</p>
+        <p className="text-muted-foreground mt-2">Convert materials into interactive modules with pre-recorded AI audio.</p>
       </header>
 
       <div className="grid gap-8">
@@ -332,7 +333,7 @@ export default function AdminWorkshopBuilderPage() {
                       <span className="text-sm font-mono">{estimation.tokens.toLocaleString()}</span>
                     </div>
                     <div className="flex flex-col border-l pl-4">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">{t('estimatedCost')}</span>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">Total Creation Cost</span>
                       <div className="flex items-center gap-1 text-primary">
                         <Coins className="h-3 w-3" />
                         <span className="text-sm font-bold">${estimation.costUsd} (~₹{estimation.costInr})</span>
@@ -341,15 +342,18 @@ export default function AdminWorkshopBuilderPage() {
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
                     <Volume2 className="h-3 w-3" />
-                    INCLUDES AI AUDIO
+                    INCLUDES PRE-RECORDED AUDIO
                   </div>
                 </div>
               )}
             </CardContent>
             <CardFooter className="bg-muted/30 p-4 flex justify-between items-center">
-              <div className="text-[10px] text-muted-foreground">
-                <p className="font-bold uppercase mb-1">AI Strategy:</p>
-                <p>Interactive lessons + Quizzes + TTS Audio.</p>
+              <div className="text-[10px] text-muted-foreground flex flex-col gap-1">
+                <div className="flex items-center gap-1 font-bold uppercase">
+                  <Mic2 className="h-3 w-3" />
+                  AI Strategy:
+                </div>
+                <p>Interactive lessons + Pre-recorded Audio + AI Clarification.</p>
               </div>
               <Button size="sm" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
                 {isLoading ? (
