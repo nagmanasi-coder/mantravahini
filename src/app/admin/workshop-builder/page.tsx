@@ -5,14 +5,17 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { useStorage } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins, Volume2 } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
+import { generateLessonAudio } from '@/ai/flows/tts-flow';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,8 +27,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 
 export default function AdminWorkshopBuilderPage() {
   const { user, isUserLoading } = useUser();
-  const { t } = useLanguage();
+  const { t, language: appLang } = useLanguage();
   const firestore = useFirestore();
+  const storage = useStorage();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -55,13 +59,12 @@ export default function AdminWorkshopBuilderPage() {
   const estimation = useMemo(() => {
     if (!content.trim()) return { tokens: 0, costUsd: 0, costInr: 0 };
     
-    // Rough estimate: 1 word ≈ 1.33 tokens. We'll use 1 token per 4 characters as a safe baseline for text.
     const charCount = content.length;
     const estimatedTokens = Math.ceil(charCount / 4);
     
     // Pricing for Gemini 1.5 Flash (approx $0.15 per 1M input tokens)
     const costUsd = (estimatedTokens / 1000000) * 0.15;
-    const costInr = costUsd * 83; // Approx exchange rate
+    const costInr = costUsd * 83;
 
     return {
       tokens: estimatedTokens,
@@ -119,13 +122,14 @@ export default function AdminWorkshopBuilderPage() {
 
     setIsLoading(true);
     try {
+      // 1. Generate Course Structure
       const generated = await generateWorkshopLessons({
         content,
         title: courseTitle,
         language: language
       });
 
-      if (!firestore) return;
+      if (!firestore || !storage) return;
 
       const courseId = `course-${Date.now()}`;
       const courseRef = doc(firestore, 'courses', courseId);
@@ -152,17 +156,34 @@ export default function AdminWorkshopBuilderPage() {
 
         for (const les of mod.lessons) {
           const lessonId = `les-${les.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
+          
+          // 2. Generate TTS Audio for Lesson
+          let audioUrl = '';
+          try {
+            const ttsResult = await generateLessonAudio({
+              text: `${les.title}. ${les.concept}. Activity: ${les.activity}`,
+              language: language === 'en' ? 'en' : 'kn'
+            });
+            
+            const audioRef = ref(storage, `course-audio/${lessonId}.wav`);
+            await uploadString(audioRef, ttsResult.audioDataUri, 'data_url');
+            audioUrl = await getDownloadURL(audioRef);
+          } catch (ttsErr) {
+            console.warn("TTS Generation failed for lesson:", lessonId, ttsErr);
+          }
+
           const lessonRef = doc(firestore, 'lessons', lessonId);
           await setDoc(lessonRef, {
             ...les,
             id: lessonId,
             moduleId,
-            courseId
+            courseId,
+            audioUrl
           });
         }
       }
 
-      toast({ title: "Workshop Published!", description: "AI has successfully converted your PDF into a course." });
+      toast({ title: "Workshop Published!", description: "AI has successfully converted your PDF into a course with audio." });
       setContent('');
       setCourseTitle('');
       setCourseDescription('');
@@ -188,7 +209,7 @@ export default function AdminWorkshopBuilderPage() {
           <GraduationCap className="h-10 w-10" />
           AI Workshop Builder
         </h1>
-        <p className="text-muted-foreground mt-2">Convert textbooks or PDFs into interactive modules automatically.</p>
+        <p className="text-muted-foreground mt-2">Convert textbooks into interactive modules with AI audio.</p>
       </header>
 
       <div className="grid gap-8">
@@ -275,7 +296,7 @@ export default function AdminWorkshopBuilderPage() {
               <>
                 <FileUp className="h-10 w-10 text-muted-foreground mb-4" />
                 <p className="text-sm font-bold">Upload Textbook PDF</p>
-                <p className="text-xs text-muted-foreground mt-2">AI will automatically extract text from pages.</p>
+                <p className="text-xs text-muted-foreground mt-2">AI will automatically extract text.</p>
               </>
             )}
             <input 
@@ -293,7 +314,7 @@ export default function AdminWorkshopBuilderPage() {
                 <FileText className="h-5 w-5" />
                 Source Content
               </CardTitle>
-              <CardDescription>Extracted text or manually pasted material for AI processing.</CardDescription>
+              <CardDescription>Extracted text for AI processing.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea 
@@ -318,8 +339,9 @@ export default function AdminWorkshopBuilderPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="text-[9px] text-muted-foreground italic">
-                    * Gemini 1.5 Flash is highly cost-efficient for large text.
+                  <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
+                    <Volume2 className="h-3 w-3" />
+                    INCLUDES AI AUDIO
                   </div>
                 </div>
               )}
@@ -327,7 +349,7 @@ export default function AdminWorkshopBuilderPage() {
             <CardFooter className="bg-muted/30 p-4 flex justify-between items-center">
               <div className="text-[10px] text-muted-foreground">
                 <p className="font-bold uppercase mb-1">AI Strategy:</p>
-                <p>Convert to interactive lessons + quizzes.</p>
+                <p>Interactive lessons + Quizzes + TTS Audio.</p>
               </div>
               <Button size="sm" onClick={handleGenerate} disabled={isLoading || !content.trim()}>
                 {isLoading ? (

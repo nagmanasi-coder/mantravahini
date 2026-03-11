@@ -1,7 +1,7 @@
 
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { use, useState, useEffect, useRef } from 'react';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
@@ -9,12 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/context/language-context';
-import { ArrowLeft, ArrowRight, Sparkles, BookOpen, Brain, Lightbulb, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, BookOpen, Brain, Lightbulb, CheckCircle2, XCircle, Volume2, MessageSquareQuote, Send, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { askLessonDoubt } from '@/ai/flows/lesson-clarification-flow';
+import { cn } from '@/lib/utils';
 
 interface Lesson {
   id: string;
@@ -26,6 +29,7 @@ interface Lesson {
   quiz_options: string[];
   correct_answer: string;
   image_hint?: string;
+  audioUrl?: string;
 }
 
 export default function LessonDetailPage({ params }: { params: Promise<{ lessonId: string }> }) {
@@ -42,29 +46,53 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
 
   const { data: lesson, isLoading } = useDoc<Lesson>(lessonRef);
 
-  const [step, setStep] = useState<'reading' | 'activity' | 'quiz' | 'finished'>('reading');
+  const [step, setStep] = useState<'reading' | 'activity' | 'clarification' | 'quiz' | 'finished'>('reading');
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  
+  // Clarification state
+  const [doubtText, setDoubtText] = useState('');
+  const [clarificationHistory, setClarificationHistory] = useState<{ q: string, a: string }[]>([]);
+  const [isAsking, setIsAsking] = useState(false);
+  
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleNextStep = () => {
     if (step === 'reading') setStep('activity');
-    else if (step === 'activity') setStep('quiz');
+    else if (step === 'activity') setStep('clarification');
+    else if (step === 'clarification') setStep('quiz');
+  };
+
+  const handleAskDoubt = async () => {
+    if (!doubtText.trim() || clarificationHistory.length >= 3 || !lesson) return;
+    
+    setIsAsking(true);
+    try {
+      const result = await askLessonDoubt({
+        lessonTitle: lesson.title,
+        lessonConcept: lesson.concept,
+        studentQuestion: doubtText,
+        language: language as 'kn' | 'en'
+      });
+      
+      setClarificationHistory([...clarificationHistory, { q: doubtText, a: result.answer }]);
+      setDoubtText('');
+    } catch (err) {
+      toast({ variant: "destructive", title: "Could not get an answer right now." });
+    } finally {
+      setIsAsking(false);
+    }
   };
 
   const handleFinish = () => {
     if (lesson) {
-      // Save progress to local storage (simulating persistent user progress)
       const current = JSON.parse(localStorage.getItem('student_completed_lesson_ids') || '[]');
       if (!current.includes(lesson.id)) {
         current.push(lesson.id);
         localStorage.setItem('student_completed_lesson_ids', JSON.stringify(current));
-        
-        // XP Points
         const xp = parseInt(localStorage.getItem('student_xp') || '0');
         localStorage.setItem('student_xp', (xp + 50).toString());
-        
-        // Total Completed Count
         const count = parseInt(localStorage.getItem('student_completed_lessons') || '0');
         localStorage.setItem('student_completed_lessons', (count + 1).toString());
       }
@@ -84,7 +112,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
     }
   };
 
-  const progressMap = { reading: 33, activity: 66, quiz: 90, finished: 100 };
+  const progressMap = { reading: 20, activity: 40, clarification: 60, quiz: 80, finished: 100 };
 
   if (isLoading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   if (!lesson) return <div>Lesson not found</div>;
@@ -96,6 +124,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
         <div className="flex justify-between text-[10px] uppercase font-bold mt-2 text-muted-foreground tracking-tighter">
           <span className={step === 'reading' ? 'text-primary' : ''}>Concept</span>
           <span className={step === 'activity' ? 'text-primary' : ''}>Activity</span>
+          <span className={step === 'clarification' ? 'text-primary' : ''}>Doubts</span>
           <span className={step === 'quiz' ? 'text-primary' : ''}>Quiz</span>
         </div>
       </div>
@@ -103,8 +132,18 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
       <div className="space-y-8 animate-fade-in">
         {step === 'reading' && (
           <Card className="border-2 shadow-lg overflow-hidden">
-            <CardHeader className="bg-primary/5">
+            <CardHeader className="bg-primary/5 flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-2xl font-headline text-primary">{lesson.title}</CardTitle>
+              {lesson.audioUrl && (
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="rounded-full h-10 w-10 border-primary text-primary"
+                  onClick={() => audioRef.current?.play()}
+                >
+                  <Volume2 className="h-5 w-5" />
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
@@ -122,6 +161,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
                   {lesson.concept}
                 </p>
               </div>
+              <audio ref={audioRef} src={lesson.audioUrl} />
             </CardContent>
             <CardFooter>
               <Button onClick={handleNextStep} size="lg" className="w-full font-bold h-14">
@@ -151,7 +191,67 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
             </CardContent>
             <CardFooter>
               <Button onClick={handleNextStep} size="lg" className="w-full font-bold h-14 bg-accent hover:bg-accent/90">
-                I've Done It! Go to Quiz <ArrowRight className="ml-2" />
+                I've Done It! Ask AI Questions <ArrowRight className="ml-2" />
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
+        {step === 'clarification' && (
+          <Card className="border-2 shadow-lg border-primary/20">
+            <CardHeader className="bg-primary/5">
+              <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
+                <MessageSquareQuote className="h-6 w-6" />
+                Any Clarifications?
+              </CardTitle>
+              <CardDescription>Ask the AI anything about this lesson before the quiz. (Max 3 questions)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-6">
+              <div className="space-y-4 min-h-[100px]">
+                {clarificationHistory.map((item, i) => (
+                  <div key={i} className="space-y-2 animate-fade-in">
+                    <div className="bg-muted p-3 rounded-lg text-sm font-bold flex items-start gap-2">
+                      <span className="bg-primary/10 text-primary px-2 rounded">Q</span>
+                      {item.q}
+                    </div>
+                    <div className="bg-primary/5 p-3 rounded-lg text-sm italic border border-primary/10 flex items-start gap-2">
+                      <span className="bg-green-100 text-green-700 px-2 rounded">A</span>
+                      {item.a}
+                    </div>
+                  </div>
+                ))}
+                {clarificationHistory.length === 0 && (
+                  <p className="text-center text-muted-foreground italic py-8">No questions asked yet. Ask away or skip to the quiz!</p>
+                )}
+              </div>
+
+              {clarificationHistory.length < 3 && (
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="Type your doubt here..." 
+                    value={doubtText}
+                    onChange={(e) => setDoubtText(e.target.value)}
+                    disabled={isAsking}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAskDoubt()}
+                  />
+                  <Button onClick={handleAskDoubt} disabled={isAsking || !doubtText.trim()} size="icon">
+                    {isAsking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  </Button>
+                </div>
+              )}
+              
+              {clarificationHistory.length > 0 && clarificationHistory.length < 3 && (
+                <p className="text-[10px] text-center text-muted-foreground font-bold uppercase">
+                  {3 - clarificationHistory.length} questions remaining
+                </p>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3">
+              <Button onClick={handleNextStep} size="lg" className="w-full font-bold h-14 bg-primary">
+                Final Step: Take Quiz <ArrowRight className="ml-2" />
+              </Button>
+              <Button variant="ghost" onClick={handleNextStep} className="w-full text-muted-foreground">
+                Skip Doubts & Go to Quiz
               </Button>
             </CardFooter>
           </Card>
@@ -217,5 +317,3 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
     </div>
   );
 }
-
-import { cn } from '@/lib/utils';
