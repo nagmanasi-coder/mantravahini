@@ -243,6 +243,8 @@ export const translations = {
     downloadCertificate: "ಪ್ರಮಾಣಪತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
     courseCompleted: "ಕೋರ್ಸ್ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",
     completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
+    estimatedTokens: "ಅಂದಾಜು ಟೋಕನ್‌ಗಳು",
+    estimatedCost: "ಅಂದಾಜು ವೆಚ್ಚ (AI)",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -484,5 +486,7 @@ export const translations = {
     downloadCertificate: "Download Certificate",
     courseCompleted: "Course Completed Successfully!",
     completed: "Completed",
+    estimatedTokens: "Estimated Tokens",
+    estimatedCost: "Estimated Cost (AI)",
   }
 };

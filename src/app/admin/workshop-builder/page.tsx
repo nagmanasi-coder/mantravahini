@@ -11,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2 } from 'lucide-react';
+import { Loader2, Plus, Sparkles, BookOpen, Trash2, ArrowLeft, GraduationCap, FileUp, FileText, CheckCircle2, Coins } from 'lucide-react';
 import { generateWorkshopLessons } from '@/ai/flows/workshop-generator-flow';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguage } from '@/context/language-context';
 
 // Configure PDF.js worker
 import * as pdfjsLib from 'pdfjs-dist';
@@ -23,6 +24,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 
 export default function AdminWorkshopBuilderPage() {
   const { user, isUserLoading } = useUser();
+  const { t } = useLanguage();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
@@ -49,6 +51,25 @@ export default function AdminWorkshopBuilderPage() {
     }
   }, [user, isUserLoading, isDeveloper, router]);
 
+  // Cost Estimation Logic
+  const estimation = useMemo(() => {
+    if (!content.trim()) return { tokens: 0, costUsd: 0, costInr: 0 };
+    
+    // Rough estimate: 1 word ≈ 1.33 tokens. We'll use 1 token per 4 characters as a safe baseline for text.
+    const charCount = content.length;
+    const estimatedTokens = Math.ceil(charCount / 4);
+    
+    // Pricing for Gemini 1.5 Flash (approx $0.15 per 1M input tokens)
+    const costUsd = (estimatedTokens / 1000000) * 0.15;
+    const costInr = costUsd * 83; // Approx exchange rate
+
+    return {
+      tokens: estimatedTokens,
+      costUsd: costUsd.toFixed(4),
+      costInr: costInr.toFixed(2),
+    };
+  }, [content]);
+
   const extractTextFromPdf = async (file: File) => {
     setIsExtracting(true);
     try {
@@ -67,7 +88,6 @@ export default function AdminWorkshopBuilderPage() {
       
       setContent(fullText);
       
-      // Auto-set title from filename if empty
       if (!courseTitle) {
         const cleanName = file.name.replace('.pdf', '').replace(/[-_]/g, ' ');
         setCourseTitle(cleanName);
@@ -99,7 +119,6 @@ export default function AdminWorkshopBuilderPage() {
 
     setIsLoading(true);
     try {
-      // 1. Call AI to generate structured content
       const generated = await generateWorkshopLessons({
         content,
         title: courseTitle,
@@ -108,7 +127,6 @@ export default function AdminWorkshopBuilderPage() {
 
       if (!firestore) return;
 
-      // 2. Save Course
       const courseId = `course-${Date.now()}`;
       const courseRef = doc(firestore, 'courses', courseId);
       await setDoc(courseRef, {
@@ -122,7 +140,6 @@ export default function AdminWorkshopBuilderPage() {
         createdAt: serverTimestamp(),
       });
 
-      // 3. Save Modules and Lessons
       for (const mod of generated.modules) {
         const moduleId = `mod-${mod.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}`;
         const moduleRef = doc(firestore, 'modules', moduleId);
@@ -278,13 +295,34 @@ export default function AdminWorkshopBuilderPage() {
               </CardTitle>
               <CardDescription>Extracted text or manually pasted material for AI processing.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Textarea 
                 placeholder="Paste content here or upload a PDF..." 
                 className="min-h-[200px] bg-background" 
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
+              
+              {content && (
+                <div className="bg-white/50 p-3 rounded-lg border flex flex-wrap gap-4 items-center justify-between animate-fade-in">
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">{t('estimatedTokens')}</span>
+                      <span className="text-sm font-mono">{estimation.tokens.toLocaleString()}</span>
+                    </div>
+                    <div className="flex flex-col border-l pl-4">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">{t('estimatedCost')}</span>
+                      <div className="flex items-center gap-1 text-primary">
+                        <Coins className="h-3 w-3" />
+                        <span className="text-sm font-bold">${estimation.costUsd} (~₹{estimation.costInr})</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[9px] text-muted-foreground italic">
+                    * Gemini 1.5 Flash is highly cost-efficient for large text.
+                  </div>
+                </div>
+              )}
             </CardContent>
             <CardFooter className="bg-muted/30 p-4 flex justify-between items-center">
               <div className="text-[10px] text-muted-foreground">
