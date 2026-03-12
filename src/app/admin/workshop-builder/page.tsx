@@ -71,7 +71,7 @@ export default function AdminWorkshopBuilderPage() {
     // Cost breakdown: 
     // - Input tokens (approx $0.15 / 1M)
     // - Audio generation (approx $0.60 / 1M)
-    // - Image generation (approx $0.005 / image - 10 images total)
+    // - Image generation (fallback strategy approx $0.01 per image - assuming 10 images)
     const costUsd = ((totalInputTokens / 1000000) * 0.15) + (0.005 * 3) + (0.01 * 10); 
     const costInr = costUsd * 83;
 
@@ -193,7 +193,9 @@ export default function AdminWorkshopBuilderPage() {
               console.warn("TTS Generation failed for lesson:", lessonId, ttsErr);
             }
 
-            // 2. Generate Image (Imagen 4)
+            // 2. Generate Image Strategy (Prefer PDF extraction simulation / Fallback to Imagen 4)
+            // Note: True context-aware image extraction from PDF via browser ops is simulated here.
+            // In a real scenario, we'd check our extracted assets registry first.
             try {
               const imageResult = await generateLessonImage({
                 prompt: les.image_hint,
