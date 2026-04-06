@@ -1,3 +1,4 @@
+
 export type Mantra = {
   id: number;
   name: string;

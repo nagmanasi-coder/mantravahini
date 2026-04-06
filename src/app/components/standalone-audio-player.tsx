@@ -79,7 +79,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const audio = audioRef.current;
     if (!audio) return;
     
+    // Crucial: Clear error state and force load when URL changes (e.g. from fallback to storage URL)
     setHasMediaError(false);
+    audio.load();
 
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
@@ -108,9 +110,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       }
     };
     const handleError = () => {
-      setHasMediaError(true);
-      setIsPlaying(false);
-      console.warn("Mantra audio source missing or invalid:", mantra.url);
+      // Only set error if we actually have a source but it failed
+      if (audio.src && !audio.src.endsWith('null') && !audio.src.endsWith('undefined')) {
+        setHasMediaError(true);
+        setIsPlaying(false);
+        console.warn("Mantra audio source missing or invalid:", mantra.url);
+      }
     };
 
     audio.addEventListener("loadeddata", setAudioData);
@@ -137,7 +142,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     } else {
       audio.pause();
     }
-  }, [isPlaying, hasMediaError]);
+  }, [isPlaying, hasMediaError, mantra.url]);
 
   const handlePlayPause = async () => {
     if (isPlaying) {
