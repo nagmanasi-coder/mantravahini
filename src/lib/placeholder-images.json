@@ -49,6 +49,12 @@
       "imageHint": "girl headphones"
     },
     {
+      "id": "roga-mukti-stotra-image",
+      "description": "Sacred image for Roga Mukti Mangala Stotra",
+      "imageUrl": "/roga-mukti.png",
+      "imageHint": "healing deity"
+    },
+    {
       "id": "bhairava-image",
       "description": "Powerful image of Lord Kaala Bhairava",
       "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fgemini-generated-image-gmm7mzgmm7mzgmm7-png?alt=media",
