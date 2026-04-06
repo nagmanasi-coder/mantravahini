@@ -65,7 +65,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
-  // Fix: pass null to src if url is empty to avoid Next.js console errors
+  // Use the mantra URL if provided, otherwise null to prevent console errors
   const audioSrc = mantra.url || null;
 
   useEffect(() => {
@@ -83,10 +83,10 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     
     // Clear error state when URL changes
     setHasMediaError(false);
-    setIsBuffering(true);
     
     // Only load if the source looks valid
     if (audioSrc && (audioSrc.startsWith('http') || audioSrc.startsWith('/'))) {
+      setIsBuffering(true);
       audio.load();
     } else {
       setIsBuffering(false);
@@ -421,15 +421,20 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         </CardContent>
         {!showTracker && (
            <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError || isBuffering}>
-              {isBuffering ? (
-                <Loader2 className="h-8 w-8 animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="h-8 w-8" />
-              ) : (
-                <Play className="h-8 w-8" />
-              )}
-            </Button>
+            {(!audioSrc && mantra.assetId) || isBuffering ? (
+              <div className="flex flex-col items-center gap-2 animate-pulse">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('loading')}</span>
+              </div>
+            ) : (
+              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
+                {isPlaying ? (
+                  <Pause className="h-8 w-8" />
+                ) : (
+                  <Play className="h-8 w-8" />
+                )}
+              </Button>
+            )}
           </CardFooter>
         )}
       <audio ref={audioRef} src={audioSrc} preload="metadata" />
