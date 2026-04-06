@@ -48,6 +48,7 @@ export const mantras: Mantra[] = [
     name: 'ರೋಗ ಮುಕ್ತಿ ಮಂಗಳ ಸ್ತೋತ್ರ',
     name_en: 'Rog Mukti Mangala Stotra',
     url: '/roga-mukti-stotra.mp3',
+    assetId: 'mangala-stotra-mp3',
     method: 'ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಶ್ರದ್ಧೆಯಿಂದ ಕೇಳಿ. ಮನೆಯಲ್ಲಿ ಪ್ಲೇ ಮಾಡುವುದರಿಂದ ಸಕಾರಾತ್ಮಕ ಶಕ್ತಿ ಹೆಚ್ಚುತ್ತದೆ.',
     method_en: 'Listen with devotion twice a day. Playing it at home increases positive energy and healing vibrations.',
     benefits: 'ದೀರ್ಘಕಾಲದ ಕಾಯಿಲೆಗಳಿಂದ ಮುಕ್ತಿ ಮತ್ತು ಶಾರೀರಿಕ ದೌರ್ಬಲ್ಯ ನಿವಾರಣೆ.',
