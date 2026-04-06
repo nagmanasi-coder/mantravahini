@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2 } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2 } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,6 +59,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [hasMediaError, setHasMediaError] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -81,14 +82,18 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     
     // Clear error state when URL changes
     setHasMediaError(false);
+    setIsBuffering(true);
     
-    // Only load if the source looks valid (not empty or internal page URL)
-    if (audioSrc && audioSrc.startsWith('http') || audioSrc.startsWith('/')) {
+    // Only load if the source looks valid
+    if (audioSrc && (audioSrc.startsWith('http') || audioSrc.startsWith('/'))) {
       audio.load();
+    } else {
+      setIsBuffering(false);
     }
 
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
+      setIsBuffering(false);
     }
     const setAudioTime = () => {
       const time = audio.currentTime;
@@ -114,15 +119,20 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       }
     };
     const handleError = () => {
-      // Ignore errors if the source is clearly a placeholder or internal routing URL
       const currentSrc = audio.src;
-      if (!currentSrc || currentSrc.includes(window.location.pathname) || currentSrc.endsWith('undefined') || currentSrc.endsWith('null')) {
+      // Filter out spurious errors during URL switching
+      if (!currentSrc || 
+          currentSrc === window.location.href || 
+          currentSrc.includes(window.location.pathname) || 
+          currentSrc.endsWith('undefined') || 
+          currentSrc.endsWith('null')) {
         return;
       }
       
       setHasMediaError(true);
       setIsPlaying(false);
-      console.warn("Mantra audio source missing or invalid:", mantra.url);
+      setIsBuffering(false);
+      console.warn("Mantra audio source missing or invalid:", currentSrc);
     };
 
     audio.addEventListener("loadeddata", setAudioData);
@@ -143,7 +153,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     if (!audio || hasMediaError) return;
     if (isPlaying) {
       audio.play().catch(e => {
-        // Silently catch abort errors which happen during rapid URL changes
         if (e.name !== 'AbortError') {
           console.warn("Playback failed", e);
           setIsPlaying(false);
@@ -160,7 +169,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
-    if (hasMediaError || !audioSrc) {
+    if (!audioSrc) {
+      toast({
+        title: language === 'kn' ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading Audio...",
+        description: language === 'kn' ? "ದಯವಿಟ್ಟು ಒಂದು ಕ್ಷಣ ಕಾಯಿರಿ." : "Please wait a moment while we fetch the mantra.",
+      });
+      return;
+    }
+
+    if (hasMediaError) {
       toast({
         variant: "destructive",
         title: "Audio Unavailable",
@@ -336,8 +353,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                 <span>{formatTime(duration)}</span>
               </div>
               <div className="flex justify-center">
-                 <Button onClick={handlePlayPause} variant="outline" size="icon" className="h-12 w-12 rounded-full">
-                   {isPlaying ? <Pause /> : <Play />}
+                 <Button onClick={handlePlayPause} variant="outline" size="icon" className="h-12 w-12 rounded-full" disabled={isBuffering}>
+                   {isBuffering ? <Loader2 className="animate-spin" /> : isPlaying ? <Pause /> : <Play />}
                  </Button>
               </div>
             </div>
@@ -403,8 +420,10 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         </CardContent>
         {!showTracker && (
            <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError || !audioSrc}>
-              {isPlaying ? (
+            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError || isBuffering}>
+              {isBuffering ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+              ) : isPlaying ? (
                 <Pause className="h-8 w-8" />
               ) : (
                 <Play className="h-8 w-8" />

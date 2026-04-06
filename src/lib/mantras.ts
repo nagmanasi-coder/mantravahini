@@ -48,7 +48,7 @@ export const mantras: Mantra[] = [
     id: 3,
     name: 'ರೋಗ ಮುಕ್ತಿ ಮಂಗಳ ಸ್ತೋತ್ರ',
     name_en: 'Rog Mukti Mangala Stotra',
-    url: 'https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fmangala-stotra-mp3?alt=media',
+    url: '', // Rely on assetId fetch
     assetId: 'mangala-stotra-mp3',
     method: 'ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಶ್ರದ್ಧೆಯಿಂದ ಕೇಳಿ. ಮನೆಯಲ್ಲಿ ಪ್ಲೇ ಮಾಡುವುದರಿಂದ ಸಕಾರಾತ್ಮಕ ಶಕ್ತಿ ಹೆಚ್ಚುತ್ತದೆ.',
     method_en: 'Listen with devotion twice a day. Playing it at home increases positive energy and healing vibrations.',
@@ -77,7 +77,7 @@ export const mantras: Mantra[] = [
     id: 17, 
     name: 'ಸರ್ವ ಭಯ ಮತ್ತು ಸಂಕಷ್ಟ ನಿವಾರಣಾ ಭೈರವ ಮಂತ್ರ', 
     name_en: 'Bhairava Mantra for Removal of All Fear & Troubles',
-    url: '/bhairava-mantra.mp3',
+    url: '', // Rely on assetId
     assetId: 'bhairava-avesha-mamtra-mp3',
     method: 'ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಮಂತ್ರವನ್ನು ಕೇಳಿ.',
     method_en: 'Listen to the mantra twice a day using headphones or earphones.',
