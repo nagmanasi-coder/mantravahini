@@ -65,7 +65,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
-  const audioSrc = mantra.url || "";
+  // Fix: pass null to src if url is empty to avoid Next.js console errors
+  const audioSrc = mantra.url || null;
 
   useEffect(() => {
     const isActualDeveloper = user?.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";

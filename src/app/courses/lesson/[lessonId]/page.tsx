@@ -214,7 +214,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ lessonI
                   {lesson.concept}
                 </p>
               </div>
-              <audio ref={audioRef} src={lesson.audioUrl} />
+              <audio ref={audioRef} src={lesson.audioUrl || null} />
             </CardContent>
             <CardFooter>
               <Button onClick={handleNextStep} size="lg" className="w-full font-bold h-14">
