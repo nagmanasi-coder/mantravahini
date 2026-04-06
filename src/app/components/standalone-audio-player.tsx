@@ -79,9 +79,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const audio = audioRef.current;
     if (!audio) return;
     
-    // Crucial: Clear error state and force load when URL changes (e.g. from fallback to storage URL)
+    // Clear error state when URL changes
     setHasMediaError(false);
-    audio.load();
+    
+    // Only load if the source looks valid (not empty or internal page URL)
+    if (audioSrc && audioSrc.startsWith('http') || audioSrc.startsWith('/')) {
+      audio.load();
+    }
 
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
@@ -110,12 +114,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       }
     };
     const handleError = () => {
-      // Only set error if we actually have a source but it failed
-      if (audio.src && !audio.src.endsWith('null') && !audio.src.endsWith('undefined')) {
-        setHasMediaError(true);
-        setIsPlaying(false);
-        console.warn("Mantra audio source missing or invalid:", mantra.url);
+      // Ignore errors if the source is clearly a placeholder or internal routing URL
+      const currentSrc = audio.src;
+      if (!currentSrc || currentSrc.includes(window.location.pathname) || currentSrc.endsWith('undefined') || currentSrc.endsWith('null')) {
+        return;
       }
+      
+      setHasMediaError(true);
+      setIsPlaying(false);
+      console.warn("Mantra audio source missing or invalid:", mantra.url);
     };
 
     audio.addEventListener("loadeddata", setAudioData);
@@ -129,20 +136,23 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [mantra.url, mantra.id, showTracker, sendLocalNotification]);
+  }, [audioSrc, mantra.id, showTracker, sendLocalNotification]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || hasMediaError) return;
     if (isPlaying) {
       audio.play().catch(e => {
-        console.warn("Playback failed", e);
-        setIsPlaying(false);
+        // Silently catch abort errors which happen during rapid URL changes
+        if (e.name !== 'AbortError') {
+          console.warn("Playback failed", e);
+          setIsPlaying(false);
+        }
       });
     } else {
       audio.pause();
     }
-  }, [isPlaying, hasMediaError, mantra.url]);
+  }, [isPlaying, hasMediaError, audioSrc]);
 
   const handlePlayPause = async () => {
     if (isPlaying) {
@@ -150,7 +160,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
-    if (hasMediaError) {
+    if (hasMediaError || !audioSrc) {
       toast({
         variant: "destructive",
         title: "Audio Unavailable",
@@ -393,7 +403,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         </CardContent>
         {!showTracker && (
            <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
+            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError || !audioSrc}>
               {isPlaying ? (
                 <Pause className="h-8 w-8" />
               ) : (
