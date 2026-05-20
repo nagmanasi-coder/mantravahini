@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -51,7 +50,7 @@ export function UserProfile() {
 
   useEffect(() => {
     if (user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53') {
-      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
+      const devModeEnabled = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
       setIsDevMode(devModeEnabled);
     }
   }, [user]);
@@ -96,7 +95,7 @@ export function UserProfile() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
-  const remainingDays = isPaidUser ? calculateRemainingDays(userProfile.premiumCycleStartDate) : null;
+  const remainingDays = isPaidUser ? calculateRemainingDays(userProfile?.premiumCycleStartDate) : null;
 
   const trialInfo = useMemo(() => {
     if (!userProfile?.createdAt || isPaidUser) return null;
