@@ -166,7 +166,7 @@ export const translations = {
     hanumanPranaContact: "ಹನುಮಾನ್ ಪ್ರಾಣ ಮಂತ್ರ ಮತ್ತು ಪವಿತ್ರ ವಿಧಾನಕ್ಕಾಗಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     installApp: "ಅಪ್ಲಿಕೇಶನ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ",
     pwaInstallTitle: "ಮಂತ್ರವಾಹಿನಿ ಅಪ್ಲಿಕೇಶನ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ",
-    pwaInstallSubtitle: "ಸುಲಭ ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.",
+    pwaInstallSubtitle: "ಸುಲಭ ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮ ಸಾಧದಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.",
     pwaStep: "ಹಂತ",
     pwaInstallStep1Title: "ಬ್ರೌಸರ್ ಮೆನು ತೆರೆಯಿರಿ",
     pwaInstallStep1Description: "ಮೆನು ತೆರೆಯಲು ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ಮೇಲಿನ-ಬಲ ಮೂಲೆಯಲ್ಲಿರುವ ಮೂರು ಚುಕ್ಕೆಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.",
@@ -240,6 +240,11 @@ export const translations = {
     completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
     estimatedTokens: "ಅಂದಾಜು ಟೋಕನ್‌ಗಳು",
     estimatedCost: "ಅಂದಾಜು ವೆಚ್ಚ (AI)",
+    dailyBoostTitle: "ದೈವಿಕ ಶಕ್ತಿ ವೃದ್ಧಿ (Daily Boost)",
+    dailyBoostDesc: "ಒಂದು ವೀಡಿಯೊ ನೋಡಿ ಮತ್ತು ಮುಂದಿನ ೧ ಗಂಟೆ ಕಾಲ ಜಾಹೀರಾತು ರಹಿತ ಅನುಭವ ಪಡೆಯಿರಿ.",
+    watchAdToBoost: "ಶಕ್ತಿ ವೃದ್ಧಿಸಲು ವೀಡಿಯೊ ನೋಡಿ",
+    energyBoostActive: "ದೈವಿಕ ಶಕ್ತಿ ಸಕ್ರಿಯವಾಗಿದೆ!",
+    minutesLeft: "ನಿಮಿಷಗಳು ಬಾಕಿ",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -478,5 +483,10 @@ export const translations = {
     completed: "Completed",
     estimatedTokens: "Estimated Tokens",
     estimatedCost: "Estimated Cost (AI)",
+    dailyBoostTitle: "Daily Energy Boost",
+    dailyBoostDesc: "Watch a short video and enjoy an Ad-Free experience for the next 1 hour.",
+    watchAdToBoost: "Watch Ad for Boost",
+    energyBoostActive: "Divine Energy Boost Active!",
+    minutesLeft: "minutes remaining",
   }
 };

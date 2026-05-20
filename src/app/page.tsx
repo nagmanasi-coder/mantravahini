@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
-import { BannerAd } from "@/app/components/ads";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, MessageSquareQuote, GraduationCap as School } from "lucide-react";
+import { BannerAd, InterstitialAd } from "@/app/components/ads";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, MessageSquareQuote, GraduationCap as School, Zap, Clock, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +24,7 @@ import {
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from "firebase/firestore";
+import { doc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import {
@@ -54,6 +54,10 @@ export default function Home() {
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
   const [painHistory, setPainHistory] = useState<any[]>([]);
 
+  // Energy Boost State
+  const [showBoostAd, setShowBoostAd] = useState(false);
+  const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
+
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, "users", user.uid);
@@ -61,6 +65,7 @@ export default function Home() {
 
   const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
+  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
 
   useEffect(() => {
     const loadHistory = () => {
@@ -72,6 +77,12 @@ export default function Home() {
     loadHistory();
     window.addEventListener('painHistoryUpdated', loadHistory);
     
+    // Check Boost Pass
+    const expiry = localStorage.getItem('ad_free_until');
+    if (expiry && new Date(expiry) > new Date()) {
+      setBoostExpiry(expiry);
+    }
+
     const reminderTimer = setTimeout(() => {
       if (userProfile?.subscriptionTier === 'free' || !userProfile) {
         checkAndNotifyPainMantraReminder();
@@ -83,6 +94,30 @@ export default function Home() {
       clearTimeout(reminderTimer);
     };
   }, [checkAndNotifyPainMantraReminder, userProfile]);
+
+  const handleBoostAdComplete = () => {
+    setShowBoostAd(false);
+    const expiryDate = new Date();
+    expiryDate.setHours(expiryDate.getHours() + 1); // 1 Hour boost
+    localStorage.setItem('ad_free_until', expiryDate.toISOString());
+    setBoostExpiry(expiryDate.toISOString());
+
+    if (firestore && user) {
+        addDoc(collection(firestore, "ad_impressions"), {
+            userId: user.uid,
+            timestamp: serverTimestamp(),
+            type: "daily_boost"
+        }).catch(err => console.warn("Log failed", err));
+    }
+
+    toast({ title: "Boost Active!", description: "You are now Ad-Free for 1 hour. Divine blessings!" });
+  };
+
+  const getTimeRemaining = () => {
+    if (!boostExpiry) return 0;
+    const diff = new Date(boostExpiry).getTime() - new Date().getTime();
+    return Math.max(0, Math.floor(diff / 60000));
+  };
 
   const whatsAppMessage = "Hello! I'm interested in Mantravaahini. Please reply with the number of your query:\n\n1. Upgrade to Premium\n2. Other Services";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
@@ -171,6 +206,41 @@ export default function Home() {
              {t('appSubtitle')}
             </p>
           </header>
+
+          {/* REVENUE BOOSTER: Energy Boost Card */}
+          {!isPaidUser && (
+            <Card className="mb-8 border-2 border-amber-500 bg-amber-50 shadow-lg animate-pulse overflow-hidden relative">
+              <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="bg-amber-500 p-3 rounded-full text-white">
+                    <Zap className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h3 className="font-bold text-amber-900 text-lg">{t('dailyBoostTitle')}</h3>
+                    <p className="text-sm text-amber-800/80">{t('dailyBoostDesc')}</p>
+                  </div>
+                  {boostExpiry && getTimeRemaining() > 0 ? (
+                    <div className="text-right">
+                       <p className="text-[10px] uppercase font-bold text-amber-700">{t('energyBoostActive')}</p>
+                       <p className="text-2xl font-black text-amber-600 flex items-center gap-1 justify-end">
+                         <Clock className="h-4 w-4" />
+                         {getTimeRemaining()}m
+                       </p>
+                    </div>
+                  ) : (
+                    <Button onClick={() => setShowBoostAd(true)} className="bg-amber-600 hover:bg-amber-700 font-bold shrink-0 shadow-lg">
+                      <PlayCircle className="h-4 w-4 mr-2" />
+                      {t('watchAdToBoost')}
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+              <div className="absolute bottom-0 left-0 h-1 bg-amber-200 w-full overflow-hidden">
+                 <div className="h-full bg-amber-500 animate-infinite-scroll" style={{ width: '40%' }}></div>
+              </div>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <Card className={cn("bg-primary/10 border-primary/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.1s" }}>

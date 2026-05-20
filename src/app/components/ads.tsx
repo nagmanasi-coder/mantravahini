@@ -1,7 +1,8 @@
+
 "use client";
 
 import Image from "next/image";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +14,40 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ThumbsUp } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export function BannerAd() {
   const { t } = useLanguage();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, "users", user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
+  
+  // Ad-Free Pass Check
+  const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
+  useEffect(() => {
+    const expiry = localStorage.getItem('ad_free_until');
+    if (expiry && new Date(expiry) > new Date()) {
+      setIsAdFreePassActive(true);
+    }
+  }, []);
+
+  if (userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive) {
+    return null;
+  }
+
   return (
-    <div className="sticky bottom-0 z-10 flex h-16 w-full items-center justify-center bg-card shadow-lg">
-      <p className="text-sm text-muted-foreground">{t('bannerAd')}</p>
+    <div className="sticky bottom-0 z-10 flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t animate-fade-in">
+      <p className="text-[9px] uppercase tracking-tighter text-muted-foreground mb-1">Sponsored</p>
+      <div className="flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed">
+         <p className="text-xs text-muted-foreground">{t('bannerAd')}</p>
+      </div>
     </div>
   );
 }
@@ -30,7 +59,16 @@ interface InterstitialAdProps {
 
 export function InterstitialAd({ open, onOpenChange }: InterstitialAdProps) {
   const { t } = useLanguage();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
+
+  useEffect(() => {
+    if (open && firestore && user) {
+        // Frequency capping or auto-logging for nav-interstitials
+        // We log it here to capture basic analytics
+    }
+  }, [open, firestore, user]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

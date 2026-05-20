@@ -18,7 +18,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
 import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
-import { InterstitialAd } from "./ads";
+import { InterstitialAd, BannerAd } from "./ads";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -41,6 +41,22 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium', createdAt?: string }>(userDocRef);
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+
+  // Ad-Free Pass Check
+  const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
+  useEffect(() => {
+    const checkPass = () => {
+      const expiry = localStorage.getItem('ad_free_until');
+      if (expiry && new Date(expiry) > new Date()) {
+        setIsAdFreePassActive(true);
+      } else {
+        setIsAdFreePassActive(false);
+      }
+    };
+    checkPass();
+    const interval = setInterval(checkPass, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   // 7-Day Trial Logic
   const isWithinTrial = useMemo(() => {
@@ -70,7 +86,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
-  // Use the mantra URL if provided, otherwise null
+  // Use the mantra URL if provided, otherwise null (safeguard for Next.js console errors)
   const audioSrc = mantra.url || null;
 
   useEffect(() => {
@@ -177,7 +193,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
-    if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd) {
+    if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
       startPlayback();
       return;
     }
@@ -243,15 +259,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     <Card className={cn("overflow-hidden shadow-xl relative")}>
         <InterstitialAd open={showAd} onOpenChange={(open) => !open && handleAdComplete()} />
 
-        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && (
+        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <PlayCircle className="h-3 w-3 mr-1" />
             Watch Ad to Play
           </Badge>
         )}
-        {mantra.tier === 'paid' && (isWithinTrial || isUnlockedByAd) && !isPaidUser && (
+        {mantra.tier === 'paid' && (isWithinTrial || isUnlockedByAd || isAdFreePassActive) && !isPaidUser && (
            <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
-            {t('trialAccess')}
+            {isAdFreePassActive ? 'Energy Boost Active' : t('trialAccess')}
           </Badge>
         )}
         
@@ -346,6 +362,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Revenue Boost: Small Banner in Player */}
+          {!isPaidUser && !isAdFreePassActive && (
+            <div className="pt-4 mt-4 border-t border-dashed">
+              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Support Us</p>
+              <div className="bg-muted h-12 flex items-center justify-center rounded">
+                <span className="text-xs text-muted-foreground">Advertisement Banner</span>
               </div>
             </div>
           )}
