@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -77,8 +78,24 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
+  /* Allow selection in input and textareas */
+  input, textarea {
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+}
+
+/* Capacitor Safe Area adjustments */
+header {
+  padding-top: env(safe-area-inset-top);
+}
+footer {
+  padding-bottom: env(safe-area-inset-bottom);
 }

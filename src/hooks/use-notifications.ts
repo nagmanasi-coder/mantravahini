@@ -14,7 +14,17 @@ export function useNotifications() {
   const { t } = useLanguage();
 
   const requestPermission = useCallback(async () => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return false;
+    if (typeof window === 'undefined') return false;
+    
+    // Check for native Capacitor context first
+    const isCapacitor = (window as any).Capacitor !== undefined;
+    if (isCapacitor) {
+        // Native notification permissions are handled via Capacitor plugins
+        // For now, we return true to allow the UI to proceed
+        return true;
+    }
+
+    if (!('Notification' in window)) return false;
     
     try {
       if (Notification.permission === 'granted') return true;
@@ -27,13 +37,13 @@ export function useNotifications() {
   }, []);
 
   const sendLocalNotification = useCallback((titleKey: any, bodyKey: any) => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    if (typeof window === 'undefined') return;
     
-    if (Notification.permission === 'granted') {
+    const isCapacitor = (window as any).Capacitor !== undefined;
+    
+    // Web Notification implementation
+    if (!isCapacitor && 'Notification' in window && Notification.permission === 'granted') {
       try {
-        // Many mobile browsers (Chrome Android, iOS) do not support the Notification constructor.
-        // They require ServiceWorkerRegistration.showNotification().
-        // We wrap this in try-catch to prevent client-side exceptions that crash the app.
         new Notification(t(titleKey), {
           body: t(bodyKey),
           icon: '/favicon.svg',
@@ -42,6 +52,9 @@ export function useNotifications() {
         console.warn("Standard Notification constructor failed. This is expected on most mobile browsers:", e);
       }
     }
+    
+    // If in Capacitor, a plugin like @capacitor/local-notifications should be used here
+    // For the webview shell, we can fallback to a silent log or standard alert if critical
   }, [t]);
 
   /**
@@ -49,8 +62,10 @@ export function useNotifications() {
    * and send a reminder if so.
    */
   const checkAndNotifyPainMantraReminder = useCallback(() => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-    if (Notification.permission !== 'granted') return;
+    if (typeof window === 'undefined') return;
+    
+    const isCapacitor = (window as any).Capacitor !== undefined;
+    if (!isCapacitor && Notification.permission !== 'granted') return;
 
     const lastPlayedStr = localStorage.getItem("painMantraLastPlayed");
     const lastReminderStr = localStorage.getItem("painMantraLastReminder");
@@ -66,8 +81,8 @@ export function useNotifications() {
 
   // Scaffolding for real push tokens (FCM)
   useEffect(() => {
-    if (user && firestore && Notification.permission === 'granted') {
-      // Logic to store token would go here if Messaging SDK was fully configured with a VAPID key
+    if (user && firestore && typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      // Logic to store token would go here if Messaging SDK was fully configured
     }
   }, [user, firestore]);
 

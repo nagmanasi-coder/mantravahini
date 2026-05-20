@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link";
@@ -15,10 +16,12 @@ export function AppHeader() {
     const pathname = usePathname();
 
     useEffect(() => {
-        // This check ensures we're on the client side
+        // Platform detection: Check if running as PWA or native APK (Capacitor)
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        // A more robust implementation might use the 'beforeinstallprompt' event.
-        if (!isStandalone) {
+        const isCapacitor = (window as any).Capacitor !== undefined;
+        
+        // Only show install prompt if not already in standalone/native mode
+        if (!isStandalone && !isCapacitor) {
           setCanInstall(true);
         }
     }, []);

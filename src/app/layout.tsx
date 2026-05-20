@@ -1,5 +1,5 @@
 
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { SplashScreen } from './components/splash-screen';
@@ -14,6 +14,18 @@ export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
   description: 'A serene mantra playback experience',
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -37,7 +49,7 @@ export default function RootLayout({
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
-            <div className="pb-28">{children}</div>
+            <div className="pb-28 min-h-screen">{children}</div>
             <AppFooter />
             <Toaster />
             <FirebaseErrorListener />
