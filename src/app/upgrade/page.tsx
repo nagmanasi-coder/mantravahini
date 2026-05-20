@@ -37,7 +37,7 @@ export default function UpgradePage() {
     "No Advertisements (Ad-Free Experience)",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
-    t('featureMantraChikitse'),
+    t('featurePranaVidya'),
     "Priority Spiritual Support",
     "Referral Program Access"
   ];
@@ -124,7 +124,7 @@ export default function UpgradePage() {
               </CardContent>
               <CardFooter className="flex-col gap-4">
                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Includes Specialized Therapies & Private Support.</p>
+                    <p className="text-xs text-muted-foreground">Includes Specialized Sciences & Private Support.</p>
                 </div>
                 <Button asChild className="w-full" size="lg">
                     <Link href={whatsAppUrl} target="_blank">

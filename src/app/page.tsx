@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -274,8 +273,8 @@ export default function Home() {
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
               <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
                 <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
-                  <Link href="/healing">
-                    {t('mantraTherapyLink')}
+                  <Link href="/prana-vidya">
+                    {t('pranaVidyaLink')}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>

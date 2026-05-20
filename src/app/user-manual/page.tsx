@@ -6,8 +6,8 @@ import html2canvas from 'html2canvas';
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Download, Check, Star, Sparkles, Share2 } from 'lucide-react';
-import { Separator } from '@/separator';
+import { Download, Check, Star, Sparkles, Share2, Zap } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function UserManualPage() {
   const { t } = useLanguage();
@@ -119,23 +119,16 @@ export default function UserManualPage() {
             </div>
 
             <SectionTitle>
-              <Sparkles className="h-6 w-6" />
+              <Zap className="h-6 w-6" />
               {t('manualTherapiesTitle')}
             </SectionTitle>
             <div className="space-y-6">
                 <Card>
-                    <CardHeader><CardTitle className="text-lg">{t('hanumanTherapyTitle')}</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-lg">{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
-                        <p className="text-muted-foreground leading-relaxed">{t('hanumanTherapyDescription')}</p>
-                        <p className="text-sm font-medium text-foreground">{t('healingInfo1')}</p>
-                        <p className="text-sm font-bold text-primary">{t('hanumanTherapyFeeDetails')}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                     <CardHeader><CardTitle className="text-lg">{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
-                    <CardContent>
                         <p className="text-muted-foreground leading-relaxed">{t('untimelyDeathContent')}</p>
-                        <p className="mt-4 font-bold text-primary">{t('hanumanPranaContact')}</p>
+                        <p className="text-sm font-medium text-foreground">{t('pranaInfo1')}</p>
+                        <p className="text-sm font-bold text-primary">{t('pranaTherapyFeeDetails')}</p>
                     </CardContent>
                 </Card>
             </div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { use, useMemo } from 'react';
@@ -58,8 +57,8 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
 
         <div className="grid gap-4">
           {filteredMantras.map((mantra) => {
-            // Specialized mantras like Anjaneya (ID 9) require personalized activation info
-            const targetHref = mantra.id === 9 ? '/healing' : `/mantras/play/${mantra.id}`;
+            // Specialized mantras like Anjaneya (ID 9) require Prana Vidya activation info
+            const targetHref = mantra.id === 9 ? '/prana-vidya' : `/mantras/play/${mantra.id}`;
             const isPremium = mantra.tier === 'paid';
             const isUnlocked = isPaidUser || isWithinTrial || !isPremium;
             
