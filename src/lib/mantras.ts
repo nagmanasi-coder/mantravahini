@@ -37,7 +37,7 @@ export const mantras: Mantra[] = [
     url: '/chakshu-mantra.mp3',
     method: 'ಹೆಡ್‌ಫೋನ್ ಅಥವಾ ಇಯರ್‌ಫೋನ್ ಬಳಸಿ ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಮಂತ್ರವನ್ನು ಕೇಳಿ.',
     method_en: 'Listen to the mantra twice a day using headphones or earphones.',
-    benefits: 'ಕಣ್ಣಿನ ದೃಷ್ಟಿ ಸುಧಾರಣೆ, ಕಣ್ಣಿನ ಕಿರಿಕಿರಿ ಮತ್ತು ವಿವಿಧ ಸಮಸ್ಯೆಗಳಿಂದ ಮುಕ್ತಿ.',
+    benefits: 'ಕಣ್ಣಿನ ದೃಷ್ಟಿ ಸುಧಾರಣೆ, ಕಣ್ಣಿನ ಕಿರಿಕಿರಿ ಮತ್ತು ವಿವಿಧ समस्याಗಳಿಂದ ಮುಕ್ತಿ.',
     benefits_en: 'Improved eyesight, relief from eye irritation and various vision problems.',
     description: 'ಪ್ರಾಚೀನ ನೇತ್ರ ಜ್ಯೋತಿ ಮಂತ್ರವು ಕಣ್ಣಿನ ಆರೋಗ್ಯವನ್ನು ಕಾಪಾಡಲು ಮತ್ತು ದೃಷ್ಟಿ ದೋಷಗಳನ್ನು ನಿವಾರಿಸಲು ಪ್ರಸಿದ್ಧವಾಗಿದೆ.',
     description_en: 'An ancient mantra famous for protecting eye health and correcting vision issues.',
@@ -48,6 +48,7 @@ export const mantras: Mantra[] = [
     id: 3,
     name: 'ರೋಗ ಮುಕ್ತಿ ಮಂಗಳ ಸ್ತೋತ್ರ',
     name_en: 'Rog Mukti Mangala Stotra',
+    // Using direct public storage URL for immediate availability
     url: 'https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fmangala-stotra-mp3?alt=media&token=54700d3d-9fbe-4682-965d-db9675276536',
     assetId: 'mangala-stotra-mp3',
     method: 'ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಶ್ರದ್ಧೆಯಿಂದ ಕೇಳಿ. ಮನೆಯಲ್ಲಿ ಪ್ಲೇ ಮಾಡುವುದರಿಂದ ಸಕಾರಾತ್ಮಕ ಶಕ್ತಿ ಹೆಚ್ಚುತ್ತದೆ.',

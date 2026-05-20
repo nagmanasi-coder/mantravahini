@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: 'cover',
+  viewportFit: 'cover', // Critical for Capacitor/APK safe areas
 };
 
 export default function RootLayout({

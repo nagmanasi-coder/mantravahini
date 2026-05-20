@@ -120,10 +120,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       setIsPlaying(false);
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       
-      // TRIGGER END AD: If user is not paid/boosted, show ad at the end of audio
+      // TRIGGER END AD: Ad after playback for free users
       if (!isPaidUser && !isDeveloper && !isAdFreePassActive) {
          setShowEndAd(true);
-         // Log the "End of Audio" ad impression
          if (firestore && user) {
             addDoc(collection(firestore, "ad_impressions"), {
                 userId: user.uid,
@@ -262,10 +261,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        {/* Ad Triggered BEFORE Playback */}
         <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
-        
-        {/* Ad Triggered AFTER Playback */}
         <InterstitialAd open={showEndAd} onOpenChange={(open) => !open && setShowEndAd(false)} />
 
         {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
@@ -393,7 +389,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             )}
           </CardFooter>
         )}
-      <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      <audio ref={audioRef} src={audioSrc || null} preload="metadata" />
     </Card>
   );
 }
