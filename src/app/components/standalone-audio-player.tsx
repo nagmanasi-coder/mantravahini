@@ -41,10 +41,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium', createdAt?: string }>(userDocRef);
   
-  // Logic: Everyone is a "free" user unless they have an active sub
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
 
-  // Ad-Free Pass Check (Works for all)
+  // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   useEffect(() => {
     const checkPass = () => {
@@ -60,7 +59,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     return () => clearInterval(interval);
   }, []);
 
-  // 7-Day Trial Logic (Requires registration)
   const isWithinTrial = useMemo(() => {
     if (!userProfile?.createdAt) return false;
     const createdDate = new Date(userProfile.createdAt);
@@ -69,7 +67,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   }, [userProfile?.createdAt]);
 
   const [isDeveloper, setIsDeveloper] = useState(false);
-  
   const [step, setStep] = useState<'initial' | 'pre_play' | 'playing' | 'post_play' | 'result'>(showTracker ? 'pre_play' : 'initial');
   const [beforeScore, setBeforeScore] = useState(0);
   const [afterScore, setAfterScore] = useState(0);
@@ -80,15 +77,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [hasMediaError, setHasMediaError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   
-  // Ad-Supported Model State
-  const [showAd, setShowAd] = useState(false);
+  // Ad-Supported Model States
+  const [showStartAd, setShowStartAd] = useState(false); // Ad before shloka (Watch to Unlock)
+  const [showEndAd, setShowEndAd] = useState(false);     // Ad after shloka
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
-
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
-
-  // Use the mantra URL if provided, otherwise null (safeguard for Next.js console errors)
   const audioSrc = mantra.url || null;
 
   useEffect(() => {
@@ -99,12 +94,10 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
   }, [user]);
 
-
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     
-    // Clear errors when mantra changes or valid URL arrives
     if (audioSrc && audioSrc.startsWith('http')) {
       setHasMediaError(false);
       setIsBuffering(true);
@@ -126,15 +119,28 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const handleEnded = () => {
       setIsPlaying(false);
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
+      
+      // TRIGGER END AD: If user is not paid/boosted, show ad at the end of audio
+      if (!isPaidUser && !isDeveloper && !isAdFreePassActive) {
+         setShowEndAd(true);
+         // Log the "End of Audio" ad impression
+         if (firestore && user) {
+            addDoc(collection(firestore, "ad_impressions"), {
+                userId: user.uid,
+                mantraId: mantra.id,
+                timestamp: serverTimestamp(),
+                type: "post_playback_interstitial"
+            }).catch(e => console.warn(e));
+         }
+      }
+
       if (showTracker) {
         setStep('post_play');
       }
     };
     const handleError = () => {
       const currentSrc = audio.src;
-      // Filter out abort errors or common initial load failures while URL is switching
       if (!currentSrc || currentSrc === window.location.href || !currentSrc.startsWith('http')) return;
-      
       setHasMediaError(true);
       setIsPlaying(false);
       setIsBuffering(false);
@@ -151,16 +157,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [audioSrc, mantra.id, showTracker, sendLocalNotification]);
+  }, [audioSrc, mantra.id, showTracker, sendLocalNotification, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || hasMediaError || !audioSrc) return;
     if (isPlaying) {
       audio.play().catch(e => {
-        if (e.name !== 'AbortError') {
-          setIsPlaying(false);
-        }
+        if (e.name !== 'AbortError') setIsPlaying(false);
       });
     } else {
       audio.pause();
@@ -195,14 +199,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
-    // Logic: If user is Dev, Premium, Trial, or has an active Ad Boost, play immediately
+    // Logic: Skip ads for special tiers
     if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
       startPlayback();
       return;
     }
 
-    // Otherwise, check if it's a free mantra or requires a rewarded unlock
-    if (mantra.tier === 'free') {
+    // Handle Restricted Content Ad (Start of Audio)
+    if (mantra.tier === 'paid') {
+        setShowStartAd(true);
+    } else {
+        // Free content daily limit check
         const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
         if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
              toast({ variant: "destructive", title: t('toastDailyLimitTitle'), description: t('toastDailyLimitDescription') });
@@ -210,27 +217,21 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         }
         startPlayback();
         localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
-    } else {
-        // Show Ad to unlock for all free users (Guests & Registered)
-        setShowAd(true);
     }
   };
 
-  const handleAdComplete = () => {
-    setShowAd(false);
+  const handleStartAdComplete = () => {
+    setShowStartAd(false);
     setIsUnlockedByAd(true);
-    
-    // Log Ad Impression if user is logged in
     if (firestore && user) {
         addDoc(collection(firestore, "ad_impressions"), {
             userId: user.uid,
             mantraId: mantra.id,
             timestamp: serverTimestamp(),
-            type: "rewarded_unlock"
-        }).catch(err => console.warn("Failed to log ad impression", err));
+            type: "rewarded_unlock_start"
+        }).catch(err => console.warn(err));
     }
-    
-    toast({ title: "Unlocked!", description: "Mantra is unlocked for this session. Enjoy!" });
+    toast({ title: "Unlocked!", description: "Mantra is unlocked. Divine listening!" });
     startPlayback();
   };
   
@@ -261,17 +262,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        <InterstitialAd open={showAd} onOpenChange={(open) => !open && handleAdComplete()} />
+        {/* Ad Triggered BEFORE Playback */}
+        <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
+        
+        {/* Ad Triggered AFTER Playback */}
+        <InterstitialAd open={showEndAd} onOpenChange={(open) => !open && setShowEndAd(false)} />
 
         {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <PlayCircle className="h-3 w-3 mr-1" />
             Watch Ad to Play
-          </Badge>
-        )}
-        {mantra.tier === 'paid' && (isWithinTrial || isUnlockedByAd || isAdFreePassActive) && !isPaidUser && (
-           <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
-            {isAdFreePassActive ? 'Energy Boost Active' : t('trialAccess')}
           </Badge>
         )}
         
@@ -370,10 +370,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </div>
           )}
 
-          {/* Revenue Boost: Small Banner in Player for all free users */}
-          {!isPaidUser && !isAdFreePassActive && (
+          {!isPaidUser && !isAdFreePassActive && !isDeveloper && (
             <div className="pt-4 mt-4 border-t border-dashed">
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Support Us</p>
+              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Passive Support</p>
               <div className="bg-muted h-12 flex items-center justify-center rounded">
                 <span className="text-xs text-muted-foreground">Advertisement Banner</span>
               </div>
