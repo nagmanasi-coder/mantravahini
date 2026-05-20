@@ -16,7 +16,7 @@ import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
-import { doc } from "firebase/firestore";
+import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
 import { InterstitialAd } from "./ads";
 
@@ -199,6 +199,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const handleAdComplete = () => {
     setShowAd(false);
     setIsUnlockedByAd(true);
+    
+    // Log Ad Impression for revenue analysis
+    if (firestore && user) {
+        addDoc(collection(firestore, "ad_impressions"), {
+            userId: user.uid,
+            mantraId: mantra.id,
+            timestamp: serverTimestamp(),
+            type: "rewarded_unlock"
+        }).catch(err => console.warn("Failed to log ad impression", err));
+    }
+    
     toast({ title: "Unlocked!", description: "Mantra is unlocked for this session. Enjoy!" });
     startPlayback();
   };

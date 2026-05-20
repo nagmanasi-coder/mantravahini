@@ -48,52 +48,18 @@
       },
       "required": ["uid", "email"]
     },
-    "Course": {
-      "title": "Course",
+    "AdImpression": {
+      "title": "AdImpression",
       "type": "object",
-      "description": "Educational course metadata.",
+      "description": "Logs when a user watches an ad to unlock content.",
       "properties": {
         "id": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "published": { "type": "boolean" },
-        "language": { "type": "string" },
-        "price": { "type": "number" },
-        "level": { "type": "string" },
-        "createdAt": { "type": "string" }
+        "userId": { "type": "string" },
+        "mantraId": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "type": { "type": "string", "enum": ["rewarded_unlock", "interstitial", "banner"] }
       },
-      "required": ["id", "title"]
-    },
-    "Module": {
-      "title": "Module",
-      "type": "object",
-      "description": "Chapter or section within a course.",
-      "properties": {
-        "id": { "type": "string" },
-        "courseId": { "type": "string" },
-        "title": { "type": "string" },
-        "order": { "type": "number" }
-      },
-      "required": ["id", "courseId", "title", "order"]
-    },
-    "Lesson": {
-      "title": "Lesson",
-      "type": "object",
-      "description": "Specific interactive lesson content.",
-      "properties": {
-        "id": { "type": "string" },
-        "moduleId": { "type": "string" },
-        "courseId": { "type": "string" },
-        "title": { "type": "string" },
-        "concept": { "type": "string" },
-        "activity": { "type": "string" },
-        "quiz_question": { "type": "string" },
-        "quiz_options": { "type": "array", "items": { "type": "string" } },
-        "correct_answer": { "type": "string" },
-        "image_hint": { "type": "string" },
-        "audioUrl": { "type": "string", "format": "uri", "description": "TTS generated audio link." }
-      },
-      "required": ["id", "moduleId", "courseId", "title"]
+      "required": ["userId", "mantraId", "timestamp"]
     }
   },
   "auth": {
@@ -112,21 +78,9 @@
       "schema": { "$ref": "#/backend/entities/Asset" },
       "description": "Public media metadata."
     },
-    "/courses/{courseId}": {
-      "schema": { "$ref": "#/backend/entities/Course" },
-      "description": "Public educational courses."
-    },
-    "/modules/{moduleId}": {
-      "schema": { "$ref": "#/backend/entities/Module" },
-      "description": "Course modules."
-    },
-    "/lessons/{lessonId}": {
-      "schema": { "$ref": "#/backend/entities/Lesson" },
-      "description": "Interactive lessons."
-    },
-    "/admin_users/{userId}": {
-      "schema": "object",
-      "description": "Admin role markers."
+    "/ad_impressions/{impressionId}": {
+      "schema": { "$ref": "#/backend/entities/AdImpression" },
+      "description": "Logs for revenue analysis."
     }
   }
 }
