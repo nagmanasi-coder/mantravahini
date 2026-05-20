@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle, RefreshCw, VolumeX } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,9 +78,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [isBuffering, setIsBuffering] = useState(false);
   
   // Ad-Supported Model States
-  const [showStartAd, setShowStartAd] = useState(false); // Ad before shloka (Watch to Unlock)
-  const [showEndAd, setShowEndAd] = useState(false);     // Ad after shloka
+  const [showStartAd, setShowStartAd] = useState(false);
+  const [showEndAd, setShowEndAd] = useState(false);
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
+
+  // In-Player Passive Ad States
+  const [playerAdKey, setPlayerAdKey] = useState(0);
+  const [isPlayerAdRefreshing, setIsPlayerAdRefreshing] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
@@ -93,6 +97,29 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       setIsDeveloper(isActualDeveloper && devModeEnabled);
     }
   }, [user]);
+
+  // AUTO-REFRESH IN-PLAYER AD: Refresh central ad every 45 seconds during playback
+  useEffect(() => {
+    if (isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive) {
+      const interval = setInterval(() => {
+        setIsPlayerAdRefreshing(true);
+        setTimeout(() => {
+          setPlayerAdKey(prev => prev + 1);
+          setIsPlayerAdRefreshing(false);
+          // Log impression for central ad rotation
+          if (firestore && user) {
+            addDoc(collection(firestore, "ad_impressions"), {
+              userId: user.uid,
+              mantraId: mantra.id,
+              timestamp: serverTimestamp(),
+              type: "in_player_passive_refresh"
+            }).catch(() => {});
+          }
+        }, 500);
+      }, 45000); // 45 second rotation
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user, mantra.id]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -120,7 +147,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       setIsPlaying(false);
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       
-      // TRIGGER END AD: Ad after playback for free users
       if (!isPaidUser && !isDeveloper && !isAdFreePassActive) {
          setShowEndAd(true);
          if (firestore && user) {
@@ -198,17 +224,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
-    // Logic: Skip ads for special tiers
     if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
       startPlayback();
       return;
     }
 
-    // Handle Restricted Content Ad (Start of Audio)
     if (mantra.tier === 'paid') {
         setShowStartAd(true);
     } else {
-        // Free content daily limit check
         const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
         if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
              toast({ variant: "destructive", title: t('toastDailyLimitTitle'), description: t('toastDailyLimitDescription') });
@@ -259,6 +282,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  const showPlayerAd = isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive;
+
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
         <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
@@ -275,17 +300,42 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
           <CardTitle className="font-headline text-2xl text-center">{language === 'kn' ? mantra?.name : mantra?.name_en}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {mantraImage && step !== 'result' && (
-            <div className="relative aspect-video w-full">
+          <div className="relative aspect-video w-full overflow-hidden rounded-md bg-muted">
+            {showPlayerAd ? (
+               <div 
+                key={playerAdKey}
+                className={cn(
+                  "absolute inset-0 flex flex-col items-center justify-center bg-black transition-all duration-700",
+                  isPlayerAdRefreshing ? "opacity-0 scale-95" : "opacity-100 scale-100 animate-fade-in"
+                )}
+               >
+                 <div className="flex flex-col items-center gap-4 text-white">
+                    <div className="bg-primary/20 p-6 rounded-full animate-pulse border border-primary/40">
+                      <RefreshCw className="h-10 w-10 text-primary" />
+                    </div>
+                    <div className="text-center space-y-1">
+                      <p className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/80">Support Content</p>
+                      <p className="text-sm font-bold opacity-80">Passive Media Stream</p>
+                      <div className="flex items-center justify-center gap-1 text-[8px] opacity-40">
+                        <VolumeX size={8} />
+                        <span>MUTED DURING SHLOKA</span>
+                      </div>
+                    </div>
+                 </div>
+                 <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                    <span className="text-[8px] bg-white/10 px-1 rounded text-white/50">ID: {playerAdKey + 500}</span>
+                 </div>
+               </div>
+            ) : mantraImage ? (
               <Image
                 src={mantraImage.imageUrl}
                 alt={mantraImage.description}
                 fill
-                className="rounded-md object-cover"
+                className="object-cover"
                 data-ai-hint={mantraImage.imageHint}
               />
-            </div>
-          )}
+            ) : null}
+          </div>
 
           {hasMediaError && (
             <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3 border border-destructive/20 animate-fade-in">
