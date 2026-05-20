@@ -5,18 +5,48 @@ import Link from "next/link";
 import { Info, BookText, MessageSquareQuote, GraduationCap, Video, Music, GraduationCap as School } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { usePathname } from "next/navigation";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export function AppFooter() {
     const { t, language } = useLanguage();
     const pathname = usePathname();
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, "users", user.uid);
+    }, [firestore, user]);
+
+    const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
+    
+    const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
+
+    useEffect(() => {
+        const checkPass = () => {
+            const expiry = localStorage.getItem('ad_free_until');
+            setIsAdFreePassActive(!!(expiry && new Date(expiry) > new Date()));
+        };
+        checkPass();
+        const interval = setInterval(checkPass, 10000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Focused experience: Hide footer on mantra collection pages or focused learning sessions
     if (pathname?.startsWith('/mantras') || pathname?.includes('/lessons/')) {
       return null;
     }
 
+    const showAd = !(userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive);
+
     return (
-         <footer className="fixed bottom-0 z-40 w-full border-t bg-background">
+         <footer className={cn(
+            "fixed z-40 w-full border-t bg-background transition-all duration-300",
+            showAd ? "bottom-16" : "bottom-0"
+         )}>
             <div className="container mx-auto flex h-auto min-h-14 max-w-4xl items-center justify-center p-2">
                  <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:gap-x-6">
                     <Link href="/mantras" className="flex items-center space-x-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">

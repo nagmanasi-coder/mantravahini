@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
-import { BannerAd, InterstitialAd } from "@/app/components/ads";
+import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, MessageSquareQuote, GraduationCap as School, Zap, Clock, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -488,7 +488,6 @@ export default function Home() {
         title={upgradeDialogContent.title}
         description={upgradeDialogContent.description}
       />
-      <BannerAd />
     </div>
   );
 }

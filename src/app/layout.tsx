@@ -9,6 +9,7 @@ import { AppFooter } from './components/app-footer';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
+import { BannerAd } from './components/ads';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -49,8 +50,9 @@ export default function RootLayout({
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
-            <div className="pb-28 min-h-screen">{children}</div>
+            <div className="pb-32 min-h-screen">{children}</div>
             <AppFooter />
+            <BannerAd />
             <Toaster />
             <FirebaseErrorListener />
           </FirebaseClientProvider>

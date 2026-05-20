@@ -69,7 +69,7 @@ export function BannerAd() {
   }
 
   return (
-    <div className="sticky bottom-0 z-10 flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t">
       <div className="flex items-center gap-1 mb-1">
         <p className="text-[9px] uppercase tracking-tighter text-muted-foreground">Sponsored Content</p>
         {isRefreshing && <RefreshCw className="h-2 w-2 animate-spin text-muted-foreground/50" />}
