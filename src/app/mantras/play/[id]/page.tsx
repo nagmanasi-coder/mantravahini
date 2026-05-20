@@ -1,3 +1,4 @@
+
 'use client';
 
 import { use, useMemo } from 'react';
@@ -37,10 +38,11 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
 
   const { data: assetData } = useDoc<AssetData>(assetRef);
 
-  // Merge storage URL into mantra if available
+  // Smart Merge: Use verified storage URL from database if available,
+  // otherwise keep the hardcoded fallback URL from mantras.ts
   const mantra = useMemo(() => {
     if (!baseMantra) return null;
-    if (assetData?.url) {
+    if (assetData?.url && assetData.url.trim() !== '') {
       return { ...baseMantra, url: assetData.url };
     }
     return baseMantra;
@@ -62,11 +64,11 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
 
   // Determine the best image based on the mantra ID or category
   const getMantraImageId = (id: number) => {
-    if (id === 1) return 'kali-mantra-infographic'; // Water method
-    if (id === 2) return 'chakshu-mantra-infographic'; // Headphone method
-    if (id === 3) return 'roga-mukti-stotra-image'; // Roga Mukti
-    if (id === 17) return 'bhairava-image'; // Kaala Bhairava
-    return 'hanuman-healing'; // Default spiritual image
+    if (id === 1) return 'kali-mantra-infographic';
+    if (id === 2) return 'chakshu-mantra-infographic';
+    if (id === 3) return 'roga-mukti-stotra-image';
+    if (id === 17) return 'bhairava-image';
+    return 'hanuman-healing';
   };
 
   const currentMethod = language === 'kn' ? mantra.method : mantra.method_en;

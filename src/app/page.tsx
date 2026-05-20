@@ -55,7 +55,7 @@ export default function Home() {
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
   const [painHistory, setPainHistory] = useState<any[]>([]);
 
-  // Energy Boost State
+  // Energy Boost State (Works for Guests & Registered)
   const [showBoostAd, setShowBoostAd] = useState(false);
   const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
   const [boostProgress, setBoostProgress] = useState(0);
@@ -217,7 +217,7 @@ export default function Home() {
             </p>
           </header>
 
-          {/* REVENUE BOOSTER: Energy Boost Card (5 Steps) */}
+          {/* REVENUE BOOSTER: Energy Boost Card (Visible to all non-paid users, including guests) */}
           {!isPaidUser && (
             <Card className="mb-8 border-2 border-amber-500 bg-amber-50 shadow-lg animate-pulse overflow-hidden relative">
               <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />

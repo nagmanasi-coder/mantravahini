@@ -15,7 +15,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ThumbsUp } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 
 export function BannerAd() {
   const { t } = useLanguage();
@@ -29,15 +29,23 @@ export function BannerAd() {
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
   
-  // Ad-Free Pass Check
+  // Ad-Free Pass Check (Works for both Guests and Registered Users)
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   useEffect(() => {
-    const expiry = localStorage.getItem('ad_free_until');
-    if (expiry && new Date(expiry) > new Date()) {
-      setIsAdFreePassActive(true);
-    }
+    const checkPass = () => {
+      const expiry = localStorage.getItem('ad_free_until');
+      if (expiry && new Date(expiry) > new Date()) {
+        setIsAdFreePassActive(true);
+      } else {
+        setIsAdFreePassActive(false);
+      }
+    };
+    checkPass();
+    const interval = setInterval(checkPass, 10000); // Check more frequently
+    return () => clearInterval(interval);
   }, []);
 
+  // Exceptions: Premium or Basic users, or users with an active 1-hour boost
   if (userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive) {
     return null;
   }
@@ -59,16 +67,7 @@ interface InterstitialAdProps {
 
 export function InterstitialAd({ open, onOpenChange }: InterstitialAdProps) {
   const { t } = useLanguage();
-  const { user } = useUser();
-  const firestore = useFirestore();
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
-
-  useEffect(() => {
-    if (open && firestore && user) {
-        // Frequency capping or auto-logging for nav-interstitials
-        // We log it here to capture basic analytics
-    }
-  }, [open, firestore, user]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

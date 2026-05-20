@@ -18,7 +18,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
 import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
-import { InterstitialAd, BannerAd } from "./ads";
+import { InterstitialAd } from "./ads";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -40,9 +40,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   }, [firestore, user]);
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium', createdAt?: string }>(userDocRef);
+  
+  // Logic: Everyone is a "free" user unless they have an active sub
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
 
-  // Ad-Free Pass Check
+  // Ad-Free Pass Check (Works for all)
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   useEffect(() => {
     const checkPass = () => {
@@ -54,11 +56,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       }
     };
     checkPass();
-    const interval = setInterval(checkPass, 60000); // Check every minute
+    const interval = setInterval(checkPass, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  // 7-Day Trial Logic
+  // 7-Day Trial Logic (Requires registration)
   const isWithinTrial = useMemo(() => {
     if (!userProfile?.createdAt) return false;
     const createdDate = new Date(userProfile.createdAt);
@@ -102,18 +104,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const audio = audioRef.current;
     if (!audio) return;
     
-    setHasMediaError(false);
-    
-    if (audioSrc && (audioSrc.startsWith('http') || audioSrc.startsWith('/'))) {
+    // Clear errors when mantra changes or valid URL arrives
+    if (audioSrc && audioSrc.startsWith('http')) {
+      setHasMediaError(false);
       setIsBuffering(true);
       audio.load();
-    } else {
-      setIsBuffering(false);
     }
 
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
       setIsBuffering(false);
+      setHasMediaError(false);
     }
     const setAudioTime = () => {
       const time = audio.currentTime;
@@ -131,7 +132,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     };
     const handleError = () => {
       const currentSrc = audio.src;
-      if (!currentSrc || currentSrc === window.location.href) return;
+      // Filter out abort errors or common initial load failures while URL is switching
+      if (!currentSrc || currentSrc === window.location.href || !currentSrc.startsWith('http')) return;
       
       setHasMediaError(true);
       setIsPlaying(false);
@@ -153,7 +155,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || hasMediaError) return;
+    if (!audio || hasMediaError || !audioSrc) return;
     if (isPlaying) {
       audio.play().catch(e => {
         if (e.name !== 'AbortError') {
@@ -193,11 +195,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       return;
     }
 
+    // Logic: If user is Dev, Premium, Trial, or has an active Ad Boost, play immediately
     if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
       startPlayback();
       return;
     }
 
+    // Otherwise, check if it's a free mantra or requires a rewarded unlock
     if (mantra.tier === 'free') {
         const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
         if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
@@ -207,7 +211,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         startPlayback();
         localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
     } else {
-        // Pivot: Show Ad to unlock for free users
+        // Show Ad to unlock for all free users (Guests & Registered)
         setShowAd(true);
     }
   };
@@ -216,7 +220,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     setShowAd(false);
     setIsUnlockedByAd(true);
     
-    // Log Ad Impression for revenue analysis
+    // Log Ad Impression if user is logged in
     if (firestore && user) {
         addDoc(collection(firestore, "ad_impressions"), {
             userId: user.uid,
@@ -366,7 +370,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </div>
           )}
 
-          {/* Revenue Boost: Small Banner in Player */}
+          {/* Revenue Boost: Small Banner in Player for all free users */}
           {!isPaidUser && !isAdFreePassActive && (
             <div className="pt-4 mt-4 border-t border-dashed">
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Support Us</p>
