@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2 } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
 import { doc } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
+import { InterstitialAd } from "./ads";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -61,11 +62,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   const [hasMediaError, setHasMediaError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   
+  // Ad-Supported Model State
+  const [showAd, setShowAd] = useState(false);
+  const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
+  
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
 
-  // Use the mantra URL if provided, otherwise null to prevent console errors
+  // Use the mantra URL if provided, otherwise null
   const audioSrc = mantra.url || null;
 
   useEffect(() => {
@@ -81,10 +86,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const audio = audioRef.current;
     if (!audio) return;
     
-    // Clear error state when URL changes
     setHasMediaError(false);
     
-    // Only load if the source looks valid
     if (audioSrc && (audioSrc.startsWith('http') || audioSrc.startsWith('/'))) {
       setIsBuffering(true);
       audio.load();
@@ -102,15 +105,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       if(isFinite(audio.duration) && audio.duration > 0) {
         setProgress((time / audio.duration) * 100);
       }
-
-      // Specialized Logic: Mute first 5 seconds of Bhairava Mantra (ID 17)
-      if (mantra.id === 17) {
-        if (time < 5 && !audio.muted) {
-          audio.muted = true;
-        } else if (time >= 5 && audio.muted) {
-          audio.muted = false;
-        }
-      }
     };
     const handleEnded = () => {
       setIsPlaying(false);
@@ -121,19 +115,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     };
     const handleError = () => {
       const currentSrc = audio.src;
-      // Filter out spurious errors during URL switching
-      if (!currentSrc || 
-          currentSrc === window.location.href || 
-          currentSrc.includes(window.location.pathname) || 
-          currentSrc.endsWith('undefined') || 
-          currentSrc.endsWith('null')) {
-        return;
-      }
+      if (!currentSrc || currentSrc === window.location.href) return;
       
       setHasMediaError(true);
       setIsPlaying(false);
       setIsBuffering(false);
-      console.warn("Mantra audio source missing or invalid:", currentSrc);
     };
 
     audio.addEventListener("loadeddata", setAudioData);
@@ -155,7 +141,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     if (isPlaying) {
       audio.play().catch(e => {
         if (e.name !== 'AbortError') {
-          console.warn("Playback failed", e);
           setIsPlaying(false);
         }
       });
@@ -164,6 +149,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
   }, [isPlaying, hasMediaError, audioSrc]);
 
+  const startPlayback = () => {
+    setIsPlaying(true);
+    setStep('playing');
+  };
+
   const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPlaying(false);
@@ -171,100 +161,61 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
 
     if (!audioSrc) {
-      toast({
-        title: language === 'kn' ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading Audio...",
-        description: language === 'kn' ? "ದಯವಿಟ್ಟು ಒಂದು ಕ್ಷಣ ಕಾಯಿರಿ." : "Please wait a moment while we fetch the mantra.",
-      });
+      toast({ title: t('loading') });
       return;
     }
 
     if (hasMediaError) {
-      toast({
-        variant: "destructive",
-        title: "Audio Unavailable",
-        description: language === 'kn' ? "ಕ್ಷಮಿಸಿ, ಈ ಮಂತ್ರದ ಧ್ವನಿ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ." : "Sorry, this mantra's audio is currently unavailable.",
-      });
+      toast({ variant: "destructive", title: "Audio Unavailable" });
       return;
     }
 
-    // Request notification permission on first play attempt
     await requestPermission();
 
     if (showTracker && beforeScore === 0) {
-      toast({
-        variant: "destructive",
-        title: "Rating Required",
-        description: t('pleaseRateToStart'),
-      });
+      toast({ variant: "destructive", title: t('pleaseRateToStart') });
       return;
     }
 
-    if (isDeveloper) {
-      setIsPlaying(true);
-      setStep('playing');
+    if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd) {
+      startPlayback();
       return;
     }
 
-    // 7-Day Trial Exception
-    if (isWithinTrial) {
-      setIsPlaying(true);
-      setStep('playing');
-      return;
+    if (mantra.tier === 'free') {
+        const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
+        if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
+             toast({ variant: "destructive", title: t('toastDailyLimitTitle'), description: t('toastDailyLimitDescription') });
+             return;
+        }
+        startPlayback();
+        localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
+    } else {
+        // Pivot: Show Ad to unlock for free users
+        setShowAd(true);
     }
+  };
 
-    switch(mantra.tier) {
-        case 'free':
-            const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
-            if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
-                 toast({
-                    variant: "destructive",
-                    title: t('toastDailyLimitTitle'),
-                    description: t('toastDailyLimitDescription'),
-                });
-                return;
-            }
-            
-            setIsPlaying(true);
-            setStep('playing');
-            localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
-            break;
-        
-        case 'paid':
-            if (isPaidUser) {
-              setIsPlaying(true);
-              setStep('playing');
-            } else {
-              onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
-            }
-            break;
-    }
+  const handleAdComplete = () => {
+    setShowAd(false);
+    setIsUnlockedByAd(true);
+    toast({ title: "Unlocked!", description: "Mantra is unlocked for this session. Enjoy!" });
+    startPlayback();
   };
   
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current;
     if (!audio || !e.currentTarget || !isFinite(duration) || duration === 0) return;
-
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const newTime = (clickX / width) * duration;
-    
-    if (isFinite(newTime)) {
-      audio.currentTime = newTime;
-    }
+    const newTime = (clickX / rect.width) * duration;
+    if (isFinite(newTime)) audio.currentTime = newTime;
   };
 
   const handleSaveResult = () => {
-    const historyItem = {
-      date: new Date().toISOString(),
-      before: beforeScore,
-      after: afterScore,
-    };
-    
+    const historyItem = { date: new Date().toISOString(), before: beforeScore, after: afterScore };
     const currentHistory = JSON.parse(localStorage.getItem('painReliefHistory') || '[]');
-    const updatedHistory = [...currentHistory, historyItem];
-    localStorage.setItem('painReliefHistory', JSON.stringify(updatedHistory));
-    
+    localStorage.setItem('painReliefHistory', JSON.stringify([...currentHistory, historyItem]));
     sendLocalNotification('notificationHealingSavedTitle', 'notificationHealingSavedBody');
     setStep('result');
     window.dispatchEvent(new Event('painHistoryUpdated'));
@@ -279,21 +230,20 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && (
-           <Badge variant="default" className="absolute top-4 right-4 z-10">
-            {t('headerUpgrade')}
+        <InterstitialAd open={showAd} onOpenChange={(open) => !open && handleAdComplete()} />
+
+        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && (
+           <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
+            <PlayCircle className="h-3 w-3 mr-1" />
+            Watch Ad to Play
           </Badge>
         )}
-        {mantra.tier === 'paid' && !isPaidUser && isWithinTrial && (
+        {mantra.tier === 'paid' && (isWithinTrial || isUnlockedByAd) && !isPaidUser && (
            <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
             {t('trialAccess')}
           </Badge>
         )}
-        {mantra.tier === 'free' && (
-          <Badge variant="secondary" className="absolute top-4 right-4 z-10">
-            {t('free')}
-          </Badge>
-        )}
+        
         <CardHeader>
           <CardTitle className="font-headline text-2xl text-center">{language === 'kn' ? mantra?.name : mantra?.name_en}</CardTitle>
         </CardHeader>
@@ -325,18 +275,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                 <p className="text-sm font-bold text-primary">{t('rateYourPain')}</p>
                 <span className="text-2xl font-bold text-primary">{beforeScore}</span>
               </div>
-              <Slider
-                value={[beforeScore]}
-                onValueChange={(v) => setBeforeScore(v[0])}
-                max={10}
-                step={1}
-              />
-              {beforeScore === 0 && (
-                <p className="text-xs text-center text-destructive font-medium flex items-center justify-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  {t('pleaseRateToStart')}
-                </p>
-              )}
+              <Slider value={[beforeScore]} onValueChange={(v) => setBeforeScore(v[0])} max={10} step={1} />
               <Button onClick={handlePlayPause} disabled={beforeScore === 0 || hasMediaError} className="w-full h-12 text-lg font-bold">
                 <Play className="mr-2 h-5 w-5" />
                 {t('startHealing')}
@@ -367,12 +306,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                 <p className="text-sm font-bold text-primary">{t('ratePainAfterMantra')}</p>
                 <span className="text-2xl font-bold text-primary">{afterScore}</span>
               </div>
-              <Slider
-                value={[afterScore]}
-                onValueChange={(v) => setAfterScore(v[0])}
-                max={10}
-                step={1}
-              />
+              <Slider value={[afterScore]} onValueChange={(v) => setAfterScore(v[0])} max={10} step={1} />
               <Button onClick={handleSaveResult} className="w-full h-12 text-lg font-bold">
                 <Save className="mr-2 h-5 w-5" />
                 {t('saveHealingResult')}
@@ -386,21 +320,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                 <CheckCircle2 className="h-10 w-10 text-primary" />
               </div>
               <h3 className="text-2xl font-bold text-primary">{t('healingGreatSuccess')}</h3>
-              <p className="text-muted-foreground">
-                {beforeScore - afterScore} {t('pointsReduced')}
-              </p>
-              
-              <div className="mt-4 p-4 rounded-lg bg-accent/10 border border-accent/20 w-full text-left space-y-2">
-                <div className="flex items-center gap-2 text-primary font-bold">
-                  <Sparkles className="h-4 w-4" />
-                  <span>{t('upsellPainReliefTitle')}</span>
-                </div>
-                <ul className="text-sm space-y-1 text-muted-foreground font-medium">
-                  <li>{t('upsellPainReliefItem1')}</li>
-                  <li>{t('upsellPainReliefItem2')}</li>
-                </ul>
-              </div>
-
+              <p className="text-muted-foreground">{beforeScore - afterScore} {t('pointsReduced')}</p>
               <Button variant="outline" onClick={() => setStep('pre_play')} className="mt-4 w-full">
                 {t('closeButton')}
               </Button>
@@ -421,18 +341,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         </CardContent>
         {!showTracker && (
            <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            {(!audioSrc && mantra.assetId) || isBuffering ? (
+            {isBuffering ? (
               <div className="flex flex-col items-center gap-2 animate-pulse">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('loading')}</span>
               </div>
             ) : (
               <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
-                {isPlaying ? (
-                  <Pause className="h-8 w-8" />
-                ) : (
-                  <Play className="h-8 w-8" />
-                )}
+                {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
               </Button>
             )}
           </CardFooter>
