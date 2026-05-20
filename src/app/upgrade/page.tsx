@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Star, ShieldX, PlayCircle } from "lucide-react";
+import { ArrowLeft, Check, Star, PlayCircle } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useEffect, useState } from "react";
 
@@ -29,20 +29,18 @@ export default function UpgradePage() {
   ];
   
   const basicFeatures = [
-    t('featureRemoveAds' as any) || "Remove Banner Ads",
+    t('featureRemoveAds') || "Remove Banner Ads",
     t('featureUnlimitedAudioPlays'),
     t('featureNewMantras'),
   ];
 
   const premiumFeatures = [
-    "No Advertisements (Ad-Free)",
-    t('featureAiChatbot'),
-    t('featurePremiumLibrary'),
-    t('featurePracticalVideos'),
-    t('featureWorkshops'),
+    "No Advertisements (Ad-Free Experience)",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featureMantraChikitse'),
+    "Priority Spiritual Support",
+    "Referral Program Access"
   ];
 
   if (!isMounted) return null;
@@ -127,7 +125,7 @@ export default function UpgradePage() {
               </CardContent>
               <CardFooter className="flex-col gap-4">
                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Includes all Advanced Modules & Private Support.</p>
+                    <p className="text-xs text-muted-foreground">Includes Specialized Therapies & Private Support.</p>
                 </div>
                 <Button asChild className="w-full" size="lg">
                     <Link href={whatsAppUrl} target="_blank">

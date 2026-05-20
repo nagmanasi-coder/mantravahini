@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Download, Check, Star, Sparkles, Bot, Share2 } from 'lucide-react';
+import { Download, Check, Star, Sparkles, Share2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export default function UserManualPage() {
@@ -143,28 +143,17 @@ export default function UserManualPage() {
 
             <SectionTitle>
               <Sparkles className="h-6 w-6" />
-              {t('manualAdvancedModulesTitle')}
+              {t('manualReferralTitle')}
             </SectionTitle>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="flex flex-col">
-                    <CardHeader className="flex-row items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full"><Bot className="h-5 w-5 text-primary" /></div>
-                        <CardTitle className="text-lg">{t('manualAiGuideTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <p className="text-sm text-muted-foreground leading-relaxed">{t('manualAiGuideDescription')}</p>
-                    </CardContent>
-                </Card>
-                <Card className="flex flex-col">
-                    <CardHeader className="flex-row items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full"><Share2 className="h-5 w-5 text-primary" /></div>
-                        <CardTitle className="text-lg">{t('manualReferralTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <p className="text-sm text-muted-foreground leading-relaxed">{t('manualReferralDescription')}</p>
-                    </CardContent>
-                </Card>
-            </div>
+            <Card>
+                <CardHeader className="flex-row items-center gap-3">
+                    <div className="bg-primary/10 p-2 rounded-full"><Share2 className="h-5 w-5 text-primary" /></div>
+                    <CardTitle className="text-lg">{t('manualReferralTitle')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{t('manualReferralDescription')}</p>
+                </CardContent>
+            </Card>
 
             <SectionTitle>
               <Sparkles className="h-6 w-6" />
@@ -189,7 +178,7 @@ export default function UserManualPage() {
                 </Card>
                 <Card className="border-secondary border-2">
                     <CardHeader>
-                        <CardTitle className="text-lg">{t('manualBasicTierTitle' as any) || 'Basic Tier'}</CardTitle>
+                        <CardTitle className="text-lg">{t('manualBasicTierTitle') || 'Basic Tier'}</CardTitle>
                         <CardDescription>{t('basicPlanDescription')}</CardDescription>
                     </CardHeader>
                      <CardContent>
@@ -207,7 +196,7 @@ export default function UserManualPage() {
                     <CardHeader>
                          <CardTitle className="flex items-center gap-2 text-lg">
                             <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                            <span>{t('manualPremiumTierTitle' as any) || 'Premium Tier'}</span>
+                            <span>{t('manualPremiumTierTitle') || 'Premium Tier'}</span>
                             <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                          </CardTitle>
                     </CardHeader>

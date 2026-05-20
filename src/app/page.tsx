@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, MessageSquareQuote, GraduationCap as School, Zap, Clock, PlayCircle } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, Zap, Clock, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -262,42 +262,6 @@ export default function Home() {
               </div>
             </Card>
           )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <Card className={cn("bg-primary/10 border-primary/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.1s" }}>
-              <Link href="/ai-guide">
-                <CardContent className="p-4 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary/20 p-2 rounded-full">
-                      <MessageSquareQuote className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="text-left">
-                      <h2 className="font-headline text-lg font-bold text-primary">{t('talkToAiGuide')}</h2>
-                      <p className="text-[10px] text-muted-foreground">{t('aiGuideSubtitle')}</p>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-primary" />
-                </CardContent>
-              </Link>
-            </Card>
-
-            <Card className={cn("bg-accent/10 border-accent/20 transition-transform duration-300 hover:scale-105 cursor-pointer shadow-md", cardAnimation)} style={{ animationDelay: "0.2s" }}>
-              <Link href="/courses">
-                <CardContent className="p-4 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-accent/20 p-2 rounded-full">
-                      <School className="h-6 w-6 text-accent" />
-                    </div>
-                    <div className="text-left">
-                      <h2 className="font-headline text-lg font-bold text-accent">{t('learningHubTitle')}</h2>
-                      <p className="text-[10px] text-muted-foreground">{t('learningHubSubtitle')}</p>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-accent" />
-                </CardContent>
-              </Link>
-            </Card>
-          </div>
 
           <Card className={cn("mb-8 text-center bg-accent text-accent-foreground transition-transform duration-300 hover:scale-105 hover:shadow-2xl", cardAnimation)} style={{ animationDelay: "0.3s" }}>
             <CardHeader className="py-4">

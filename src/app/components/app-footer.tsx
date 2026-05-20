@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { Info, BookText, MessageSquareQuote, GraduationCap, Video, Music, GraduationCap as School } from "lucide-react";
+import { Info, BookText, MessageSquareQuote, GraduationCap, Video, Music } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { usePathname } from "next/navigation";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
@@ -36,7 +36,7 @@ export function AppFooter() {
     }, []);
 
     // Focused experience: Hide footer on mantra collection pages or focused learning sessions
-    if (pathname?.startsWith('/mantras') || pathname?.includes('/lessons/')) {
+    if (pathname?.startsWith('/mantras')) {
       return null;
     }
 
@@ -53,25 +53,9 @@ export function AppFooter() {
                         <Music className="h-4 w-4" />
                         <span>{t('mantraHubTitle')}</span>
                     </Link>
-                    <Link href="/courses" className="flex items-center space-x-2 text-sm font-bold text-accent transition-colors hover:text-accent/80">
-                        <School className="h-4 w-4" />
-                        <span>{t('learningHubTitle')}</span>
-                    </Link>
-                    <Link href="/ai-guide" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <MessageSquareQuote className="h-4 w-4" />
-                        <span>{t('aiGuideTitle')}</span>
-                    </Link>
-                    <Link href="/premium-library" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <BookText className="h-4 w-4" />
-                        <span>{t('premiumLibrary')}</span>
-                    </Link>
                     <Link href="/practical-videos" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Video className="h-4 w-4" />
                         <span>{t('practicalVideos')}</span>
-                    </Link>
-                    <Link href="/workshops" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <GraduationCap className="h-4 w-4" />
-                        <span>{t('workshops' as any) || 'Workshops'}</span>
                     </Link>
                     <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Info className="h-4 w-4" />
