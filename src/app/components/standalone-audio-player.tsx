@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle, RefreshCw, VolumeX } from "lucide-react";
+import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +85,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   // In-Player Passive Ad States
   const [playerAdKey, setPlayerAdKey] = useState(0);
   const [isPlayerAdRefreshing, setIsPlayerAdRefreshing] = useState(false);
+  const [adSlotType, setAdSlotType] = useState<'video' | 'banner'>('video');
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
@@ -98,28 +99,31 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
   }, [user]);
 
-  // AUTO-REFRESH IN-PLAYER AD: Refresh central ad every 45 seconds during playback
+  // INTELLIGENT AD REFRESH: Rotates between Video and Banner based on availability (simulated)
   useEffect(() => {
     if (isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive) {
       const interval = setInterval(() => {
         setIsPlayerAdRefreshing(true);
         setTimeout(() => {
           setPlayerAdKey(prev => prev + 1);
+          // Intelligent Shift: If "video" is unavailable (simulated 30% failure), show banner
+          setAdSlotType(Math.random() > 0.3 ? 'video' : 'banner');
           setIsPlayerAdRefreshing(false);
-          // Log impression for central ad rotation
+          
           if (firestore && user) {
             addDoc(collection(firestore, "ad_impressions"), {
               userId: user.uid,
               mantraId: mantra.id,
               timestamp: serverTimestamp(),
-              type: "in_player_passive_refresh"
+              type: "in_player_passive_refresh",
+              slot_type: adSlotType
             }).catch(() => {});
           }
         }, 500);
-      }, 45000); // 45 second rotation
+      }, 45000); 
       return () => clearInterval(interval);
     }
-  }, [isPlaying, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user, mantra.id]);
+  }, [isPlaying, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user, mantra.id, adSlotType]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -309,19 +313,34 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                   isPlayerAdRefreshing ? "opacity-0 scale-95" : "opacity-100 scale-100 animate-fade-in"
                 )}
                >
-                 <div className="flex flex-col items-center gap-4 text-white">
-                    <div className="bg-primary/20 p-6 rounded-full animate-pulse border border-primary/40">
-                      <RefreshCw className="h-10 w-10 text-primary" />
-                    </div>
-                    <div className="text-center space-y-1">
-                      <p className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/80">Support Content</p>
-                      <p className="text-sm font-bold opacity-80">Passive Media Stream</p>
-                      <div className="flex items-center justify-center gap-1 text-[8px] opacity-40">
-                        <VolumeX size={8} />
-                        <span>MUTED DURING SHLOKA</span>
+                 {adSlotType === 'video' ? (
+                   <div className="flex flex-col items-center gap-4 text-white">
+                      <div className="bg-primary/20 p-6 rounded-full animate-pulse border border-primary/40">
+                        <RefreshCw className="h-10 w-10 text-primary" />
                       </div>
-                    </div>
-                 </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/80">Premium Video Slot</p>
+                        <p className="text-sm font-bold opacity-80">Passive Media Stream</p>
+                        <div className="flex items-center justify-center gap-1 text-[8px] opacity-40">
+                          <VolumeX size={8} />
+                          <span>MUTED DURING SHLOKA</span>
+                        </div>
+                      </div>
+                   </div>
+                 ) : (
+                   <div className="flex flex-col items-center gap-4 text-white p-6 w-full h-full border-4 border-dashed border-white/20">
+                      <div className="bg-white/10 p-4 rounded-xl">
+                        <ImageIcon className="h-12 w-12 text-white/50" />
+                      </div>
+                      <div className="text-center space-y-2">
+                        <p className="text-xs font-black uppercase tracking-widest text-amber-400">Intelligent Fallback Ad</p>
+                        <div className="bg-white/20 h-12 w-full rounded flex items-center justify-center">
+                           <span className="text-[10px] font-bold">SPONSORED BANNER CREATIVE</span>
+                        </div>
+                        <p className="text-[8px] opacity-40 uppercase">Loading Next Video Content...</p>
+                      </div>
+                   </div>
+                 )}
                  <div className="absolute bottom-2 left-2 flex items-center gap-1">
                     <span className="text-[8px] bg-white/10 px-1 rounded text-white/50">ID: {playerAdKey + 500}</span>
                  </div>
@@ -418,9 +437,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
           {!isPaidUser && !isAdFreePassActive && !isDeveloper && (
             <div className="pt-4 mt-4 border-t border-dashed">
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Passive Support</p>
-              <div className="bg-muted h-12 flex items-center justify-center rounded">
-                <span className="text-xs text-muted-foreground">Advertisement Banner</span>
+              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Passive Support Slot</p>
+              <div className="bg-muted h-12 flex items-center justify-center rounded border border-dashed border-primary/20">
+                <span className="text-xs text-muted-foreground italic">Intelligent Ad Fallback Enabled</span>
               </div>
             </div>
           )}

@@ -63,27 +63,27 @@ export function BannerAd() {
     };
   }, []);
 
-  // Exceptions: Premium/Basic users, or users with active boost
+  // Exceptions: Paid users or users with active boost
   if (userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10">
       <div className="flex items-center gap-1 mb-1">
-        <p className="text-[9px] uppercase tracking-tighter text-muted-foreground">Sponsored Content</p>
-        {isRefreshing && <RefreshCw className="h-2 w-2 animate-spin text-muted-foreground/50" />}
+        <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-black">Sponsored Content</p>
+        {isRefreshing && <RefreshCw className="h-2 w-2 animate-spin text-primary/50" />}
       </div>
       <div 
         key={adKey}
         className={cn(
-          "flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed transition-all duration-500",
+          "flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed border-primary/20 transition-all duration-500",
           isRefreshing ? "opacity-0 scale-95" : "opacity-100 scale-100 animate-fade-in"
         )}
       >
-         <p className="text-xs text-muted-foreground flex items-center gap-2">
+         <p className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
            {t('bannerAd')}
-           <span className="text-[8px] bg-muted-foreground/20 px-1 rounded">ID: {adKey + 100}</span>
+           <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">ID: {adKey + 100}</span>
          </p>
       </div>
     </div>
