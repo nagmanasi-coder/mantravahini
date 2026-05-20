@@ -241,10 +241,11 @@ export const translations = {
     estimatedTokens: "ಅಂದಾಜು ಟೋಕನ್‌ಗಳು",
     estimatedCost: "ಅಂದಾಜು ವೆಚ್ಚ (AI)",
     dailyBoostTitle: "ದೈವಿಕ ಶಕ್ತಿ ವೃದ್ಧಿ (Daily Boost)",
-    dailyBoostDesc: "ಒಂದು ವೀಡಿಯೊ ನೋಡಿ ಮತ್ತು ಮುಂದಿನ ೧ ಗಂಟೆ ಕಾಲ ಜಾಹೀರಾತು ರಹಿತ ಅನುಭವ ಪಡೆಯಿರಿ.",
+    dailyBoostDesc: "೫ ವೀಡಿಯೊಗಳನ್ನು ನೋಡಿ ಮತ್ತು ಮುಂದಿನ ೧ ಗಂಟೆ ಕಾಲ ಜಾಹೀರಾತು ರಹಿತ ಅನುಭವ ಪಡೆಯಿರಿ.",
     watchAdToBoost: "ಶಕ್ತಿ ವೃದ್ಧಿಸಲು ವೀಡಿಯೊ ನೋಡಿ",
     energyBoostActive: "ದೈವಿಕ ಶಕ್ತಿ ಸಕ್ರಿಯವಾಗಿದೆ!",
     minutesLeft: "ನಿಮಿಷಗಳು ಬಾಕಿ",
+    boostProgressStatus: "ಪಗತಿ: {current}/೫",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -484,9 +485,10 @@ export const translations = {
     estimatedTokens: "Estimated Tokens",
     estimatedCost: "Estimated Cost (AI)",
     dailyBoostTitle: "Daily Energy Boost",
-    dailyBoostDesc: "Watch a short video and enjoy an Ad-Free experience for the next 1 hour.",
+    dailyBoostDesc: "Watch 5 short videos and enjoy an Ad-Free experience for the next 1 hour.",
     watchAdToBoost: "Watch Ad for Boost",
     energyBoostActive: "Divine Energy Boost Active!",
     minutesLeft: "minutes remaining",
+    boostProgressStatus: "Progress: {current}/5",
   }
 };

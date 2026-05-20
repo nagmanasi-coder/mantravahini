@@ -36,6 +36,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Progress } from "@/components/ui/progress";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -57,6 +58,7 @@ export default function Home() {
   // Energy Boost State
   const [showBoostAd, setShowBoostAd] = useState(false);
   const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
+  const [boostProgress, setBoostProgress] = useState(0);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -97,20 +99,28 @@ export default function Home() {
 
   const handleBoostAdComplete = () => {
     setShowBoostAd(false);
-    const expiryDate = new Date();
-    expiryDate.setHours(expiryDate.getHours() + 1); // 1 Hour boost
-    localStorage.setItem('ad_free_until', expiryDate.toISOString());
-    setBoostExpiry(expiryDate.toISOString());
+    const newProgress = boostProgress + 1;
+    
+    if (newProgress >= 5) {
+        const expiryDate = new Date();
+        expiryDate.setHours(expiryDate.getHours() + 1); // 1 Hour boost
+        localStorage.setItem('ad_free_until', expiryDate.toISOString());
+        setBoostExpiry(expiryDate.toISOString());
+        setBoostProgress(0);
+        toast({ title: "Boost Active!", description: "You are now Ad-Free for 1 hour. Divine blessings!" });
+    } else {
+        setBoostProgress(newProgress);
+        toast({ title: t('boostProgressStatus').replace('{current}', String(newProgress)), description: "Watch more videos to unlock your 1-hour boost!" });
+    }
 
     if (firestore && user) {
         addDoc(collection(firestore, "ad_impressions"), {
             userId: user.uid,
             timestamp: serverTimestamp(),
-            type: "daily_boost"
+            type: "daily_boost_step",
+            step: newProgress
         }).catch(err => console.warn("Log failed", err));
     }
-
-    toast({ title: "Boost Active!", description: "You are now Ad-Free for 1 hour. Divine blessings!" });
   };
 
   const getTimeRemaining = () => {
@@ -207,31 +217,42 @@ export default function Home() {
             </p>
           </header>
 
-          {/* REVENUE BOOSTER: Energy Boost Card */}
+          {/* REVENUE BOOSTER: Energy Boost Card (5 Steps) */}
           {!isPaidUser && (
             <Card className="mb-8 border-2 border-amber-500 bg-amber-50 shadow-lg animate-pulse overflow-hidden relative">
               <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="bg-amber-500 p-3 rounded-full text-white">
-                    <Zap className="h-6 w-6" />
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="bg-amber-500 p-4 rounded-full text-white shrink-0">
+                    <Zap className="h-8 w-8" />
                   </div>
-                  <div className="flex-1 text-left">
-                    <h3 className="font-bold text-amber-900 text-lg">{t('dailyBoostTitle')}</h3>
+                  <div className="flex-1 text-center sm:text-left space-y-2">
+                    <h3 className="font-bold text-amber-900 text-xl">{t('dailyBoostTitle')}</h3>
                     <p className="text-sm text-amber-800/80">{t('dailyBoostDesc')}</p>
+                    
+                    {!boostExpiry || getTimeRemaining() <= 0 ? (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px] uppercase font-black text-amber-700">
+                           <span>Progress</span>
+                           <span>{boostProgress} / 5 Videos</span>
+                        </div>
+                        <Progress value={(boostProgress / 5) * 100} className="h-2 bg-amber-200" />
+                      </div>
+                    ) : null}
                   </div>
+                  
                   {boostExpiry && getTimeRemaining() > 0 ? (
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                        <p className="text-[10px] uppercase font-bold text-amber-700">{t('energyBoostActive')}</p>
-                       <p className="text-2xl font-black text-amber-600 flex items-center gap-1 justify-end">
-                         <Clock className="h-4 w-4" />
+                       <p className="text-3xl font-black text-amber-600 flex items-center gap-1 justify-end">
+                         <Clock className="h-5 w-5" />
                          {getTimeRemaining()}m
                        </p>
                     </div>
                   ) : (
-                    <Button onClick={() => setShowBoostAd(true)} className="bg-amber-600 hover:bg-amber-700 font-bold shrink-0 shadow-lg">
-                      <PlayCircle className="h-4 w-4 mr-2" />
-                      {t('watchAdToBoost')}
+                    <Button onClick={() => setShowBoostAd(true)} className="bg-amber-600 hover:bg-amber-700 font-bold shrink-0 shadow-lg h-14 px-6">
+                      <PlayCircle className="h-5 w-5 mr-2" />
+                      {boostProgress > 0 ? `Continue (${boostProgress}/5)` : t('watchAdToBoost')}
                     </Button>
                   )}
                 </div>
