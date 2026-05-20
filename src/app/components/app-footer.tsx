@@ -47,8 +47,8 @@ export function AppFooter() {
             "fixed z-40 w-full border-t bg-background transition-all duration-300",
             showAd ? "bottom-16" : "bottom-0"
          )}>
-            <div className="container mx-auto flex h-auto min-h-14 max-w-4xl items-center justify-center p-2">
-                 <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:gap-x-6">
+            <div className="container mx-auto flex flex-col items-center justify-center p-2">
+                 <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:gap-x-6 mb-2">
                     <Link href="/mantras" className="flex items-center space-x-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">
                         <Music className="h-4 w-4" />
                         <span>{t('mantraHubTitle')}</span>
@@ -78,6 +78,13 @@ export function AppFooter() {
                         <span>{t('aboutUs')}</span>
                     </Link>
                 </nav>
+
+                {/* Legal Links for Compliance */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground uppercase font-bold tracking-tighter opacity-60">
+                    <Link href="/privacy-policy" className="hover:text-primary transition-colors">{t('privacyPolicy')}</Link>
+                    <Link href="/terms" className="hover:text-primary transition-colors">{t('termsOfService')}</Link>
+                    <Link href="/refund" className="hover:text-primary transition-colors">{t('refundPolicy')}</Link>
+                </div>
             </div>
         </footer>
     )
