@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp } from "lucide-react";
+import { ThumbsUp, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
+import { cn } from "@/lib/utils";
 
 export function BannerAd() {
   const { t } = useLanguage();
@@ -29,8 +30,12 @@ export function BannerAd() {
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
   
-  // Ad-Free Pass Check (Works for both Guests and Registered Users)
+  // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
+  // Ad Refresh Logic: Simulate AdMob/AdSense banner refresh every 60 seconds
+  const [adKey, setAdKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   useEffect(() => {
     const checkPass = () => {
       const expiry = localStorage.getItem('ad_free_until');
@@ -41,20 +46,45 @@ export function BannerAd() {
       }
     };
     checkPass();
-    const interval = setInterval(checkPass, 10000); // Check more frequently
-    return () => clearInterval(interval);
+    const passInterval = setInterval(checkPass, 10000);
+
+    // REVENUE MAXIMIZATION: Auto-refresh banner every 60 seconds
+    const adRefreshInterval = setInterval(() => {
+      setIsRefreshing(true);
+      setTimeout(() => {
+        setAdKey(prev => prev + 1);
+        setIsRefreshing(false);
+      }, 500); // Brief visual swap
+    }, 60000);
+
+    return () => {
+      clearInterval(passInterval);
+      clearInterval(adRefreshInterval);
+    };
   }, []);
 
-  // Exceptions: Premium or Basic users, or users with an active 1-hour boost
+  // Exceptions: Premium/Basic users, or users with active boost
   if (userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive) {
     return null;
   }
 
   return (
-    <div className="sticky bottom-0 z-10 flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t animate-fade-in">
-      <p className="text-[9px] uppercase tracking-tighter text-muted-foreground mb-1">Sponsored</p>
-      <div className="flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed">
-         <p className="text-xs text-muted-foreground">{t('bannerAd')}</p>
+    <div className="sticky bottom-0 z-10 flex h-16 w-full flex-col items-center justify-center bg-card shadow-lg border-t">
+      <div className="flex items-center gap-1 mb-1">
+        <p className="text-[9px] uppercase tracking-tighter text-muted-foreground">Sponsored Content</p>
+        {isRefreshing && <RefreshCw className="h-2 w-2 animate-spin text-muted-foreground/50" />}
+      </div>
+      <div 
+        key={adKey}
+        className={cn(
+          "flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed transition-all duration-500",
+          isRefreshing ? "opacity-0 scale-95" : "opacity-100 scale-100 animate-fade-in"
+        )}
+      >
+         <p className="text-xs text-muted-foreground flex items-center gap-2">
+           {t('bannerAd')}
+           <span className="text-[8px] bg-muted-foreground/20 px-1 rounded">ID: {adKey + 100}</span>
+         </p>
       </div>
     </div>
   );
