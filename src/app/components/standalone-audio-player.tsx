@@ -3,12 +3,11 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Save, CheckCircle2, AlertCircle, Sparkles, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon } from "lucide-react";
+import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { isToday, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -24,10 +23,9 @@ interface StandaloneAudioPlayerProps {
   mantra: Mantra;
   onUpgradeRequest: (title: string, description: string) => void;
   imageId?: string;
-  showTracker?: boolean;
 }
 
-export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showTracker }: StandaloneAudioPlayerProps) {
+export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: StandaloneAudioPlayerProps) {
   const { language, t } = useLanguage();
   const { toast } = useToast();
   const { user } = useUser();
@@ -67,9 +65,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
   }, [userProfile?.createdAt]);
 
   const [isDeveloper, setIsDeveloper] = useState(false);
-  const [step, setStep] = useState<'initial' | 'pre_play' | 'playing' | 'post_play' | 'result'>(showTracker ? 'pre_play' : 'initial');
-  const [beforeScore, setBeforeScore] = useState(0);
-  const [afterScore, setAfterScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -99,14 +94,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     }
   }, [user]);
 
-  // INTELLIGENT AD REFRESH: Rotates between Video and Banner based on availability (simulated)
+  // INTELLIGENT AD REFRESH
   useEffect(() => {
     if (isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive) {
       const interval = setInterval(() => {
         setIsPlayerAdRefreshing(true);
         setTimeout(() => {
           setPlayerAdKey(prev => prev + 1);
-          // Intelligent Shift: If "video" is unavailable (simulated 30% failure), show banner
           setAdSlotType(Math.random() > 0.3 ? 'video' : 'banner');
           setIsPlayerAdRefreshing(false);
           
@@ -162,10 +156,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             }).catch(e => console.warn(e));
          }
       }
-
-      if (showTracker) {
-        setStep('post_play');
-      }
     };
     const handleError = () => {
       const currentSrc = audio.src;
@@ -186,7 +176,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [audioSrc, mantra.id, showTracker, sendLocalNotification, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user]);
+  }, [audioSrc, mantra.id, sendLocalNotification, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -199,11 +189,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
       audio.pause();
     }
   }, [isPlaying, hasMediaError, audioSrc]);
-
-  const startPlayback = () => {
-    setIsPlaying(true);
-    setStep('playing');
-  };
 
   const handlePlayPause = async () => {
     if (isPlaying) {
@@ -223,13 +208,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
 
     await requestPermission();
 
-    if (showTracker && beforeScore === 0) {
-      toast({ variant: "destructive", title: t('pleaseRateToStart') });
-      return;
-    }
-
     if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
-      startPlayback();
+      setIsPlaying(true);
       return;
     }
 
@@ -241,7 +221,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
              toast({ variant: "destructive", title: t('toastDailyLimitTitle'), description: t('toastDailyLimitDescription') });
              return;
         }
-        startPlayback();
+        setIsPlaying(true);
         localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
     }
   };
@@ -258,7 +238,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
         }).catch(err => console.warn(err));
     }
     toast({ title: "Unlocked!", description: "Mantra is unlocked. Divine listening!" });
-    startPlayback();
+    setIsPlaying(true);
   };
   
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -268,15 +248,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
     const clickX = e.clientX - rect.left;
     const newTime = (clickX / rect.width) * duration;
     if (isFinite(newTime)) audio.currentTime = newTime;
-  };
-
-  const handleSaveResult = () => {
-    const historyItem = { date: new Date().toISOString(), before: beforeScore, after: afterScore };
-    const currentHistory = JSON.parse(localStorage.getItem('painReliefHistory') || '[]');
-    localStorage.setItem('painReliefHistory', JSON.stringify([...currentHistory, historyItem]));
-    sendLocalNotification('notificationHealingSavedTitle', 'notificationHealingSavedBody');
-    setStep('result');
-    window.dispatchEvent(new Event('painHistoryUpdated'));
   };
 
   const formatTime = (time: number) => {
@@ -341,9 +312,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
                       </div>
                    </div>
                  )}
-                 <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                    <span className="text-[8px] bg-white/10 px-1 rounded text-white/50">ID: {playerAdKey + 500}</span>
-                 </div>
                </div>
             ) : mantraImage ? (
               <Image
@@ -365,75 +333,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </div>
           )}
 
-          {showTracker && step === 'pre_play' && (
-            <div className="space-y-4 pt-4 border-t animate-fade-in">
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-bold text-primary">{t('rateYourPain')}</p>
-                <span className="text-2xl font-bold text-primary">{beforeScore}</span>
-              </div>
-              <Slider value={[beforeScore]} onValueChange={(v) => setBeforeScore(v[0])} max={10} step={1} />
-              <Button onClick={handlePlayPause} disabled={beforeScore === 0 || hasMediaError} className="w-full h-12 text-lg font-bold">
-                <Play className="mr-2 h-5 w-5" />
-                {t('startHealing')}
-              </Button>
+          <div className="space-y-2">
+            <div onClick={handleProgressClick} className="cursor-pointer">
+              <Progress value={progress} aria-label="Mantra progress" />
             </div>
-          )}
-
-          {step === 'playing' && (
-            <div className="space-y-2 pt-4 border-t animate-fade-in">
-              <div onClick={handleProgressClick} className="cursor-pointer">
-                <Progress value={progress} aria-label="Mantra progress" />
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-              <div className="flex justify-center">
-                 <Button onClick={handlePlayPause} variant="outline" size="icon" className="h-12 w-12 rounded-full" disabled={isBuffering}>
-                   {isBuffering ? <Loader2 className="animate-spin" /> : isPlaying ? <Pause /> : <Play />}
-                 </Button>
-              </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
-          )}
-
-          {showTracker && step === 'post_play' && (
-            <div className="space-y-4 pt-4 border-t animate-fade-in">
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-bold text-primary">{t('ratePainAfterMantra')}</p>
-                <span className="text-2xl font-bold text-primary">{afterScore}</span>
-              </div>
-              <Slider value={[afterScore]} onValueChange={(v) => setAfterScore(v[0])} max={10} step={1} />
-              <Button onClick={handleSaveResult} className="w-full h-12 text-lg font-bold">
-                <Save className="mr-2 h-5 w-5" />
-                {t('saveHealingResult')}
-              </Button>
-            </div>
-          )}
-
-          {showTracker && step === 'result' && (
-            <div className="flex flex-col items-center justify-center space-y-4 py-8 text-center animate-fade-in">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <CheckCircle2 className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold text-primary">{t('healingGreatSuccess')}</h3>
-              <p className="text-muted-foreground">{beforeScore - afterScore} {t('pointsReduced')}</p>
-              <Button variant="outline" onClick={() => setStep('pre_play')} className="mt-4 w-full">
-                {t('closeButton')}
-              </Button>
-            </div>
-          )}
-
-          {!showTracker && (
-            <div className="space-y-2">
-              <div onClick={handleProgressClick} className="cursor-pointer">
-                <Progress value={progress} aria-label="Mantra progress" />
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
-          )}
+          </div>
 
           {!isPaidUser && !isAdFreePassActive && !isDeveloper && (
             <div className="pt-4 mt-4 border-t border-dashed">
@@ -444,20 +352,18 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, showT
             </div>
           )}
         </CardContent>
-        {!showTracker && (
-           <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-            {isBuffering ? (
-              <div className="flex flex-col items-center gap-2 animate-pulse">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('loading')}</span>
-              </div>
-            ) : (
-              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
-                {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
-              </Button>
-            )}
-          </CardFooter>
-        )}
+        <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
+          {isBuffering ? (
+            <div className="flex flex-col items-center gap-2 animate-pulse">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('loading')}</span>
+            </div>
+          ) : (
+            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
+              {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+            </Button>
+          )}
+        </CardFooter>
       <audio ref={audioRef} src={audioSrc || null} preload="metadata" />
     </Card>
   );

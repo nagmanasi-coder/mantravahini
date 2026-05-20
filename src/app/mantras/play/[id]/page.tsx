@@ -3,7 +3,7 @@
 
 import { use, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
-import { mantras, type Mantra } from '@/lib/mantras';
+import { mantras } from '@/lib/mantras';
 import { StandaloneAudioPlayer } from '@/app/components/standalone-audio-player';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home, Info, Sparkles, HeartPulse, Zap } from 'lucide-react';
@@ -30,7 +30,6 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
   const mantraId = parseInt(id);
   const baseMantra = mantras.find(m => m.id === mantraId);
 
-  // Fetch cloud asset if linked
   const assetRef = useMemoFirebase(() => {
     if (!firestore || !baseMantra?.assetId) return null;
     return doc(firestore, 'assets', baseMantra.assetId);
@@ -38,8 +37,6 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
 
   const { data: assetData } = useDoc<AssetData>(assetRef);
 
-  // Smart Merge: Use verified storage URL from database if available,
-  // otherwise keep the hardcoded fallback URL from mantras.ts
   const mantra = useMemo(() => {
     if (!baseMantra) return null;
     if (assetData?.url && assetData.url.trim() !== '') {
@@ -62,7 +59,6 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
     setShowUpgradeDialog(true);
   };
 
-  // Determine the best image based on the mantra ID or category
   const getMantraImageId = (id: number) => {
     if (id === 1) return 'kali-mantra-infographic';
     if (id === 2) return 'chakshu-mantra-infographic';
@@ -88,7 +84,6 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
         <StandaloneAudioPlayer 
           mantra={mantra} 
           onUpgradeRequest={handleUpgradeRequest}
-          showTracker={mantra.category === 'disease' && mantra.id === 1}
           imageId={getMantraImageId(mantra.id)}
         />
 
@@ -155,10 +150,6 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
               {t('backToMain')}
             </Link>
           </Button>
-        </div>
-
-        <div className="flex justify-center pb-12 opacity-20 text-primary">
-           <Sparkles className="h-12 w-12" />
         </div>
       </div>
     </div>

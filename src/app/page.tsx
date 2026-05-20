@@ -2,12 +2,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, TrendingDown, Zap, Clock, PlayCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -27,15 +27,6 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Progress } from "@/components/ui/progress";
 
 const WhatsAppIcon = () => (
@@ -53,9 +44,8 @@ export default function Home() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
-  const [painHistory, setPainHistory] = useState<any[]>([]);
 
-  // Energy Boost State (Works for Guests & Registered)
+  // Energy Boost State
   const [showBoostAd, setShowBoostAd] = useState(false);
   const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
   const [boostProgress, setBoostProgress] = useState(0);
@@ -70,16 +60,6 @@ export default function Home() {
   const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
 
   useEffect(() => {
-    const loadHistory = () => {
-      const saved = localStorage.getItem('painReliefHistory');
-      if (saved) {
-        setPainHistory(JSON.parse(saved));
-      }
-    };
-    loadHistory();
-    window.addEventListener('painHistoryUpdated', loadHistory);
-    
-    // Check Boost Pass
     const expiry = localStorage.getItem('ad_free_until');
     if (expiry && new Date(expiry) > new Date()) {
       setBoostExpiry(expiry);
@@ -91,10 +71,7 @@ export default function Home() {
       }
     }, 2000);
 
-    return () => {
-      window.removeEventListener('painHistoryUpdated', loadHistory);
-      clearTimeout(reminderTimer);
-    };
+    return () => clearTimeout(reminderTimer);
   }, [checkAndNotifyPainMantraReminder, userProfile]);
 
   const handleBoostAdComplete = () => {
@@ -103,7 +80,7 @@ export default function Home() {
     
     if (newProgress >= 5) {
         const expiryDate = new Date();
-        expiryDate.setHours(expiryDate.getHours() + 1); // 1 Hour boost
+        expiryDate.setHours(expiryDate.getHours() + 1);
         localStorage.setItem('ad_free_until', expiryDate.toISOString());
         setBoostExpiry(expiryDate.toISOString());
         setBoostProgress(0);
@@ -157,7 +134,6 @@ export default function Home() {
         await navigator.share(shareData);
       } catch (error: any) {
         if (error.name === 'AbortError' || error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
-          console.warn("Share suppressed by browser policy.");
           return;
         }
         copyFallback(shareData.url);
@@ -170,16 +146,9 @@ export default function Home() {
   const copyFallback = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
-      toast({
-        title: "Link Copied",
-        description: "App link has been copied to your clipboard.",
-      });
+      toast({ title: "Link Copied", description: "App link has been copied to your clipboard." });
     } catch (error) {
-       toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not share or copy link.",
-      });
+       toast({ variant: "destructive", title: "Error", description: "Could not share or copy link." });
     }
   };
 
@@ -189,20 +158,6 @@ export default function Home() {
     setShowJoinGroupDialog(false);
     router.push('/upgrade');
   };
-
-  const chartConfig = {
-    before: { label: t('chartLegendBefore'), color: "hsl(var(--muted-foreground))" },
-    after: { label: t('chartLegendAfter'), color: "hsl(var(--primary))" },
-  } satisfies ChartConfig;
-
-  const chartData = useMemo(() => {
-    if (painHistory.length === 0) return [];
-    return painHistory.slice(-10).map((h, i) => ({
-      index: i + 1,
-      before: h.before,
-      after: h.after,
-    }));
-  }, [painHistory]);
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -217,7 +172,6 @@ export default function Home() {
             </p>
           </header>
 
-          {/* REVENUE BOOSTER: Energy Boost Card (Visible to all non-paid users, including guests) */}
           {!isPaidUser && (
             <Card className="mb-8 border-2 border-amber-500 bg-amber-50 shadow-lg animate-pulse overflow-hidden relative">
               <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
@@ -284,7 +238,6 @@ export default function Home() {
                         mantra={painMantra} 
                         onUpgradeRequest={handleUpgradeRequest}
                         imageId="kali-mantra-infographic"
-                        showTracker={true}
                       />
                       <Card className="mt-4">
                           <CardContent className="p-4 space-y-2 text-center text-muted-foreground text-xs">
@@ -318,32 +271,6 @@ export default function Home() {
                 )}
             </div>
 
-            {painHistory.length > 0 && (
-              <Card className={cn("mt-4 animate-fade-in", cardAnimation)}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <div className="space-y-1">
-                    <CardTitle className="text-xl flex items-center gap-2">
-                      <TrendingDown className="h-5 w-5 text-primary" />
-                      {t('physicalHealingProgressTitle' as any) || 'Physical Healing Progress'}
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                    <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
-                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                      <XAxis dataKey="index" tickLine={false} axisLine={false} tickMargin={8} />
-                      <YAxis domain={[0, 10]} tickLine={false} axisLine={false} tickMargin={8} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      <Line type="monotone" dataKey="before" stroke="var(--color-before)" strokeWidth={2} dot={{ r: 4 }} />
-                      <Line type="monotone" dataKey="after" stroke="var(--color-after)" strokeWidth={3} dot={{ r: 4 }} />
-                    </LineChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            )}
-            
             <div className={cn(cardAnimation)} style={{ animationDelay: "0.5s" }}>
               <div className={cn("mt-6 text-center", cardAnimation)} style={{ animationDelay: "0.55s" }}>
                 <Button asChild size="lg" className="text-lg font-bold p-8 animate-pulse">
@@ -442,7 +369,6 @@ export default function Home() {
               </Button>
             </CardFooter>
           </Card>
-
         </div>
       </main>
       
