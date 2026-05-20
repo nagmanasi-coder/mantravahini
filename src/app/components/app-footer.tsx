@@ -1,4 +1,3 @@
-
 "use client"
 
 import Link from "next/link";
@@ -52,10 +51,6 @@ export function AppFooter() {
                     <Link href="/mantras" className="flex items-center space-x-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">
                         <Music className="h-4 w-4" />
                         <span>{t('mantraHubTitle')}</span>
-                    </Link>
-                    <Link href="/practical-videos" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        <Video className="h-4 w-4" />
-                        <span>{t('practicalVideos')}</span>
                     </Link>
                     <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Info className="h-4 w-4" />

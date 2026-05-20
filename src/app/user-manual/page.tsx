@@ -7,7 +7,7 @@ import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Download, Check, Star, Sparkles, Share2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/separator';
 
 export default function UserManualPage() {
   const { t } = useLanguage();
