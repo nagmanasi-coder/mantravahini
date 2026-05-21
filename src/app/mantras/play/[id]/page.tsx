@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import { use, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
@@ -17,7 +16,7 @@ import { doc } from 'firebase/firestore';
 interface AssetData {
   id: string;
   url: string;
-  fileType: string;
+  fileType: 'audio' | 'video' | 'document' | 'image';
 }
 
 export default function MantraPlayerPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,12 +29,27 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
   const mantraId = parseInt(id);
   const baseMantra = mantras.find(m => m.id === mantraId);
 
+  // Audio Asset fetch
   const assetRef = useMemoFirebase(() => {
     if (!firestore || !baseMantra?.assetId) return null;
     return doc(firestore, 'assets', baseMantra.assetId);
   }, [firestore, baseMantra?.assetId]);
 
+  // Determine Background Video Asset ID (e.g., "video-kali-healing")
+  const videoAssetId = useMemo(() => {
+     if (mantraId === 1) return 'video-kali-loop';
+     if (mantraId === 2) return 'video-eye-healing-loop';
+     if (mantraId === 9) return 'video-hanuman-healing-loop';
+     return null;
+  }, [mantraId]);
+
+  const videoAssetRef = useMemoFirebase(() => {
+    if (!firestore || !videoAssetId) return null;
+    return doc(firestore, 'assets', videoAssetId);
+  }, [firestore, videoAssetId]);
+
   const { data: assetData } = useDoc<AssetData>(assetRef);
+  const { data: videoAssetData } = useDoc<AssetData>(videoAssetRef);
 
   const mantra = useMemo(() => {
     if (!baseMantra) return null;
@@ -85,6 +99,7 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
           mantra={mantra} 
           onUpgradeRequest={handleUpgradeRequest}
           imageId={getMantraImageId(mantra.id)}
+          videoUrl={videoAssetData?.url}
         />
 
         <div className="grid gap-6">

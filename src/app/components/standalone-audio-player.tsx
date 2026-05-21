@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck } from "lucide-react";
+import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck, Film } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +22,10 @@ interface StandaloneAudioPlayerProps {
   mantra: Mantra;
   onUpgradeRequest: (title: string, description: string) => void;
   imageId?: string;
+  videoUrl?: string; // Support for "in-run" videos
 }
 
-export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: StandaloneAudioPlayerProps) {
+export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, videoUrl }: StandaloneAudioPlayerProps) {
   const { language, t } = useLanguage();
   const { toast } = useToast();
   const { user } = useUser();
@@ -55,6 +56,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
@@ -109,7 +111,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isAdFree, isAdFreePassActive]);
+  }, [isAdFree, isAdFreePassActive, sendLocalNotification]);
 
   const logImpression = (type: string, unitId: string) => {
     if (firestore && user) {
@@ -126,13 +128,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
   useEffect(() => {
     const audio = audioRef.current;
+    const video = videoRef.current;
     if (!audio || hasMediaError || !audioSrc) return;
+    
     if (isPlaying) {
       audio.play().catch(e => {
         if (e.name !== 'AbortError') setIsPlaying(false);
       });
+      if (video) video.play().catch(() => {});
     } else {
       audio.pause();
+      if (video) video.pause();
     }
   }, [isPlaying, hasMediaError, audioSrc]);
 
@@ -156,7 +162,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
-    // ENFORCE REWARDED AD UNLOCK FOR FREE USERS
     setShowStartAd(true);
   };
 
@@ -207,8 +212,18 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="relative aspect-video w-full overflow-hidden rounded-md bg-muted">
-            {mantraImage ? (
+          <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
+            {videoUrl ? (
+              <video 
+                ref={videoRef}
+                src={videoUrl} 
+                className="w-full h-full object-cover" 
+                loop 
+                muted 
+                playsInline
+                poster={mantraImage?.imageUrl}
+              />
+            ) : mantraImage ? (
               <Image
                 src={mantraImage.imageUrl}
                 alt={mantraImage.description}
@@ -218,8 +233,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
               />
             ) : (
               <div className="flex items-center justify-center h-full">
-                <Music2 className="h-12 w-12 text-muted-foreground" />
+                <Music2 className="h-12 w-12 text-muted-foreground/30" />
               </div>
+            )}
+            
+            {videoUrl && (
+               <div className="absolute bottom-2 right-2 bg-black/40 p-1 rounded backdrop-blur-sm">
+                  <Film className="h-3 w-3 text-white/50" />
+               </div>
             )}
           </div>
 
