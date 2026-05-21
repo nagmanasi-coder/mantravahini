@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -126,6 +126,29 @@ export default function Home() {
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
           </header>
+
+          {/* Kalajnana Spotlight */}
+          <Link href="/kalajnana" className={cn("block mb-8", cardAnimation)}>
+             <Card className="border-2 border-primary bg-primary/5 hover:shadow-xl transition-all group overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                   <Compass size={120} />
+                </div>
+                <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
+                   <div className="flex items-center gap-4">
+                      <div className="h-14 w-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                         <Compass className="h-8 w-8 animate-spin-slow" />
+                      </div>
+                      <div>
+                         <h3 className="text-2xl font-headline font-bold text-primary">{t('kalajnanaTitle')}</h3>
+                         <p className="text-sm font-bold text-muted-foreground">{t('dinaBhavishya')}</p>
+                      </div>
+                   </div>
+                   <div className="bg-primary text-white p-2 rounded-full group-hover:translate-x-1 transition-transform">
+                      <ArrowRight size={20} />
+                   </div>
+                </CardContent>
+             </Card>
+          </Link>
 
           {/* Healing Streak & Boost Area */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">

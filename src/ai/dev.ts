@@ -5,3 +5,4 @@ import './flows/workshop-generator-flow';
 import './flows/tts-flow';
 import './flows/lesson-clarification-flow';
 import './flows/image-generation-flow';
+import './flows/kalajnana-flow';

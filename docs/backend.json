@@ -53,6 +53,24 @@
       },
       "required": ["uid", "email"]
     },
+    "DailyHoroscope": {
+      "title": "DailyHoroscope",
+      "type": "object",
+      "description": "Daily AI-generated predictions for 12 Rashi and 12 Lagna.",
+      "properties": {
+        "date": { "type": "string", "description": "Format: YYYY-MM-DD" },
+        "rashiData": { 
+          "type": "object",
+          "description": "Keyed by sign index (0-11)"
+        },
+        "lagnaData": {
+          "type": "object",
+          "description": "Keyed by sign index (0-11)"
+        },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["date", "rashiData", "lagnaData"]
+    },
     "Testimonial": {
       "title": "Testimonial",
       "type": "object",
@@ -93,6 +111,10 @@
     "/mantras/{mantraId}": {
       "schema": { "$ref": "#/backend/entities/Mantra" },
       "description": "Public mantra tracks."
+    },
+    "/daily_horoscope/{dateId}": {
+      "schema": { "$ref": "#/backend/entities/DailyHoroscope" },
+      "description": "Public daily predictions cached to save costs."
     },
     "/assets/{assetId}": {
       "schema": { "$ref": "#/backend/entities/Asset" },
