@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, RefreshCw, Smartphone, Globe, ShieldCheck } from "lucide-react";
+import { ThumbsUp, RefreshCw, Smartphone, Globe, ShieldCheck, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -75,14 +75,38 @@ interface InterstitialAdProps {
 }
 
 export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: InterstitialAdProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
   const unitId = type === 'rewarded' ? ADMOB_CONFIG.units.rewarded.android : ADMOB_CONFIG.units.interstitial.android;
 
   useEffect(() => {
     setIsNative(isNativePlatform());
   }, []);
+
+  // Web Simulation Timer: Auto-close after 5 seconds
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (open && !isNative) {
+      setCountdown(5);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            onOpenChange(false); // Trigger completion
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [open, isNative, onOpenChange]);
+
+  const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,10 +115,10 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           <div className="flex justify-between items-start">
             <div>
               <DialogTitle className="font-headline text-2xl">
-                {type === 'rewarded' ? "Watch to Unlock" : t('adTitle')}
+                {type === 'rewarded' ? readyText : t('adTitle')}
               </DialogTitle>
               <DialogDescription>
-                {type === 'rewarded' ? "Please watch this video to access your mantra." : t('adDescription')}
+                {type === 'rewarded' ? (isNative ? "Loading video ad..." : `Auto-unlocking in ${countdown}s...`) : t('adDescription')}
               </DialogDescription>
             </div>
             {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
@@ -115,18 +139,18 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           <div className="relative z-10 text-center p-6 space-y-6">
              <div className="relative">
                 <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/40 animate-pulse">
-                  <RefreshCw className="h-10 w-10 text-primary" />
+                  {isNative ? <RefreshCw className="h-10 w-10 text-primary" /> : <Loader2 className="h-10 w-10 text-primary animate-spin" />}
                 </div>
                 {type === 'rewarded' && (
                   <div className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg animate-bounce">
-                    +UNLOCK
+                    {isNative ? "+UNLOCK" : `READY IN ${countdown}S`}
                   </div>
                 )}
              </div>
 
              <div className="space-y-2">
                 <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                  {isNative ? "Loading Native AdMob" : "Simulated Ad Stream"}
+                  {isNative ? "Loading Native AdMob" : readyText}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                    <ShieldCheck size={12} className="text-green-500" />
@@ -138,14 +162,22 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           </div>
 
           <div className="absolute bottom-4 left-4 right-4 h-1 bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full bg-primary animate-infinite-scroll w-1/3" />
+            <div 
+              className="h-full bg-primary transition-all duration-1000 ease-linear" 
+              style={{ width: isNative ? "33%" : `${(1 - countdown/5) * 100}%` }}
+            />
           </div>
         </div>
 
         <div className="flex flex-col gap-2 p-6 bg-muted/30">
-          <Button size="lg" onClick={() => onOpenChange(false)} className="h-14 font-black text-lg">
+          <Button 
+            size="lg" 
+            onClick={() => onOpenChange(false)} 
+            className="h-14 font-black text-lg"
+            disabled={!isNative && countdown > 0}
+          >
             <ThumbsUp className="mr-2 h-5 w-5" />
-            {type === 'rewarded' ? "Collect Reward" : t('adAwesomeButton')}
+            {type === 'rewarded' ? (countdown > 0 && !isNative ? `Preparing (${countdown}s)` : "Collect Reward") : t('adAwesomeButton')}
           </Button>
           <p className="text-[10px] text-center text-muted-foreground italic">
             {isNative 
