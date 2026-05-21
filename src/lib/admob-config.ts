@@ -1,30 +1,46 @@
-
 /**
  * ADMOB CONFIGURATION
  * 
- * Replace these placeholder IDs with your real AdMob IDs 
- * from the Google AdMob Console when you are ready to build the APK.
+ * This file centralizes your ad strategy. 
+ * - APK Users: Triggers real AdMob logic (via Capacitor plugin).
+ * - Web Users: Shows simulated ads to maintain the business model.
  */
 export const ADMOB_CONFIG = {
-  // Your AdMob App ID (from App Settings)
-  appId: "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX",
+  // Your AdMob App ID from Google Console
+  appId: "ca-app-pub-3940256099942544~3347511713", // Test App ID
 
-  // Unit IDs (created under 'Ad Units' in AdMob)
+  // Ad Unit IDs (Mapping to real console IDs)
   units: {
     banner: {
-      android: "ca-app-pub-3940256099942544/6300978111", // Test ID
-      ios: "ca-app-pub-3940256099942544/2934735716",    // Test ID
+      android: "ca-app-pub-3940256099942544/6300978111",
+      ios: "ca-app-pub-3940256099942544/2934735716",
     },
     interstitial: {
-      android: "ca-app-pub-3940256099942544/1033173712", // Test ID
-      ios: "ca-app-pub-3940256099942544/4411468910",    // Test ID
+      android: "ca-app-pub-3940256099942544/1033173712",
+      ios: "ca-app-pub-3940256099942544/4411468910",
     },
     rewarded: {
-      android: "ca-app-pub-3940256099942544/5224354917", // Test ID
-      ios: "ca-app-pub-3940256099942544/1712485313",    // Test ID
+      android: "ca-app-pub-3940256099942544/5224354917", // HIGH REVENUE
+      ios: "ca-app-pub-3940256099942544/1712485313",
     }
   },
   
-  // Set to true to show real ads. Set to false for testing.
+  // Strategy: Rewarded Ads are the primary unlock mechanism for Free users
+  rewardedUnlockEnabled: true,
+  
+  // Testing mode (Set to false for production APK builds)
   testing: true
 };
+
+/**
+ * Utility to detect if the app is running in a Native/APK context.
+ */
+export function isNativePlatform(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  // Check for Capacitor (Native Bridge) or PWA Standalone Mode
+  const isCapacitor = !!(window as any).Capacitor;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  
+  return isCapacitor || isStandalone;
+}
