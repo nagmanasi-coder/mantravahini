@@ -39,7 +39,7 @@ export function AppFooter() {
       return null;
     }
 
-    const showAd = !(userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive);
+    const showAd = !(userProfile?.subscriptionTier === 'premium' || isAdFreePassActive);
 
     return (
          <footer className={cn(

@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "Mantra": {
@@ -40,7 +39,7 @@
         "displayName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "photoURL": { "type": "string" },
-        "subscriptionTier": { "type": "string", "enum": ["free", "basic", "premium"] },
+        "subscriptionTier": { "type": "string", "enum": ["free", "premium"] },
         "premiumCycleStartDate": { "type": ["string", "null"], "format": "date-time" },
         "referralCode": { "type": "string" },
         "referredBy": { "type": "string" },

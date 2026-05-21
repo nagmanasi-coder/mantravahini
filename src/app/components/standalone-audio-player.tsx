@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
@@ -37,9 +36,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'basic' | 'premium', createdAt?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'premium', createdAt?: string }>(userDocRef);
   
-  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+  const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
   // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);

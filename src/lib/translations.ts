@@ -157,7 +157,7 @@ export const translations = {
     downloadAsPdf: "PDF ಆಗಿ ದೌನ್‌ಲೋಡ್ ಮಾಡಿ",
     manualIntroTitle: "ಮಂತ್ರವಾಹಿನಿಗೆ ಸುಸ್ವಾಗತ",
     manualIntroContent: "ಈ ಕೈಪಿಡಿಯು ಅಪ್ಲಿಕೇಶನ್‌ನ ವೈಶಿಷ್ಟ್ಯಗಳು, ಚಂದಾದಾರಿಕೆಗಳು ಮತ್ತು ವಿಶೇಷ ಉತ್ಪನ್ನಗಳ ಮೂಲಕ ನಿಮಗೆ ಮಾರ್ಗದರ್ಶನ ನೀಡುತ್ತದೆ.",
-    manualFeaturesTitle: "ಅಪ್ಲಿಕೇಶನ್ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಚಂದಾದಾರಿಕೆಗಳು",
+    manualFeaturesTitle: "ಅಪ್ಲಿಕೇಶನ್ ವೈಷ್ಟ್ಯಗಳು ಮತ್ತು ಚಂದಾದಾರಿಕೆಗಳು",
     manualFreeTierFeatures: "Unlimited Ad-Supported Plays|Mantra Collection Access",
     manualPremiumTierTitle: "Premium Ad-Free (₹499/month)",
     manualPremiumTierFeatures: "No Ads|Offline Access for Mantras|Eligible for Guru Diksha for free*|Access to Premium Divine Group*|Eligible for free Prana Vidya*",

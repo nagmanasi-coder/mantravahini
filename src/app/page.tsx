@@ -54,9 +54,9 @@ export default function Home() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'basic' | 'premium' }>(userDocRef);
+  const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'premium' }>(userDocRef);
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
-  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+  const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
   useEffect(() => {
     const expiry = localStorage.getItem('ad_free_until');
