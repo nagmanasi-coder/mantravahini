@@ -213,17 +213,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
-    if (mantra.tier === 'paid') {
-        setShowStartAd(true);
-    } else {
-        const lastPlayDateStr = localStorage.getItem("painMantraLastPlayed");
-        if (lastPlayDateStr && isToday(new Date(lastPlayDateStr))) {
-             toast({ variant: "destructive", title: t('toastDailyLimitTitle'), description: t('toastDailyLimitDescription') });
-             return;
-        }
-        setIsPlaying(true);
-        localStorage.setItem("painMantraLastPlayed", new Date().toISOString());
-    }
+    // Always require ad unlock for non-premium users
+    setShowStartAd(true);
   };
 
   const handleStartAdComplete = () => {
@@ -264,7 +255,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
         <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
         <InterstitialAd open={showEndAd} onOpenChange={(open) => !open && setShowEndAd(false)} />
 
-        {mantra.tier === 'paid' && !isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
+        {!isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <PlayCircle className="h-3 w-3 mr-1" />
             Watch Ad to Play
