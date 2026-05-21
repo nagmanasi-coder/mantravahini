@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, Shield, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
 import { useState, useEffect } from "react";
@@ -44,7 +44,7 @@ const PranaVidyaPageSkeleton = () => (
 
 export default function PranaVidyaPage() {
   const { t } = useLanguage();
-  const whatsAppMessage = "Hello! I'm interested in Prana Vidya activation. Please help me.";
+  const whatsAppMessage = "Hello! I'm interested in Prana Vidya Level 1: Pranasparshi activation. Please help me.";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const pranaImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
 
@@ -62,7 +62,7 @@ export default function PranaVidyaPage() {
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-          <header className="mb-8 text-center">
+          <header className="mb-8 text-center animate-fade-in">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
               {t('pranaVidyaTitle')}
             </h1>
@@ -72,6 +72,24 @@ export default function PranaVidyaPage() {
           </header>
 
           <div className="space-y-8">
+            {/* Lineage & Authority Card */}
+            <Card className="bg-primary/5 border-primary/20 shadow-md">
+              <CardContent className="p-6 text-center space-y-4">
+                 <div className="flex justify-center gap-4 mb-2">
+                    <Crown className="h-8 w-8 text-amber-500" />
+                    <Flame className="h-8 w-8 text-primary" />
+                 </div>
+                 <p className="font-headline text-xl font-bold text-foreground leading-relaxed">
+                   {t('pranaLineage')}
+                 </p>
+                 <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                    <span>Guru Gorakhnath</span>
+                    <span className="h-1 w-1 rounded-full bg-primary" />
+                    <span>Mahavatar Babaji</span>
+                 </div>
+              </CardContent>
+            </Card>
+
             <Card className="overflow-hidden shadow-xl border-2 border-primary">
               <CardHeader className="bg-primary/5">
                 <CardTitle className="font-headline text-3xl text-center text-primary flex items-center justify-center gap-2">
@@ -92,9 +110,21 @@ export default function PranaVidyaPage() {
                     data-ai-hint={pranaImage.imageHint}
                   />}
                 </div>
-                <div className="text-center text-muted-foreground space-y-4">
-                  <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
-                  <p>{t('pranaInfo2')}</p>
+                
+                {/* Level 1 Details */}
+                <div className="bg-muted/50 p-6 rounded-xl border-2 border-dashed border-primary/20 space-y-4">
+                    <div className="text-center">
+                        <h3 className="font-headline text-2xl font-bold text-primary">{t('pranaLevel1Title')}</h3>
+                        <p className="font-bold text-muted-foreground">{t('pranaLevel1Desc')}</p>
+                    </div>
+                    <div className="flex flex-col items-center gap-2 py-2 border-y border-primary/10">
+                        <p className="text-2xl font-black text-accent">{t('pranaLevel1Fee')}</p>
+                        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Personalized Activation Included</p>
+                    </div>
+                    <div className="text-center text-muted-foreground text-sm space-y-3">
+                        <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
+                        <p>{t('pranaInfo2')}</p>
+                    </div>
                 </div>
 
                 <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-6 text-center shadow-sm">

@@ -178,7 +178,7 @@ export function UserProfile() {
                   UID: {user.uid}
                 </p>
                 <Button variant="ghost" size="icon" className="h-4 w-4" onClick={copyUid}>
-                  {copied ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                  {copied ? <CheckCircle2 size={10} className="text-green-500" /> : <Copy size={10} />}
                 </Button>
               </div>
             )}
