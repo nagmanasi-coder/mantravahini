@@ -46,9 +46,12 @@ service cloud.firestore {
     }
 
     match /testimonials/{id} {
-      // Only registered users can see approved testimonials
-      // Admins can see all
-      allow list, get: if isSignedIn() && (isAdmin() || resource.data.status == 'approved');
+      // Admins can see and list all testimonials regardless of status
+      allow list, get: if isSignedIn() && isAdmin();
+      
+      // Regular users can only list and see approved results
+      // Note: Regular users must include the 'status == approved' filter in their queries
+      allow list, get: if isSignedIn() && resource.data.status == 'approved';
       
       // Only practitioners can create
       allow create: if isPractitioner();
