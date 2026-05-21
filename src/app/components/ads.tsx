@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, RefreshCw, Smartphone, Globe, ShieldCheck, Loader2, Clock } from "lucide-react";
+import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { cn } from "@/lib/utils";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
 
 export function BannerAd() {
@@ -85,29 +84,30 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     setIsNative(isNativePlatform());
   }, []);
 
-  // Web & APK Interaction Timer
+  // Timer logic: purely handles the number decrement
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (open) {
       setCountdown(5);
       timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            // In simulation mode, we auto-close to unlock
-            if (!isNative) {
-                onOpenChange(false); 
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
+        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
     }
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [open, isNative, onOpenChange]);
+  }, [open]);
+
+  // Completion logic: separated to avoid "update while rendering" errors
+  useEffect(() => {
+    if (open && !isNative && countdown === 0) {
+      // Small delay to ensure UI shows "0" before closing
+      const closeTimer = setTimeout(() => {
+        onOpenChange(false);
+      }, 100);
+      return () => clearTimeout(closeTimer);
+    }
+  }, [open, isNative, countdown, onOpenChange]);
 
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
 
@@ -149,7 +149,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
                 <div className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
                   <span className="text-white text-4xl font-black">{countdown}</span>
                 </div>
-                {type === 'rewarded' && (
+                {type === 'rewarded' && countdown > 0 && (
                   <div className="absolute -top-2 -right-4 bg-amber-500 text-white text-[10px] font-black px-3 py-1 rounded shadow-lg animate-bounce uppercase tracking-tighter">
                     {language === 'kn' ? 'ಸಿದ್ಧವಾಗುತ್ತಿದೆ' : 'GETTING READY'}
                   </div>
