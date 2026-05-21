@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
 import { InterstitialAd } from "./ads";
+import { ADMOB_CONFIG } from "@/lib/admob-config";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -43,30 +44,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const isPractitioner = !!userProfile?.isPranaPractitioner;
   const isAdFree = isPaidUser || isPractitioner;
 
-  // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   useEffect(() => {
     const checkPass = () => {
       const expiry = localStorage.getItem('ad_free_until');
-      if (expiry && new Date(expiry) > new Date()) {
-        setIsAdFreePassActive(true);
-      } else {
-        setIsAdFreePassActive(false);
-      }
+      setIsAdFreePassActive(expiry ? new Date(expiry) > new Date() : false);
     };
     checkPass();
     const interval = setInterval(checkPass, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  const isWithinTrial = useMemo(() => {
-    if (!userProfile?.createdAt) return false;
-    const createdDate = new Date(userProfile.createdAt);
-    const daysSinceCreation = differenceInDays(new Date(), createdDate);
-    return daysSinceCreation >= 0 && daysSinceCreation < 7;
-  }, [userProfile?.createdAt]);
-
-  const [isDeveloper, setIsDeveloper] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -74,12 +62,10 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const [hasMediaError, setHasMediaError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   
-  // Ad-Supported Model States
   const [showStartAd, setShowStartAd] = useState(false);
   const [showEndAd, setShowEndAd] = useState(false);
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
 
-  // In-Player Passive Ad States
   const [playerAdKey, setPlayerAdKey] = useState(0);
   const [isPlayerAdRefreshing, setIsPlayerAdRefreshing] = useState(false);
   const [adSlotType, setAdSlotType] = useState<'video' | 'banner'>('video');
@@ -89,16 +75,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
   const audioSrc = mantra.url || null;
 
   useEffect(() => {
-    const isActualDeveloper = user?.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
-    if (typeof window !== 'undefined') {
-      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      setIsDeveloper(isActualDeveloper && devModeEnabled);
-    }
-  }, [user]);
-
-  // INTELLIGENT AD REFRESH
-  useEffect(() => {
-    if (isPlaying && !isAdFree && !isDeveloper && !isAdFreePassActive) {
+    if (isPlaying && !isAdFree && !isAdFreePassActive) {
       const interval = setInterval(() => {
         setIsPlayerAdRefreshing(true);
         setTimeout(() => {
@@ -112,14 +89,15 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
               mantraId: mantra.id,
               timestamp: serverTimestamp(),
               type: "in_player_passive_refresh",
-              slot_type: adSlotType
+              slot_type: adSlotType,
+              unitId: ADMOB_CONFIG.units.banner.android
             }).catch(() => {});
           }
         }, 500);
       }, 45000); 
       return () => clearInterval(interval);
     }
-  }, [isPlaying, isAdFree, isDeveloper, isAdFreePassActive, firestore, user, mantra.id, adSlotType]);
+  }, [isPlaying, isAdFree, isAdFreePassActive, firestore, user, mantra.id, adSlotType]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -134,7 +112,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
       setIsBuffering(false);
-      setHasMediaError(false);
     }
     const setAudioTime = () => {
       const time = audio.currentTime;
@@ -147,15 +124,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       setIsPlaying(false);
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       
-      if (!isAdFree && !isDeveloper && !isAdFreePassActive) {
+      if (!isAdFree && !isAdFreePassActive) {
          setShowEndAd(true);
          if (firestore && user) {
             addDoc(collection(firestore, "ad_impressions"), {
                 userId: user.uid,
                 mantraId: mantra.id,
                 timestamp: serverTimestamp(),
-                type: "post_playback_interstitial"
-            }).catch(e => console.warn(e));
+                type: "post_playback_interstitial",
+                unitId: ADMOB_CONFIG.units.interstitial.android
+            }).catch(() => {});
          }
       }
     };
@@ -178,7 +156,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [audioSrc, mantra.id, sendLocalNotification, isAdFree, isDeveloper, isAdFreePassActive, firestore, user]);
+  }, [audioSrc, mantra.id, sendLocalNotification, isAdFree, isAdFreePassActive, firestore, user]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -198,10 +176,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       return;
     }
 
-    if (!audioSrc) {
-      toast({ title: t('loading') });
-      return;
-    }
+    if (!audioSrc) return;
 
     if (hasMediaError) {
       toast({ variant: "destructive", title: "Audio Unavailable" });
@@ -210,12 +185,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
     await requestPermission();
 
-    if (isDeveloper || isWithinTrial || isAdFree || isUnlockedByAd || isAdFreePassActive) {
+    if (isAdFree || isUnlockedByAd || isAdFreePassActive) {
       setIsPlaying(true);
       return;
     }
 
-    // Always require ad unlock for non-premium/non-practitioner users
     setShowStartAd(true);
   };
 
@@ -227,16 +201,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
             userId: user.uid,
             mantraId: mantra.id,
             timestamp: serverTimestamp(),
-            type: "rewarded_unlock_start"
-        }).catch(err => console.warn(err));
+            type: "rewarded_unlock_start",
+            unitId: ADMOB_CONFIG.units.rewarded.android
+        }).catch(() => {});
     }
-    toast({ title: "Unlocked!", description: "Mantra is unlocked. Divine listening!" });
     setIsPlaying(true);
   };
   
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current;
-    if (!audio || !e.currentTarget || !isFinite(duration) || duration === 0) return;
+    if (!audio || !isFinite(duration) || duration === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const newTime = (clickX / rect.width) * duration;
@@ -250,14 +224,22 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const showPlayerAd = isPlaying && !isAdFree && !isDeveloper && !isAdFreePassActive;
+  const showPlayerAd = isPlaying && !isAdFree && !isAdFreePassActive;
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
-        <InterstitialAd open={showEndAd} onOpenChange={(open) => !open && setShowEndAd(false)} />
+        <InterstitialAd 
+          open={showStartAd} 
+          onOpenChange={(open) => !open && handleStartAdComplete()} 
+          type="rewarded"
+        />
+        <InterstitialAd 
+          open={showEndAd} 
+          onOpenChange={(open) => !open && setShowEndAd(false)} 
+          type="interstitial"
+        />
 
-        {!isAdFree && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
+        {!isAdFree && !isUnlockedByAd && !isAdFreePassActive && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <PlayCircle className="h-3 w-3 mr-1" />
             Watch Ad to Play
@@ -283,8 +265,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
                         <RefreshCw className="h-10 w-10 text-primary" />
                       </div>
                       <div className="text-center space-y-1">
-                        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/80">Premium Video Slot</p>
-                        <p className="text-sm font-bold opacity-80">Passive Media Stream</p>
+                        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/80">Active Media Unit</p>
+                        <p className="text-sm font-bold opacity-80">Passive Revenue Stream</p>
                         <div className="flex items-center justify-center gap-1 text-[8px] opacity-40">
                           <VolumeX size={8} />
                           <span>MUTED DURING SHLOKA</span>
@@ -297,11 +279,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
                         <ImageIcon className="h-12 w-12 text-white/50" />
                       </div>
                       <div className="text-center space-y-2">
-                        <p className="text-xs font-black uppercase tracking-widest text-amber-400">Intelligent Fallback Ad</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-amber-400">Loading Unit: {ADMOB_CONFIG.units.banner.android.slice(-6)}</p>
                         <div className="bg-white/20 h-12 w-full rounded flex items-center justify-center">
-                           <span className="text-[10px] font-bold">SPONSORED BANNER CREATIVE</span>
+                           <span className="text-[10px] font-bold">SPONSORED MEDIA SLOT</span>
                         </div>
-                        <p className="text-[8px] opacity-40 uppercase">Loading Next Video Content...</p>
+                        <p className="text-[8px] opacity-40 uppercase">Refreshing Next Content...</p>
                       </div>
                    </div>
                  )}
@@ -318,7 +300,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
           </div>
 
           {hasMediaError && (
-            <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3 border border-destructive/20 animate-fade-in">
+            <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3 border border-destructive/20">
               <AlertCircle className="h-5 w-5 shrink-0" />
               <p className="text-sm font-bold">
                 {language === 'kn' ? "ಧ್ವನಿ ಕಡತ ಲಭ್ಯವಿಲ್ಲ." : "Mantra audio source is missing."}
@@ -336,11 +318,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
             </div>
           </div>
 
-          {!isAdFree && !isAdFreePassActive && !isDeveloper && (
+          {!isAdFree && !isAdFreePassActive && (
             <div className="pt-4 mt-4 border-t border-dashed">
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Passive Support Slot</p>
+              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Service Support Unit</p>
               <div className="bg-muted h-12 flex items-center justify-center rounded border border-dashed border-primary/20">
-                <span className="text-xs text-muted-foreground italic">Intelligent Ad Fallback Enabled</span>
+                <span className="text-xs text-muted-foreground italic font-mono">AD_UNIT: {ADMOB_CONFIG.units.banner.android.slice(0, 10)}...</span>
               </div>
             </div>
           )}
@@ -352,7 +334,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
               <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('loading')}</span>
             </div>
           ) : (
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" aria-label={isPlaying ? t('pauseButton') : t('playButton')} disabled={hasMediaError}>
+            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" disabled={hasMediaError}>
               {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
             </Button>
           )}

@@ -17,6 +17,7 @@ import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
+import { ADMOB_CONFIG } from "@/lib/admob-config";
 
 export function BannerAd() {
   const { t } = useLanguage();
@@ -30,31 +31,24 @@ export function BannerAd() {
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: string, isPranaPractitioner?: boolean }>(userDocRef);
   
-  // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
-  // Ad Refresh Logic: Simulate AdMob/AdSense banner refresh every 60 seconds
   const [adKey, setAdKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const checkPass = () => {
       const expiry = localStorage.getItem('ad_free_until');
-      if (expiry && new Date(expiry) > new Date()) {
-        setIsAdFreePassActive(true);
-      } else {
-        setIsAdFreePassActive(false);
-      }
+      setIsAdFreePassActive(expiry ? new Date(expiry) > new Date() : false);
     };
     checkPass();
     const passInterval = setInterval(checkPass, 10000);
 
-    // REVENUE MAXIMIZATION: Auto-refresh banner every 60 seconds
     const adRefreshInterval = setInterval(() => {
       setIsRefreshing(true);
       setTimeout(() => {
         setAdKey(prev => prev + 1);
         setIsRefreshing(false);
-      }, 500); // Brief visual swap
+      }, 500);
     }, 60000);
 
     return () => {
@@ -63,7 +57,6 @@ export function BannerAd() {
     };
   }, []);
 
-  // Exceptions: Paid users, Practitioners, or users with active boost
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
 
@@ -86,7 +79,9 @@ export function BannerAd() {
       >
          <p className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
            {t('bannerAd')}
-           <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">ID: {adKey + 100}</span>
+           <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">
+             UID: {ADMOB_CONFIG.units.banner.android.slice(-4)}
+           </span>
          </p>
       </div>
     </div>
@@ -96,36 +91,51 @@ export function BannerAd() {
 interface InterstitialAdProps {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
+  type?: 'interstitial' | 'rewarded';
 }
 
-export function InterstitialAd({ open, onOpenChange }: InterstitialAdProps) {
+export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: InterstitialAdProps) {
   const { t } = useLanguage();
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
+  const unitId = type === 'rewarded' ? ADMOB_CONFIG.units.rewarded.android : ADMOB_CONFIG.units.interstitial.android;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="font-headline text-2xl">{t('adTitle')}</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">
+            {type === 'rewarded' ? "Watch to Unlock" : t('adTitle')}
+          </DialogTitle>
           <DialogDescription>
-            {t('adDescription')}
+            {type === 'rewarded' ? "Watch this short ad to unlock your sacred mantra." : t('adDescription')}
           </DialogDescription>
         </DialogHeader>
-        <div className="relative mt-4 h-96 w-full">
+        <div className="relative mt-4 h-96 w-full bg-black flex flex-col items-center justify-center">
           {adImage && (
              <Image
                 src={adImage.imageUrl}
                 alt={adImage.description}
                 fill
-                className="object-cover"
+                className="opacity-40 object-cover"
                 data-ai-hint={adImage.imageHint}
               />
           )}
+          <div className="relative z-10 text-center p-6 space-y-4">
+             <div className="h-16 w-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/40 animate-pulse">
+                <RefreshCw className="h-8 w-8 text-primary" />
+             </div>
+             <p className="text-white font-bold text-xs uppercase tracking-[0.3em]">
+               Loading {type === 'rewarded' ? 'Rewarded' : 'Direct'} Ad
+             </p>
+             <p className="text-white/40 text-[10px] font-mono">
+               UNIT: {unitId.slice(0, 15)}...
+             </p>
+          </div>
         </div>
         <div className="flex flex-col gap-2 p-6">
-          <Button size="lg" onClick={() => onOpenChange(false)}>
+          <Button size="lg" onClick={() => onOpenChange(false)} className="h-14 font-black">
             <ThumbsUp className="mr-2 h-4 w-4" />
-            {t('adAwesomeButton')}
+            {type === 'rewarded' ? "Reward Earned" : t('adAwesomeButton')}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
             {t('adCloseButton')}
