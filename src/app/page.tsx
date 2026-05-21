@@ -58,11 +58,11 @@ export default function Home() {
   const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'premium' }>(userDocRef);
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
-  // Testimonials Logic
+  // Testimonials Logic - Restricted to registered users only
   const testimonialsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, 'testimonials'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
-  }, [firestore]);
+  }, [firestore, user]);
   const { data: testimonials } = useCollection(testimonialsQuery);
 
   useEffect(() => {
@@ -183,7 +183,7 @@ export default function Home() {
             </div>
 
             {/* Testimonials / Public Result Display */}
-            {testimonials && testimonials.length > 0 && (
+            {user && testimonials && testimonials.length > 0 && (
               <section className={cn("space-y-6 pt-8", cardAnimation)}>
                 <div className="text-center">
                   <h2 className="text-2xl font-headline font-bold text-primary">{t('divineResultsTitle')}</h2>
@@ -245,7 +245,7 @@ export default function Home() {
                <div className="text-center">
                 <p className="text-sm">{t('contactForServices')}</p>
                 <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
-              </div>
+               </div>
               <Button asChild><Link href={whatsAppUrl} target="_blank"><WhatsAppIcon />{t('contactOnWhatsApp')}</Link></Button>
             </CardFooter>
           </Card>

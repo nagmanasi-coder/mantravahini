@@ -46,10 +46,9 @@ service cloud.firestore {
     }
 
     match /testimonials/{id} {
-      // Allow public to list and get approved testimonials
-      // Allow admins to see all
-      allow list: if isAdmin() || resource.data.status == 'approved';
-      allow get: if isAdmin() || resource.data.status == 'approved';
+      // Only registered users can see approved testimonials
+      // Admins can see all
+      allow list, get: if isSignedIn() && (isAdmin() || resource.data.status == 'approved');
       
       // Only practitioners can create
       allow create: if isPractitioner();
