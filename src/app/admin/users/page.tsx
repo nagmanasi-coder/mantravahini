@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -15,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle } from 'lucide-react';
+import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from '@/context/language-context';
 
 interface UserProfile {
   uid: string;
@@ -53,6 +55,7 @@ interface UserProfile {
   email: string;
   photoURL: string;
   subscriptionTier?: 'free' | 'premium';
+  isPranaPractitioner?: boolean;
   premiumCycleStartDate?: string | null;
   referredBy?: string;
   referralCommissionRate?: number;
@@ -72,6 +75,7 @@ const addUserFormSchema = z.object({
 
 export default function AdminUsersPage() {
   const { user, isUserLoading: userLoading } = useUser();
+  const { t } = useLanguage();
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -146,6 +150,16 @@ export default function AdminUsersPage() {
     toast({ title: "Tier Updated", description: `${userToUpdate.displayName} is now on the ${tier} plan.` });
   };
   
+  const handlePractitionerChange = (userToUpdate: UserProfile, isPractitioner: boolean) => {
+    if (!firestore) return;
+    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
+    updateDocumentNonBlocking(userDocRef, { isPranaPractitioner: isPractitioner });
+    toast({ 
+      title: isPractitioner ? "Practitioner Assigned" : "Role Removed", 
+      description: `${userToUpdate.displayName} is ${isPractitioner ? 'now' : 'no longer'} a Prana Vidya practitioner.` 
+    });
+  };
+
   const handleCommissionChange = (userToUpdate: UserProfile, commissionRate: number) => {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
@@ -204,6 +218,7 @@ export default function AdminUsersPage() {
       ...values,
       photoURL: '',
       subscriptionTier: 'free',
+      isPranaPractitioner: false,
       createdAt: new Date().toISOString(),
     };
 
@@ -292,8 +307,8 @@ export default function AdminUsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Referrer</TableHead>
+                <TableHead>Admin</TableHead>
+                <TableHead>Practitioner</TableHead>
                 <TableHead>Comm %</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Action</TableHead>
@@ -332,8 +347,14 @@ export default function AdminUsersPage() {
                         {isAdmin ? <ShieldCheck className="h-4 w-4 text-green-500" /> : <ShieldAlert className="h-4 w-4 text-muted-foreground/30" />}
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs truncate max-w-[100px]">
-                      {u.referredBy ? getUserDisplayName(u.referredBy) : '-'}
+                    <TableCell>
+                       <div className="flex items-center gap-2">
+                        <Switch 
+                          checked={!!u.isPranaPractitioner} 
+                          onCheckedChange={(val) => handlePractitionerChange(u, val)}
+                        />
+                        {u.isPranaPractitioner ? <Heart className="h-4 w-4 text-primary fill-primary" /> : <Heart className="h-4 w-4 text-muted-foreground/30" />}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Input

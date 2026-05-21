@@ -28,7 +28,7 @@ export function BannerAd() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ subscriptionTier?: string, isPranaPractitioner?: boolean }>(userDocRef);
   
   // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
@@ -63,8 +63,11 @@ export function BannerAd() {
     };
   }, []);
 
-  // Exceptions: Paid users or users with active boost
-  if (userProfile?.subscriptionTier === 'premium' || userProfile?.subscriptionTier === 'basic' || isAdFreePassActive) {
+  // Exceptions: Paid users, Practitioners, or users with active boost
+  const isPremium = userProfile?.subscriptionTier === 'premium';
+  const isPractitioner = !!userProfile?.isPranaPractitioner;
+
+  if (isPremium || isPractitioner || isAdFreePassActive) {
     return null;
   }
 

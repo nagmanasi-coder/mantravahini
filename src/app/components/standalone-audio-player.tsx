@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
@@ -36,9 +37,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'premium', createdAt?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'premium', isPranaPractitioner?: boolean, createdAt?: string }>(userDocRef);
   
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
+  const isPractitioner = !!userProfile?.isPranaPractitioner;
+  const isAdFree = isPaidUser || isPractitioner;
 
   // Ad-Free Pass Check
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
@@ -95,7 +98,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
   // INTELLIGENT AD REFRESH
   useEffect(() => {
-    if (isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive) {
+    if (isPlaying && !isAdFree && !isDeveloper && !isAdFreePassActive) {
       const interval = setInterval(() => {
         setIsPlayerAdRefreshing(true);
         setTimeout(() => {
@@ -116,7 +119,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       }, 45000); 
       return () => clearInterval(interval);
     }
-  }, [isPlaying, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user, mantra.id, adSlotType]);
+  }, [isPlaying, isAdFree, isDeveloper, isAdFreePassActive, firestore, user, mantra.id, adSlotType]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -144,7 +147,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       setIsPlaying(false);
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       
-      if (!isPaidUser && !isDeveloper && !isAdFreePassActive) {
+      if (!isAdFree && !isDeveloper && !isAdFreePassActive) {
          setShowEndAd(true);
          if (firestore && user) {
             addDoc(collection(firestore, "ad_impressions"), {
@@ -175,7 +178,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [audioSrc, mantra.id, sendLocalNotification, isPaidUser, isDeveloper, isAdFreePassActive, firestore, user]);
+  }, [audioSrc, mantra.id, sendLocalNotification, isAdFree, isDeveloper, isAdFreePassActive, firestore, user]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -207,12 +210,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
 
     await requestPermission();
 
-    if (isDeveloper || isWithinTrial || isPaidUser || isUnlockedByAd || isAdFreePassActive) {
+    if (isDeveloper || isWithinTrial || isAdFree || isUnlockedByAd || isAdFreePassActive) {
       setIsPlaying(true);
       return;
     }
 
-    // Always require ad unlock for non-premium users
+    // Always require ad unlock for non-premium/non-practitioner users
     setShowStartAd(true);
   };
 
@@ -247,14 +250,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const showPlayerAd = isPlaying && !isPaidUser && !isDeveloper && !isAdFreePassActive;
+  const showPlayerAd = isPlaying && !isAdFree && !isDeveloper && !isAdFreePassActive;
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
         <InterstitialAd open={showStartAd} onOpenChange={(open) => !open && handleStartAdComplete()} />
         <InterstitialAd open={showEndAd} onOpenChange={(open) => !open && setShowEndAd(false)} />
 
-        {!isPaidUser && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
+        {!isAdFree && !isWithinTrial && !isUnlockedByAd && !isAdFreePassActive && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <PlayCircle className="h-3 w-3 mr-1" />
             Watch Ad to Play
@@ -333,7 +336,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId }: Sta
             </div>
           </div>
 
-          {!isPaidUser && !isAdFreePassActive && !isDeveloper && (
+          {!isAdFree && !isAdFreePassActive && !isDeveloper && (
             <div className="pt-4 mt-4 border-t border-dashed">
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest mb-2">Passive Support Slot</p>
               <div className="bg-muted h-12 flex items-center justify-center rounded border border-dashed border-primary/20">

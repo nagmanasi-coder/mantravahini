@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -13,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Clock } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Clock, Heart } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
@@ -22,6 +23,7 @@ import { differenceInDays } from 'date-fns';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'premium';
+  isPranaPractitioner?: boolean;
   premiumCycleStartDate?: string | null;
   referralCode?: string;
   createdAt?: string;
@@ -95,10 +97,11 @@ export function UserProfile() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
+  const isPractitioner = !!userProfile?.isPranaPractitioner;
   const remainingDays = isPaidUser ? calculateRemainingDays(userProfile?.premiumCycleStartDate) : null;
 
   const trialInfo = useMemo(() => {
-    if (!userProfile?.createdAt || isPaidUser) return null;
+    if (!userProfile?.createdAt || isPaidUser || isPractitioner) return null;
     const createdDate = new Date(userProfile.createdAt);
     const daysSinceCreation = differenceInDays(new Date(), createdDate);
     const daysLeft = 7 - daysSinceCreation;
@@ -107,7 +110,7 @@ export function UserProfile() {
       return { active: true, daysLeft };
     }
     return { active: false, daysLeft: 0 };
-  }, [userProfile?.createdAt, isPaidUser]);
+  }, [userProfile?.createdAt, isPaidUser, isPractitioner]);
 
   if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
@@ -125,7 +128,7 @@ export function UserProfile() {
   }
 
   const isActualDeveloper = user.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-  const showReferralInMenu = isPremiumUser || (isActualDeveloper && isDevMode);
+  const showReferralInMenu = isPremiumUser || isPractitioner || (isActualDeveloper && isDevMode);
 
   return (
     <DropdownMenu>
@@ -149,14 +152,23 @@ export function UserProfile() {
               {user.email}
             </p>
             
-            {isPaidUser && remainingDays !== null && (
+            {isPractitioner && (
+              <div className="mt-2 p-2 rounded bg-primary/10 border border-primary/20 flex items-center gap-2">
+                 <Heart size={12} className="text-primary fill-primary" />
+                 <p className="text-[10px] font-black text-primary uppercase tracking-tighter">
+                   {t('practitionerRole')}
+                 </p>
+              </div>
+            )}
+
+            {isPaidUser && remainingDays !== null && !isPractitioner && (
                 <p className="text-xs font-semibold leading-none text-primary/80 mt-1 flex items-center gap-1">
                   <CheckCircle2 size={10} className="text-green-500" />
                   {remainingDays} days left
                 </p>
             )}
 
-            {!isPaidUser && trialInfo && (
+            {!isPaidUser && !isPractitioner && trialInfo && (
               <div className="mt-2 p-2 rounded bg-primary/5 border border-primary/10">
                 {trialInfo.active ? (
                   <p className="text-[10px] font-bold text-primary flex items-center gap-1 uppercase tracking-tight">

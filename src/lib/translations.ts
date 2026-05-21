@@ -1,3 +1,4 @@
+
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -68,7 +69,7 @@ export const translations = {
     pranaLevel3Desc: "ತುರ್ತು ಮತ್ತು ಜೀವಕ್ಕೆ ಅಪಾಯಕಾರಿಯಾದ ಪರಿಸ್ಥಿತಿಗಳ ನಿರ್ವಹಣೆ",
     pranaLevel3Fee: "ತರಬೇತಿ ಶುಲ್ಕ: ಉಚಿತ (Free)",
     hanumanPranaTherapyTitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆ",
-    hanumanPranaTherapyDescription: "ಅಕಾಲಿಕ ಮರಣದಿಂದ ರಕ್ಷಣೆ ಮತ್ತು ಜೀವನ ಶಕ್ತಿಯ ಸಂವರ್ಧನೆ.",
+    hanumanPranaTherapyDescription: "ಅಕಾಲಿಕ ಮರಣದಿಂದ ರಕ್ಷಣೆ and ಜೀವನ ಶಕ್ತಿಯ ಸಂವರ್ಧನೆ.",
     pranaInfo1: "ಹನುಮಂತನು 'ಪ್ರಾಣದೇವರು' ಎಂದು ಪ್ರಸಿದ್ಧ. ಈ ವಿದ್ಯಾ ವಿಧಾನವು ನಿಮ್ಮ ದೇಹದ ಪ್ರಾಣ ಶಕ್ತಿಯನ್ನು ಜಾಗೃತಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
     pranaInfo2: "ಇದು ಕೇವಲ ರೋಗಗಳನ್ನು ಗುಣಪಡಿಸುವುದಲ್ಲದೆ, ಜೀವನಕ್ಕೆ ಒಂದು ದೈವಿಕ ಕವಚವನ್ನು ನೀಡುತ್ತದೆ.",
     hanumanDoha: "ನಾಸೈ ರೋಗ್ ಹರೇ ಸಬ್ ಪೀರಾ, ಜಬತ್ ನಿರಂತರ್ ಹನುಮತ್ ಬೀರಾ",
@@ -206,6 +207,8 @@ export const translations = {
     privacyPolicy: "ಗೌಪ್ಯತಾ ನೀತಿ",
     termsOfService: "ಬಳಕೆಯ ನಿಯಮಗಳು",
     refundPolicy: "ಮರುಪಾವತಿ ನೀತಿ",
+    practitionerRole: "ಪ್ರಾಣವಿದ್ಯಾ ಸಾಧಕ (Practitioner)",
+    isPractitionerLabel: "Practitioner Status",
   },
   en: {
     appTitle: "Mantravaahini",
@@ -411,5 +414,7 @@ export const translations = {
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     refundPolicy: "Refund Policy",
+    practitionerRole: "Prana Vidya Practitioner",
+    isPractitionerLabel: "Practitioner Status",
   }
 };
