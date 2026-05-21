@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -44,7 +45,7 @@ const PranaVidyaPageSkeleton = () => (
 
 export default function PranaVidyaPage() {
   const { t } = useLanguage();
-  const whatsAppMessage = "Hello! I'm interested in Prana Vidya Level 1: Pranasparshi activation. Please help me.";
+  const whatsAppMessage = "Hello! I'm interested in Prana Vidya activation. Please help me.";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const pranaImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
 
@@ -57,6 +58,33 @@ export default function PranaVidyaPage() {
   if (!isMounted) {
     return <PranaVidyaPageSkeleton />;
   }
+
+  const levels = [
+    {
+        id: 1,
+        title: t('pranaLevel1Title'),
+        description: t('pranaLevel1Desc'),
+        fee: t('pranaLevel1Fee'),
+        icon: <Zap className="h-6 w-6 text-primary" />,
+        color: "border-primary/50",
+    },
+    {
+        id: 2,
+        title: t('pranaLevel2Title'),
+        description: t('pranaLevel2Desc'),
+        fee: t('pranaLevel2Fee'),
+        icon: <HeartPulse className="h-6 w-6 text-green-500" />,
+        color: "border-green-500/50",
+    },
+    {
+        id: 3,
+        title: t('pranaLevel3Title'),
+        description: t('pranaLevel3Desc'),
+        fee: t('pranaLevel3Fee'),
+        icon: <AlertCircle className="h-6 w-6 text-red-500" />,
+        color: "border-red-500/50",
+    }
+  ];
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -86,6 +114,8 @@ export default function PranaVidyaPage() {
                     <span>Guru Gorakhnath</span>
                     <span className="h-1 w-1 rounded-full bg-primary" />
                     <span>Mahavatar Babaji</span>
+                    <span className="h-1 w-1 rounded-full bg-primary" />
+                    <span>Lord Hanuman</span>
                  </div>
               </CardContent>
             </Card>
@@ -111,20 +141,25 @@ export default function PranaVidyaPage() {
                   />}
                 </div>
                 
-                {/* Level 1 Details */}
-                <div className="bg-muted/50 p-6 rounded-xl border-2 border-dashed border-primary/20 space-y-4">
-                    <div className="text-center">
-                        <h3 className="font-headline text-2xl font-bold text-primary">{t('pranaLevel1Title')}</h3>
-                        <p className="font-bold text-muted-foreground">{t('pranaLevel1Desc')}</p>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 py-2 border-y border-primary/10">
-                        <p className="text-2xl font-black text-accent">{t('pranaLevel1Fee')}</p>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Personalized Activation Included</p>
-                    </div>
-                    <div className="text-center text-muted-foreground text-sm space-y-3">
-                        <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
-                        <p>{t('pranaInfo2')}</p>
-                    </div>
+                {/* Levels Grid */}
+                <div className="grid gap-4">
+                    {levels.map((level) => (
+                        <div key={level.id} className={cn("bg-muted/50 p-4 rounded-xl border-2 border-dashed space-y-2", level.color)}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    {level.icon}
+                                    <h3 className="font-headline text-xl font-bold text-primary">{level.title}</h3>
+                                </div>
+                            </div>
+                            <p className="font-bold text-muted-foreground text-sm">{level.description}</p>
+                            <p className="text-sm font-black text-accent">{level.fee}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="text-center text-muted-foreground text-sm space-y-3 pt-4">
+                    <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
+                    <p>{t('pranaInfo2')}</p>
                 </div>
 
                 <div className="my-6 rounded-md border border-primary/20 bg-primary/5 p-6 text-center shadow-sm">
