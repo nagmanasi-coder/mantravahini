@@ -1,10 +1,6 @@
 
 /**
  * FIRESTORE SECURITY RULES
- * 
- * Core Philosophy:
- * This ruleset implements a public-read, admin-write model for content (mantras/assets/courses)
- * and a private-read/write model for user data.
  */
 
 rules_version = '2';
@@ -17,29 +13,20 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    /**
-     * @description Checks if the user is the primary developer.
-     */
     function isDeveloper() {
       return isSignedIn() && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
 
-    /**
-     * @description Checks if the user is an admin via DBAC or Developer status.
-     */
     function isAdmin() {
       return isDeveloper() || (isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)));
     }
 
-    function isExistingAdmin() {
-      return isAdmin() && resource != null;
+    function isPractitioner() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isPranaPractitioner == true;
     }
 
     // --- COLLECTION RULES ---
 
-    /**
-     * @description Rules for the 'users' collection.
-     */
     match /users/{userId} {
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
@@ -48,40 +35,33 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    /**
-     * @description Public Content: mantras, assets, courses, modules, lessons.
-     * These are publicly readable to all users, but only writable by admins.
-     */
     match /mantras/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
+
     match /assets/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
-    match /courses/{id} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /modules/{id} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /lessons/{id} {
-      allow read: if true;
-      allow write: if isAdmin();
+
+    match /testimonials/{id} {
+      // Public can see approved ones, admins can see all
+      allow read: if isAdmin() || (resource != null && resource.data.status == 'approved');
+      allow create: if isPractitioner();
+      allow update, delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for 'admin_users'. Role management.
-     */
     match /admin_users/{userId} {
       allow get: if isSignedIn();
       allow list: if isAdmin();
       allow create: if isAdmin();
-      allow update: if isExistingAdmin();
-      allow delete: if isExistingAdmin();
+      allow update, delete: if isAdmin() && resource != null;
+    }
+
+    match /ad_impressions/{id} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
     }
   }
 }

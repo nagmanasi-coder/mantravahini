@@ -49,6 +49,21 @@
       },
       "required": ["uid", "email"]
     },
+    "Testimonial": {
+      "title": "Testimonial",
+      "type": "object",
+      "description": "Practitioner submitted results and testimonials.",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "content": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "content", "status", "createdAt"]
+    },
     "AdImpression": {
       "title": "AdImpression",
       "type": "object",
@@ -78,6 +93,10 @@
     "/assets/{assetId}": {
       "schema": { "$ref": "#/backend/entities/Asset" },
       "description": "Public media metadata."
+    },
+    "/testimonials/{id}": {
+      "schema": { "$ref": "#/backend/entities/Testimonial" },
+      "description": "Practitioner healing results."
     },
     "/ad_impressions/{impressionId}": {
       "schema": { "$ref": "#/backend/entities/AdImpression" },

@@ -4,74 +4,113 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle, Video, Users, Home as HomeIcon } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle, Video, Users, Home as HomeIcon, Upload, Loader2, MessageSquareQuote, CheckCircle2 } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, useMemoFirebase, useStorage } from '@/firebase';
+import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
 );
 
-const PranaVidyaPageSkeleton = () => (
-  <div className="relative flex min-h-screen flex-col">
-    <main className="flex-1">
-      <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-8 text-center">
-          <Skeleton className="h-10 w-3/4 mx-auto" />
-          <Skeleton className="h-5 w-1/2 mx-auto mt-4" />
-        </header>
-        <div className="space-y-8">
-          <Card className="overflow-hidden shadow-xl">
-            <CardHeader>
-              <Skeleton className="h-8 w-2/3 mx-auto" />
-              <Skeleton className="h-4 w-full mt-2" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="aspect-video w-full max-w-md mx-auto" />
-              <div className="space-y-2 pt-4">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </main>
-  </div>
-);
-
-
 export default function PranaVidyaPage() {
   const { t } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
+  const { toast } = useToast();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ isPranaPractitioner?: boolean }>(userDocRef);
+  const { data: userProfile } = useDoc<{ isPranaPractitioner?: boolean, displayName?: string }>(userDocRef);
   const isPractitioner = !!userProfile?.isPranaPractitioner;
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [testimonialContent, setTestimonialContent] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const whatsAppMessage = "Hello! I'm interested in Prana Vidya activation. Please help me.";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const pranaImage = PlaceHolderImages.find(img => img.id === 'hanuman-healing');
 
   const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) { // 50MB Limit
+        toast({ variant: "destructive", title: "File too large", description: "Please upload a video smaller than 50MB." });
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
 
-  if (!isMounted) {
-    return <PranaVidyaPageSkeleton />;
-  }
+  const handleSubmitTestimonial = async () => {
+    if (!firestore || !storage || !user) return;
+    if (!testimonialContent.trim()) {
+      toast({ variant: "destructive", title: "Empty content", description: "Please write your experience." });
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      let videoUrl = '';
+
+      if (selectedFile) {
+        const fileRef = ref(storage, `testimonials/${user.uid}_${Date.now()}`);
+        const uploadTask = uploadBytesResumable(fileRef, selectedFile);
+
+        await new Promise<void>((resolve, reject) => {
+          uploadTask.on('state_changed', 
+            (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+            (error) => reject(error),
+            async () => {
+              videoUrl = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve();
+            }
+          );
+        });
+      }
+
+      await addDoc(collection(firestore, 'testimonials'), {
+        userId: user.uid,
+        userName: userProfile?.displayName || 'Anonymous Healer',
+        content: testimonialContent,
+        videoUrl,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      });
+
+      toast({ title: t('submissionSuccess') });
+      setTestimonialContent('');
+      setSelectedFile(null);
+      setIsUploadDialogOpen(false);
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Submission Failed", description: error.message });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (!isMounted) return null;
 
   const levels = [
     {
@@ -114,7 +153,6 @@ export default function PranaVidyaPage() {
           </header>
 
           <div className="space-y-8">
-            {/* Lineage & Authority Card */}
             <Card className="bg-primary/5 border-primary/20 shadow-md">
               <CardContent className="p-6 text-center space-y-4">
                  <div className="flex justify-center gap-4 mb-2">
@@ -155,7 +193,6 @@ export default function PranaVidyaPage() {
                   />}
                 </div>
                 
-                {/* Levels Grid */}
                 <div className="grid gap-4">
                     {levels.map((level) => (
                         <div key={level.id} className={cn("bg-muted/50 p-4 rounded-xl border-2 border-dashed space-y-2", level.color)}>
@@ -171,7 +208,6 @@ export default function PranaVidyaPage() {
                     ))}
                 </div>
 
-                {/* Level 1 Practitioner Guide Section - ONLY VISIBLE TO LOGGED IN PRACTITIONERS */}
                 {isPractitioner && (
                   <Card className="border-accent border-2 bg-accent/5 shadow-inner animate-fade-in">
                       <CardHeader className="pb-2">
@@ -185,25 +221,72 @@ export default function PranaVidyaPage() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                           <div className="space-y-3">
-                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20">
                                   <HomeIcon className="h-5 w-5 text-accent shrink-0 mt-1" />
-                                  <p className="text-sm font-bold text-foreground leading-relaxed">
-                                      {t('practitionerStep1')}
-                                  </p>
+                                  <p className="text-sm font-bold text-foreground leading-relaxed">{t('practitionerStep1')}</p>
                               </div>
-                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20">
                                   <Users className="h-5 w-5 text-accent shrink-0 mt-1" />
-                                  <p className="text-sm font-bold text-foreground leading-relaxed">
-                                      {t('practitionerStep2')}
-                                  </p>
+                                  <p className="text-sm font-bold text-foreground leading-relaxed">{t('practitionerStep2')}</p>
                               </div>
-                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                              <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20">
                                   <Video className="h-5 w-5 text-accent shrink-0 mt-1" />
-                                  <p className="text-sm font-bold text-foreground leading-relaxed">
-                                      {t('practitionerStep3')}
-                                  </p>
+                                  <p className="text-sm font-bold text-foreground leading-relaxed">{t('practitionerStep3')}</p>
                               </div>
                           </div>
+
+                          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full bg-accent hover:bg-accent/90 h-12 font-bold mt-4">
+                                <Upload className="mr-2 h-4 w-4" />
+                                {t('submitTestimonial')}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>{t('submitTestimonial')}</DialogTitle>
+                                <DialogDescription>Share your healing result with the divine community.</DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <Textarea 
+                                  placeholder={t('testimonialContentPlaceholder')}
+                                  value={testimonialContent}
+                                  onChange={(e) => setTestimonialContent(e.target.value)}
+                                  className="min-h-[120px]"
+                                />
+                                <div 
+                                  className={cn(
+                                    "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+                                    selectedFile ? "border-green-500 bg-green-50" : "border-muted-foreground/20 hover:bg-muted"
+                                  )}
+                                  onClick={() => fileInputRef.current?.click()}
+                                >
+                                  {isUploading ? (
+                                    <div className="space-y-2">
+                                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                                      <p className="text-xs font-bold">Uploading {Math.round(uploadProgress)}%</p>
+                                    </div>
+                                  ) : selectedFile ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                      <CheckCircle2 className="text-green-500 h-5 w-5" />
+                                      <p className="text-sm font-bold truncate max-w-[200px]">{selectedFile.name}</p>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-1">
+                                      <Video className="h-8 w-8 mx-auto text-muted-foreground" />
+                                      <p className="text-sm font-bold">{t('uploadVideo')}</p>
+                                    </div>
+                                  )}
+                                  <input type="file" ref={fileInputRef} className="hidden" accept="video/mp4" onChange={handleFileChange} disabled={isUploading} />
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button onClick={handleSubmitTestimonial} disabled={isUploading || !testimonialContent.trim()} className="w-full h-12">
+                                  {isUploading ? t('submitting') : t('submitTestimonial')}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                       </CardContent>
                       <CardFooter className="bg-accent/10 py-3 text-center justify-center">
                           <p className="text-[10px] uppercase font-black tracking-widest text-accent italic">Divine Healer's Mission</p>
@@ -254,10 +337,6 @@ export default function PranaVidyaPage() {
                         </CardContent>
                     </Card>
                 </div>
-
-                <div className="text-center pt-4">
-                   <p className="font-black text-primary animate-pulse">{t('pranaContact')}</p>
-                </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-6">
                 <div className="text-center">
@@ -276,13 +355,9 @@ export default function PranaVidyaPage() {
           
           <div className="mt-12 text-center">
             <Button asChild variant="ghost" className="text-muted-foreground">
-                <Link href="/">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    {t('backButton')}
-                </Link>
+                <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" />{t('backButton')}</Link>
             </Button>
           </div>
-
         </div>
       </main>
     </div>
