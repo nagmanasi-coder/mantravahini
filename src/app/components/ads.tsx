@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, RefreshCw, Smartphone, Globe, ShieldCheck, Loader2 } from "lucide-react";
+import { ThumbsUp, RefreshCw, Smartphone, Globe, ShieldCheck, Loader2, Clock } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -85,16 +85,19 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     setIsNative(isNativePlatform());
   }, []);
 
-  // Web Simulation Timer: Auto-close after 5 seconds
+  // Web & APK Interaction Timer
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (open && !isNative) {
+    if (open) {
       setCountdown(5);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            onOpenChange(false); // Trigger completion
+            // In simulation mode, we auto-close to unlock
+            if (!isNative) {
+                onOpenChange(false); 
+            }
             return 0;
           }
           return prev - 1;
@@ -114,11 +117,16 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
         <DialogHeader className="p-6 pb-4">
           <div className="flex justify-between items-start">
             <div>
-              <DialogTitle className="font-headline text-2xl">
+              <DialogTitle className="font-headline text-2xl text-primary">
                 {type === 'rewarded' ? readyText : t('adTitle')}
               </DialogTitle>
-              <DialogDescription>
-                {type === 'rewarded' ? (isNative ? "Loading video ad..." : `Auto-unlocking in ${countdown}s...`) : t('adDescription')}
+              <DialogDescription className="font-bold flex items-center gap-2">
+                {type === 'rewarded' ? (
+                  <>
+                    <Clock size={14} className="text-amber-500 animate-spin" />
+                    {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
+                  </>
+                ) : t('adDescription')}
               </DialogDescription>
             </div>
             {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
@@ -138,19 +146,19 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           
           <div className="relative z-10 text-center p-6 space-y-6">
              <div className="relative">
-                <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/40 animate-pulse">
-                  {isNative ? <RefreshCw className="h-10 w-10 text-primary" /> : <Loader2 className="h-10 w-10 text-primary animate-spin" />}
+                <div className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
+                  <span className="text-white text-4xl font-black">{countdown}</span>
                 </div>
                 {type === 'rewarded' && (
-                  <div className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg animate-bounce">
-                    {isNative ? "+UNLOCK" : `READY IN ${countdown}S`}
+                  <div className="absolute -top-2 -right-4 bg-amber-500 text-white text-[10px] font-black px-3 py-1 rounded shadow-lg animate-bounce uppercase tracking-tighter">
+                    {language === 'kn' ? 'ಸಿದ್ಧವಾಗುತ್ತಿದೆ' : 'GETTING READY'}
                   </div>
                 )}
              </div>
 
              <div className="space-y-2">
                 <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                  {isNative ? "Loading Native AdMob" : readyText}
+                  {isNative ? "Native APK Ad Load" : readyText}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                    <ShieldCheck size={12} className="text-green-500" />
@@ -161,10 +169,10 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
              </div>
           </div>
 
-          <div className="absolute bottom-4 left-4 right-4 h-1 bg-white/20 rounded-full overflow-hidden">
+          <div className="absolute bottom-4 left-4 right-4 h-1.5 bg-white/20 rounded-full overflow-hidden">
             <div 
               className="h-full bg-primary transition-all duration-1000 ease-linear" 
-              style={{ width: isNative ? "33%" : `${(1 - countdown/5) * 100}%` }}
+              style={{ width: `${(1 - countdown/5) * 100}%` }}
             />
           </div>
         </div>
@@ -173,16 +181,16 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           <Button 
             size="lg" 
             onClick={() => onOpenChange(false)} 
-            className="h-14 font-black text-lg"
-            disabled={!isNative && countdown > 0}
+            className="h-14 font-black text-lg shadow-xl"
+            disabled={countdown > 0}
           >
             <ThumbsUp className="mr-2 h-5 w-5" />
-            {type === 'rewarded' ? (countdown > 0 && !isNative ? `Preparing (${countdown}s)` : "Collect Reward") : t('adAwesomeButton')}
+            {countdown > 0 ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) : (type === 'rewarded' ? "Collect Reward" : t('adAwesomeButton'))}
           </Button>
-          <p className="text-[10px] text-center text-muted-foreground italic">
+          <p className="text-[10px] text-center text-muted-foreground italic font-bold">
             {isNative 
-              ? "Real AdMob impressions are being tracked for your APK." 
-              : "This simulation demonstrates the user journey for your web traffic."}
+              ? "Official AdMob integration for your ABB/APK bundle." 
+              : "Web simulation for your PWA users."}
           </p>
         </div>
       </DialogContent>
