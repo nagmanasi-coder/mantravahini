@@ -13,11 +13,12 @@ import { BannerAd } from './components/ads';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
-  description: 'A serene mantra playback experience',
+  description: 'A serene mantra playback and spiritual healing experience',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
+    title: 'Mantravaahini',
   },
 };
 
@@ -26,7 +27,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: 'cover', // Critical for Capacitor/APK safe areas
+  viewportFit: 'cover', // Critical for notched phones and full-screen APK experience
 };
 
 export default function RootLayout({
@@ -44,13 +45,15 @@ export default function RootLayout({
         <meta name="theme-color" content="#f97316" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased bg-background text-foreground">
         <LanguageProvider>
           <FirebaseClientProvider>
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
-            <div className="pb-32 min-h-screen">{children}</div>
+            <div className="pb-32 min-h-screen">
+              {children}
+            </div>
             <AppFooter />
             <BannerAd />
             <Toaster />

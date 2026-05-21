@@ -4,11 +4,11 @@
 import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShieldCheck, Lock, Eye, Database } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Lock, Eye, Database, Info } from "lucide-react";
 import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8 pb-32">
@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
           <ShieldCheck className="h-8 w-8" />
           {t('privacyPolicy')}
         </h1>
-        <p className="text-muted-foreground mt-2">Last updated: May 2024</p>
+        <p className="text-muted-foreground mt-2">Last updated: June 2024</p>
       </header>
 
       <div className="space-y-8 animate-fade-in">
@@ -35,10 +35,10 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <p>
-              Mantravaahini ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information when you use our mobile application and related services.
+              Mantravaahini ("we", "our", or "us") is dedicated to your spiritual privacy. This policy explains how we collect, use, and safeguard your data when using the Mantravaahini APK or web services.
             </p>
             <p>
-              By using Mantravaahini, you agree to the collection and use of information in accordance with this policy.
+              By using our services, you consent to the data practices described in this statement.
             </p>
           </CardContent>
         </Card>
@@ -47,21 +47,21 @@ export default function PrivacyPolicyPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5 text-primary" />
-              2. Information We Collect
+              2. Data Collection
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <div>
-              <h3 className="font-bold text-foreground">A. Account Information</h3>
-              <p>When you register, we collect your email address and display name via Firebase Authentication.</p>
+              <h3 className="font-bold text-foreground">A. Authentication</h3>
+              <p>We use Firebase Auth to manage your account via email or anonymous tokens.</p>
             </div>
             <div>
-              <h3 className="font-bold text-foreground">B. Usage Data</h3>
-              <p>We may collect information on how the service is accessed and used, such as shloka playback history and ad interaction events.</p>
+              <h3 className="font-bold text-foreground">B. Spiritual Progress</h3>
+              <p>We store your practitioner level and referral lineage to manage the Prana Vidya hierarchy.</p>
             </div>
             <div>
-              <h3 className="font-bold text-foreground">C. Device & Ad IDs</h3>
-              <p>Since we use Google AdMob, we may collect mobile advertising identifiers (like Android Advertising ID) to provide personalized advertisements.</p>
+              <h3 className="font-bold text-foreground">C. Advertisements</h3>
+              <p>We use Google AdMob. AdMob may collect and use personal data for its own purposes. You can find more about AdMob's data collection in the Google Privacy Policy.</p>
             </div>
           </CardContent>
         </Card>
@@ -70,41 +70,27 @@ export default function PrivacyPolicyPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary" />
-              3. Use of Information
+              3. Security
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
-            <ul className="list-disc pl-5 space-y-2">
-              <li>To provide and maintain our spiritual healing service.</li>
-              <li>To notify you about changes to our app.</li>
-              <li>To provide advertisements that support our free tier.</li>
-              <li>To track subscription status and ad-free pass eligibility.</li>
-              <li>To monitor the usage of our shlokas and mantras.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>4. Third-Party Services</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm leading-relaxed">
-            <p>We use third-party service providers to monitor and analyze the use of our service:</p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li><strong>Firebase (Google):</strong> Used for database management, user authentication, and storage.</li>
-              <li><strong>Google AdMob:</strong> Used to display advertisements to free users.</li>
-            </ul>
+            <p>
+              We implement industry-standard Firestore Security Rules to ensure only you can access your private profile data. Testimonials and videos submitted by practitioners are stored in secure Firebase Storage buckets.
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-primary/5">
           <CardHeader>
-            <CardTitle>5. Contact Us</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary" />
+              4. Contact
+            </CardTitle>
           </CardHeader>
           <CardContent className="text-sm">
-            <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-            <p className="font-bold mt-2">Email: contact@mantravaahini.com</p>
-            <p className="font-bold">Phone: +91 7022070287</p>
+            <p>For data removal requests or privacy queries, contact our nodal officer:</p>
+            <p className="font-bold mt-2">Email: privacy@mantravaahini.com</p>
+            <p className="font-bold">WhatsApp: +91 7022070287</p>
           </CardContent>
         </Card>
       </div>

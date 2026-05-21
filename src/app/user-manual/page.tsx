@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef } from 'react';
@@ -6,7 +7,7 @@ import html2canvas from 'html2canvas';
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Download, Check, Star, Sparkles, Share2, Zap } from 'lucide-react';
+import { Download, Check, Star, Sparkles, Share2, Zap, Shield, Trophy } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export default function UserManualPage() {
@@ -55,8 +56,22 @@ export default function UserManualPage() {
     pdf.save('mantravaahini-user-manual.pdf');
   };
 
-  const freeFeatures = t('manualFreeTierFeatures').split('|');
-  const premiumFeatures = t('manualPremiumTierFeatures').split('|');
+  const freeFeatures = [
+    t('featureAdSupportedAccess'),
+    t('featurePainMantra'),
+    "Unlimited Ad-Supported Plays",
+    "Public Spiritual Guidance"
+  ];
+
+  const premiumFeatures = [
+    "No Advertisements (Ad-Free Experience)",
+    t('featureDivineGroup'),
+    t('featureGuruDiksha'),
+    t('featurePranaVidya'),
+    "Priority Spiritual Support",
+    "Referral Program Access",
+    "Offline Mode Support"
+  ];
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2 className="font-headline text-2xl text-primary mt-12 mb-6 pt-6 border-t flex items-center gap-2">
@@ -65,9 +80,8 @@ export default function UserManualPage() {
   );
   
   const FirstSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="font-headline text-2xl text-primary mb-4">{children}</h2>
+    <h2 className="font-headline text-3xl text-primary mb-4">{children}</h2>
   );
-
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -83,139 +97,148 @@ export default function UserManualPage() {
           </header>
 
           <div className="flex justify-center mb-8">
-            <Button onClick={handleDownloadPdf}>
-              <Download className="mr-2 h-4 w-4" />
+            <Button onClick={handleDownloadPdf} className="h-12 px-6">
+              <Download className="mr-2 h-5 w-5" />
               {t('downloadAsPdf')}
             </Button>
           </div>
 
-          <div ref={manualContentRef} className="bg-background p-4 md:p-6 rounded-xl border shadow-sm">
+          <div ref={manualContentRef} className="bg-background p-4 md:p-8 rounded-xl border shadow-sm space-y-12">
             
-            <FirstSectionTitle>{t('manualIntroTitle')}</FirstSectionTitle>
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground leading-relaxed">{t('manualIntroContent')}</p>
-              </CardContent>
-            </Card>
-
-            <SectionTitle>
-              <Sparkles className="h-6 w-6" />
-              {t('manualFreeMantrasTitle')}
-            </SectionTitle>
-             <div className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle className="text-lg">{t('manualKaliMantraTitle')}</CardTitle></CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground leading-relaxed">{t('manualKaliMantraDescription')}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                     <CardHeader><CardTitle className="text-lg">{t('manualChakshuMantraTitle')}</CardTitle></CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground leading-relaxed">{t('manualChakshuMantraDescription')}</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <SectionTitle>
-              <Zap className="h-6 w-6" />
-              {t('manualTherapiesTitle')}
-            </SectionTitle>
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle className="text-lg">{t('hanumanPranaTherapyTitle')}</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className="text-muted-foreground leading-relaxed">{t('untimelyDeathContent')}</p>
-                        <p className="text-sm font-medium text-foreground">{t('pranaInfo1')}</p>
-                        <p className="text-sm font-bold text-primary">{t('pranaTherapyFeeDetails')}</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <SectionTitle>
-              <Sparkles className="h-6 w-6" />
-              {t('manualReferralTitle')}
-            </SectionTitle>
-            <Card>
-                <CardHeader className="flex-row items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-full"><Share2 className="h-5 w-5 text-primary" /></div>
-                    <CardTitle className="text-lg">{t('manualReferralTitle')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{t('manualReferralDescription')}</p>
+            <section>
+              <FirstSectionTitle>{t('manualIntroTitle')}</FirstSectionTitle>
+              <Card className="bg-muted/5">
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground leading-relaxed italic">{t('manualIntroContent')}</p>
                 </CardContent>
-            </Card>
+              </Card>
+            </section>
 
-            <SectionTitle>
-              <Sparkles className="h-6 w-6" />
-              {t('manualFeaturesTitle')}
-            </SectionTitle>
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">{t('freePlanTitle')}</CardTitle>
-                        <CardDescription>{t('freePlanDescription')}</CardDescription>
-                    </CardHeader>
-                     <CardContent>
-                        <ul className="space-y-2">
-                            {freeFeatures.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                    <Check className="h-5 w-5 text-muted-foreground/50 mt-1 flex-shrink-0" />
-                                    <span className="text-muted-foreground text-sm">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-                 <Card className="border-primary border-2 shadow-md bg-primary/5">
-                    <CardHeader>
-                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                            <span>{t('premiumPlanTitle')}</span>
-                            <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                         </CardTitle>
-                         <CardDescription>{t('premiumPlanDescription')}</CardDescription>
-                    </CardHeader>
-                     <CardContent>
-                        <ul className="space-y-2">
-                            {premiumFeatures.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                    <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                                    <span className="font-bold text-foreground text-sm">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-            </div>
+            <section>
+              <SectionTitle>
+                <Sparkles className="h-6 w-6" />
+                {t('manualFreeMantrasTitle')}
+              </SectionTitle>
+               <div className="space-y-6">
+                  <Card>
+                      <CardHeader><CardTitle className="text-lg text-primary">{t('manualKaliMantraTitle')}</CardTitle></CardHeader>
+                      <CardContent>
+                          <p className="text-muted-foreground leading-relaxed">{t('manualKaliMantraDescription')}</p>
+                          <div className="mt-4 p-3 bg-primary/5 rounded border border-primary/10 text-xs font-bold text-primary">
+                            Method: Use clean water, play near speaker, drink twice daily.
+                          </div>
+                      </CardContent>
+                  </Card>
+                  <Card>
+                       <CardHeader><CardTitle className="text-lg text-primary">{t('manualChakshuMantraTitle')}</CardTitle></CardHeader>
+                      <CardContent>
+                          <p className="text-muted-foreground leading-relaxed">{t('manualChakshuMantraDescription')}</p>
+                          <div className="mt-4 p-3 bg-primary/5 rounded border border-primary/10 text-xs font-bold text-primary">
+                            Method: Use headphones, listen twice daily.
+                          </div>
+                      </CardContent>
+                  </Card>
+              </div>
+            </section>
 
-            <SectionTitle>
-              <Sparkles className="h-6 w-6" />
-              {t('manualSpecialProductsTitle')}
-            </SectionTitle>
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle className="text-lg">{t('akshayaCashBoxName')}</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className="text-muted-foreground leading-relaxed">{t('akshayaCashBoxDescription')}</p>
-                        <p className="text-sm font-medium text-foreground">{t('akshayaCashBoxInfo')}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                     <CardHeader><CardTitle className="text-lg">{t('medicatedOilsTitle')}</CardTitle></CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground leading-relaxed">{t('medicatedOilsDescription')}</p>
-                        <Separator className="my-4" />
-                        <ul className="space-y-4">
-                            <li><strong className="font-semibold text-foreground">{t('hairOilName')}:</strong> <span className="text-muted-foreground text-sm block mt-1">{t('hairOilDescription')}</span></li>
-                            <li><strong className="font-semibold text-foreground">{t('painOilName')}:</strong> <span className="text-muted-foreground text-sm block mt-1">{t('painOilDescription')}</span></li>
-                            <li><strong className="font-semibold text-foreground">{t('skinOilName')}:</strong> <span className="text-muted-foreground text-sm block mt-1">{t('skinOilDescription')}</span></li>
-                            <li><strong className="font-semibold text-foreground">{t('sexualWellnessOilName')}:</strong> <span className="text-muted-foreground text-sm block mt-1">{t('sexualWellnessOilDescription')}</span></li>
-                        </ul>
-                    </CardContent>
-                </Card>
-            </div>
+            <section>
+              <SectionTitle>
+                <Zap className="h-6 w-6" />
+                {t('pranaVidyaTitle')}
+              </SectionTitle>
+              <div className="space-y-6">
+                  <Card className="border-2 border-primary/20">
+                      <CardHeader>
+                        <CardTitle className="text-xl flex items-center gap-2">
+                          <Trophy className="h-5 w-5 text-amber-500" />
+                          Spiritual Progression (3 Levels)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                          <div className="space-y-2">
+                            <h4 className="font-bold text-primary">{t('pranaLevel1Title')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('pranaLevel1Desc')}. Requires activation fee.</p>
+                          </div>
+                          <Separator />
+                          <div className="space-y-2">
+                            <h4 className="font-bold text-primary">{t('pranaLevel2Title')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('pranaLevel2Desc')}. Automated promotion after 10 recruits.</p>
+                          </div>
+                          <Separator />
+                          <div className="space-y-2">
+                            <h4 className="font-bold text-primary">{t('pranaLevel3Title')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('pranaLevel3Desc')}. Master level for emergency healing.</p>
+                          </div>
+                      </CardContent>
+                  </Card>
+              </div>
+            </section>
 
+            <section>
+              <SectionTitle>
+                <Shield className="h-6 w-6" />
+                {t('manualFeaturesTitle')}
+              </SectionTitle>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                      <CardHeader>
+                          <CardTitle className="text-lg">{t('freePlanTitle')}</CardTitle>
+                          <CardDescription>{t('freePlanDescription')}</CardDescription>
+                      </CardHeader>
+                       <CardContent>
+                          <ul className="space-y-2">
+                              {freeFeatures.map((feature, index) => (
+                                  <li key={index} className="flex items-start gap-2">
+                                      <Check className="h-4 w-4 text-muted-foreground/50 mt-1 flex-shrink-0" />
+                                      <span className="text-muted-foreground text-xs">{feature}</span>
+                                  </li>
+                              ))}
+                          </ul>
+                      </CardContent>
+                  </Card>
+                   <Card className="border-primary border-2 shadow-md bg-primary/5">
+                      <CardHeader>
+                           <CardTitle className="flex items-center gap-2 text-lg">
+                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                              <span>{t('premiumPlanTitle')}</span>
+                           </CardTitle>
+                           <CardDescription>{t('premiumPlanDescription')}</CardDescription>
+                      </CardHeader>
+                       <CardContent>
+                          <ul className="space-y-2">
+                              {premiumFeatures.map((feature, index) => (
+                                  <li key={index} className="flex items-start gap-2">
+                                      <Check className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                                      <span className="font-bold text-foreground text-xs">{feature}</span>
+                                  </li>
+                              ))}
+                          </ul>
+                      </CardContent>
+                  </Card>
+              </div>
+            </section>
+
+            <section>
+              <SectionTitle>
+                <Share2 className="h-6 w-6" />
+                {t('manualReferralTitle')}
+              </SectionTitle>
+              <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground leading-relaxed">{t('manualReferralDescription')}</p>
+                      <ul className="mt-4 space-y-2 text-xs font-bold text-foreground">
+                        <li>1. Share unique link from profile.</li>
+                        <li>2. New members join your spiritual group.</li>
+                        <li>3. Earn commissions on Premium upgrades.</li>
+                      </ul>
+                  </CardContent>
+              </Card>
+            </section>
+            
+            <footer className="text-center pt-12 border-t">
+              <p className="text-xs text-muted-foreground uppercase tracking-widest font-black">Mantravaahini Official Manual</p>
+              <p className="text-[10px] text-muted-foreground mt-1">© 2024 Hosadurga Spiritual Center</p>
+            </footer>
           </div>
         </div>
       </main>

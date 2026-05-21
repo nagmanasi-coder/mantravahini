@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 import pwa from '@ducanh2912/next-pwa';
 
@@ -8,14 +9,14 @@ const withPWA = pwa({
   skipWaiting: true,
   runtimeCaching: [
     {
-      // Explicitly cache audio files for offline playback
+      // Explicitly cache audio files for offline playback in APK
       urlPattern: /.*\.(?:mp3|wav|ogg)$/,
       handler: 'CacheFirst',
       options: {
         cacheName: 'mantra-audio-cache',
         expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60 * 24 * 60, // 60 Days
         },
         cacheableResponse: {
           statuses: [0, 200],
