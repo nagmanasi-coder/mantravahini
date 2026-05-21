@@ -7,7 +7,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft } from 'lucide-react';
+import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, UserCheck } from 'lucide-react';
 import { generateDailyKalajnana } from '@/ai/flows/kalajnana-flow';
 import { format } from 'date-fns';
 import { InterstitialAd } from '@/app/components/ads';
@@ -22,7 +22,7 @@ interface HoroscopeData {
 
 export default function KalajnanaPage() {
   const { t, language } = useLanguage();
-  const { user } = useUser();
+  const { user, isUserLoading: userLoading } = useUser();
   const firestore = useFirestore();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -47,8 +47,9 @@ export default function KalajnanaPage() {
   ];
 
   // Lazy Initialization: Generate if today's prediction doesn't exist
+  // We only allow authenticated users to trigger the actual write to Firestore
   useEffect(() => {
-    if (!horoscopeLoading && !horoscope && firestore && !isGenerating) {
+    if (!horoscopeLoading && !horoscope && firestore && !isGenerating && user) {
       const triggerGeneration = async () => {
         setIsGenerating(true);
         try {
@@ -67,7 +68,7 @@ export default function KalajnanaPage() {
       };
       triggerGeneration();
     }
-  }, [horoscope, horoscopeLoading, firestore, todayStr, isGenerating]);
+  }, [horoscope, horoscopeLoading, firestore, todayStr, isGenerating, user]);
 
   const handleSignClick = (index: number) => {
     setSelectedSignIndex(index);
@@ -89,6 +90,9 @@ export default function KalajnanaPage() {
     const data = selectedType === 'rashi' ? horoscope.rashiData : horoscope.lagnaData;
     return data[String(selectedSignIndex)];
   }, [horoscope, selectedSignIndex, selectedType]);
+
+  // If data doesn't exist and user is guest, prompt them to sign in to "awaken" the predictions
+  const needsAuthToGenerate = !horoscopeLoading && !horoscope && !user && !isGenerating;
 
   if (isGenerating || horoscopeLoading) {
     return (
@@ -116,7 +120,20 @@ export default function KalajnanaPage() {
         <p className="mt-4 text-lg text-muted-foreground">{t('dinaBhavishya')} - {new Date().toLocaleDateString(language === 'kn' ? 'kn-IN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 
-      {!selectedType ? (
+      {needsAuthToGenerate ? (
+        <Card className="border-2 border-dashed border-primary/40 bg-primary/5">
+           <CardContent className="p-12 text-center space-y-6">
+              <UserCheck className="h-16 w-16 text-primary mx-auto opacity-50" />
+              <div className="space-y-2">
+                <h2 className="text-2xl font-headline font-bold text-primary">Join the Mission to Awaken Predictions</h2>
+                <p className="text-muted-foreground">Today's divine insights have not been unlocked yet. Sign in to help trigger the daily Kalajnana for yourself and the community.</p>
+              </div>
+              <Button asChild size="lg" className="font-bold">
+                 <Link href="/login">{t('loginRegister')}</Link>
+              </Button>
+           </CardContent>
+        </Card>
+      ) : !selectedType ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <Card className="hover:border-primary cursor-pointer transition-all hover:shadow-xl group" onClick={() => setSelectedType('rashi')}>
             <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
@@ -166,7 +183,7 @@ export default function KalajnanaPage() {
           </div>
 
           <div id="prediction-display" className="pt-8">
-             {isRevealed && currentPrediction && (
+             {isRevealed && currentPrediction ? (
                <Card className="border-primary border-4 shadow-2xl animate-fade-in-up">
                  <CardHeader className="bg-primary/10 text-center pb-2">
                    <div className="flex justify-center gap-2 mb-2">
@@ -187,7 +204,11 @@ export default function KalajnanaPage() {
                     </p>
                  </CardFooter>
                </Card>
-             )}
+             ) : isRevealed && !currentPrediction ? (
+                <div className="text-center p-12 bg-destructive/5 rounded-xl border-2 border-dashed border-destructive/20">
+                  <p className="text-destructive font-bold">Prediction data missing. Please try refreshing.</p>
+                </div>
+             ) : null}
              
              {!isRevealed && selectedSignIndex !== null && (
                <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">

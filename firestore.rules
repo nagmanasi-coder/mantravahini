@@ -68,5 +68,12 @@ service cloud.firestore {
       allow create: if isSignedIn();
       allow read: if isAdmin();
     }
+
+    match /daily_horoscope/{dateId} {
+      // Kalajnana is public information available to all users to drive engagement
+      allow read: if true;
+      // Only signed-in users can trigger the daily AI generation to prevent spam/abuse
+      allow write: if isSignedIn();
+    }
   }
 }
