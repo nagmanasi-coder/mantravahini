@@ -25,6 +25,10 @@ export const ADMOB_CONFIG = {
     }
   },
   
+  // Video Ad served in the player during playback for free users
+  // In a real APK, this would be served via Native Video Ad units
+  simulationAdVideoUrl: "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4", 
+  
   // Strategy: Rewarded Ads are the primary unlock mechanism for Free users
   rewardedUnlockEnabled: true,
   
