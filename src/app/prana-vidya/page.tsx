@@ -1,9 +1,10 @@
+
 "use client"
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle, Video, Users, Home as HomeIcon } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
 import { useState, useEffect } from "react";
@@ -156,6 +157,44 @@ export default function PranaVidyaPage() {
                         </div>
                     ))}
                 </div>
+
+                {/* Level 1 Practitioner Guide Section */}
+                <Card className="border-accent border-2 bg-accent/5 shadow-inner">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-accent flex items-center gap-2 font-headline text-2xl">
+                            <Sparkles className="h-6 w-6" />
+                            {t('practitionerGuideTitle')}
+                        </CardTitle>
+                        <CardDescription className="font-bold text-accent/80">
+                            {t('practitionerGuideSubtitle')}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                            <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                                <HomeIcon className="h-5 w-5 text-accent shrink-0 mt-1" />
+                                <p className="text-sm font-bold text-foreground leading-relaxed">
+                                    {t('practitionerStep1')}
+                                </p>
+                            </div>
+                            <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                                <Users className="h-5 w-5 text-accent shrink-0 mt-1" />
+                                <p className="text-sm font-bold text-foreground leading-relaxed">
+                                    {t('practitionerStep2')}
+                                </p>
+                            </div>
+                            <div className="flex gap-3 items-start p-3 bg-white/50 rounded-lg border border-accent/20 transition-all hover:shadow-md">
+                                <Video className="h-5 w-5 text-accent shrink-0 mt-1" />
+                                <p className="text-sm font-bold text-foreground leading-relaxed">
+                                    {t('practitionerStep3')}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="bg-accent/10 py-3 text-center justify-center">
+                        <p className="text-[10px] uppercase font-black tracking-widest text-accent italic">Divine Healer's Mission</p>
+                    </CardFooter>
+                </Card>
 
                 <div className="text-center text-muted-foreground text-sm space-y-3 pt-4">
                     <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
