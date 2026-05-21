@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock } from "lucide-react";
+import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
+import { cn } from "@/lib/utils";
 
 export function BannerAd() {
   const { t } = useLanguage();
@@ -31,6 +32,7 @@ export function BannerAd() {
   
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   const [isNative, setIsNative] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     setIsNative(isNativePlatform());
@@ -39,6 +41,13 @@ export function BannerAd() {
       setIsAdFreePassActive(expiry ? new Date(expiry) > new Date() : false);
     };
     checkPass();
+
+    // Ad Refresh Logic: 15 seconds interval
+    const interval = setInterval(() => {
+      setRefreshKey((prev) => prev + 1);
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const isPremium = userProfile?.subscriptionTier === 'premium';
@@ -51,16 +60,25 @@ export function BannerAd() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10">
       <div className="flex items-center gap-1 mb-1">
-        <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-black">
+        <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-black flex items-center gap-1">
           {isNative ? "Mobile Ad Unit" : "Web Promo Slot"}
+          <RefreshCw size={8} className="animate-spin-slow" />
         </p>
       </div>
-      <div className="flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed border-primary/20">
+      {/* The key prop forces a re-render/refresh of the ad unit every 15s */}
+      <div 
+        key={refreshKey}
+        className={cn(
+          "flex h-10 w-[320px] items-center justify-center bg-muted rounded border border-dashed border-primary/20 animate-fade-in",
+          refreshKey > 0 && "animate-in fade-in zoom-in-95 duration-500"
+        )}
+      >
          <p className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
            {t('bannerAd')}
            <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">
              ID: {ADMOB_CONFIG.units.banner.android.slice(-4)}
            </span>
+           <span className="text-[7px] text-primary/40 font-bold">R:{refreshKey}</span>
          </p>
       </div>
     </div>
