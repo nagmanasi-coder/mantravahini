@@ -194,6 +194,16 @@ export const translations = {
     termsOfService: "ಬಳಕೆಯ ನಿಯಮಗಳು",
     refundPolicy: "ಮರುಪಾವತಿ ನೀತಿ",
     practitionerRole: "ಪ್ರಾಣವಿದ್ಯಾ ಸಾಧಕ (Practitioner)",
+    healingStreakTitle: "Daily Healing Streak",
+    healingStreakDesc: "Keep your healing energy flow consistent.",
+    daysStreak: "{count} Days",
+    streakMaintained: "Divine flow maintained!",
+    streakReset: "Streak reset. Start your healing today.",
+    karmicRewardsTitle: "Karmic Rewards Mission",
+    karmicRewardsDesc: "Invite 3 active friends to unlock 1 month of Premium for FREE.",
+    karmicProgress: "Karmic Progress: {count}/3",
+    karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
+    inviteMore: "Invite {count} more friends to reach the goal."
   },
   en: {
     appTitle: "Mantravaahini",
@@ -386,5 +396,15 @@ export const translations = {
     termsOfService: "Terms of Service",
     refundPolicy: "Refund Policy",
     practitionerRole: "Prana Vidya Practitioner",
+    healingStreakTitle: "Daily Healing Streak",
+    healingStreakDesc: "Keep your healing energy flow consistent.",
+    daysStreak: "{count} Days",
+    streakMaintained: "Divine flow maintained!",
+    streakReset: "Streak reset. Start your healing today.",
+    karmicRewardsTitle: "Karmic Rewards Mission",
+    karmicRewardsDesc: "Invite 3 active friends to unlock 1 month of Premium for FREE.",
+    karmicProgress: "Karmic Progress: {count}/3",
+    karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
+    inviteMore: "Invite {count} more friends to reach the goal."
   }
 };

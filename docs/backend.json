@@ -46,6 +46,9 @@
         "premiumCycleStartDate": { "type": ["string", "null"], "format": "date-time" },
         "referralCode": { "type": "string" },
         "referredBy": { "type": "string" },
+        "streakCount": { "type": "number" },
+        "lastStreakUpdate": { "type": "string", "format": "date-time" },
+        "referralRewardClaimed": { "type": "boolean" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]

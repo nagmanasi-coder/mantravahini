@@ -1,18 +1,20 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/context/language-context';
-import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { doc, collection, query, where, updateDoc } from 'firebase/firestore';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, Users, Gift, TrendingUp, Sparkles, ArrowLeft, Share2 } from 'lucide-react';
+import { Copy, Check, Users, Gift, TrendingUp, Sparkles, ArrowLeft, Share2, Crown, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
 
 export default function ReferralPage() {
   const { t } = useLanguage();
@@ -34,7 +36,8 @@ export default function ReferralPage() {
     referralCode?: string,
     referralCommissionRate?: number,
     totalReferrals?: number,
-    totalEarnings?: number
+    totalEarnings?: number,
+    referralRewardClaimed?: boolean
   }>(userDocRef);
 
   const isPremium = userProfile?.subscriptionTier === 'premium';
@@ -50,72 +53,69 @@ export default function ReferralPage() {
     return false;
   }, [user]);
 
-  // Generate a referral code if missing for premium users or developers
+  // Fetch referrals to track "Invite 3" mission
+  const referralsQuery = useMemoFirebase(() => {
+    if (!firestore || !userProfile?.referralCode) return null;
+    return query(collection(firestore, 'users'), where('referredBy', '==', userProfile.referralCode));
+  }, [firestore, userProfile?.referralCode]);
+
+  const { data: referrals } = useCollection(referralsQuery);
+  const referralCount = referrals?.length || 0;
+
+  // AUTO-UNLOCK REWARD LOGIC
   useEffect(() => {
-    if ((isPremium || isDeveloper) && !userProfile?.referralCode && firestore && user) {
+    if (!isPremium && referralCount >= 3 && !userProfile?.referralRewardClaimed && firestore && user) {
+        const ref = doc(firestore, 'users', user.uid);
+        updateDoc(ref, {
+            subscriptionTier: 'premium',
+            premiumCycleStartDate: new Date().toISOString(),
+            referralRewardClaimed: true
+        });
+        toast({ 
+            title: "Karmic Reward Unlocked!", 
+            description: "You've earned 1 month of FREE Premium for your referrals!",
+            className: "bg-green-600 text-white"
+        });
+    }
+  }, [referralCount, userProfile, firestore, user, isPremium, toast]);
+
+  // Generate a referral code if missing for registered users
+  useEffect(() => {
+    if (user && !userProfile?.referralCode && firestore) {
       const generatedCode = user.uid.substring(0, 6).toUpperCase();
       updateDocumentNonBlocking(doc(firestore, 'users', user.uid), {
         referralCode: generatedCode
       });
     }
-  }, [isPremium, isDeveloper, userProfile?.referralCode, firestore, user]);
-
-  useEffect(() => {
-    if (!isUserLoading && !isPremium && !isDeveloper) {
-      setShowUpgradeDialog(true);
-    }
-  }, [isPremium, isDeveloper, isUserLoading]);
+  }, [user, userProfile?.referralCode, firestore]);
 
   const referralLink = useMemo(() => {
     if (!userProfile?.referralCode) return '';
-    // Use the published production domain for shared links
-    return `https://mantravahini.vercel.app?ref=${userProfile.referralCode}`;
+    const baseUrl = "https://mantravahini.vercel.app";
+    return `${baseUrl}?ref=${userProfile.referralCode}`;
   }, [userProfile?.referralCode]);
 
   const handleCopy = () => {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast({
-      title: "Link Copied",
-      description: "Share this link with your friends to earn rewards!",
-    });
+    toast({ title: "Link Copied", description: "Share this link with your friends to earn rewards!" });
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = async () => {
     if (!referralLink) return;
     try {
-      await navigator.share({
-        title: t('appTitle'),
-        text: t('shareText'),
-        url: referralLink,
-      });
+      await navigator.share({ title: t('appTitle'), text: t('shareText'), url: referralLink });
     } catch (err) {
       handleCopy();
     }
   };
 
-  if (isUserLoading) {
-    return (
-      <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20">
-        <p className="text-muted-foreground">{t('loading')}</p>
-      </div>
-    );
-  }
+  if (isUserLoading) return <div className="container mx-auto max-w-2xl px-4 py-8 text-center mt-20"><p className="text-muted-foreground">{t('loading')}</p></div>;
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8 pb-32">
-      <UpgradeDialog 
-        open={showUpgradeDialog} 
-        onOpenChange={(isOpen) => {
-          if (!isOpen) router.push('/');
-          setShowUpgradeDialog(isOpen);
-        }}
-        title={t('toastUpgradeRequiredTitle')}
-        description={t('referralTitle') + " is available for Premium members only."}
-      />
-
       <header className="mb-12 text-center animate-fade-in">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
           {t('referralTitle')}
@@ -126,13 +126,39 @@ export default function ReferralPage() {
       </header>
 
       <div className="space-y-8">
+        {/* Karmic Rewards Mission */}
+        <Card className="border-2 border-amber-500 bg-amber-50 shadow-xl overflow-hidden animate-fade-in-up">
+           <CardHeader className="bg-amber-500 text-white flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-xl font-headline flex items-center gap-2">
+                   <Crown className="h-6 w-6" />
+                   {t('karmicRewardsTitle')}
+                </CardTitle>
+                <CardDescription className="text-amber-100 font-bold">{t('karmicRewardsDesc')}</CardDescription>
+              </div>
+              {userProfile?.referralRewardClaimed && <CheckCircle2 className="h-10 w-10 text-white" />}
+           </CardHeader>
+           <CardContent className="p-6 space-y-4">
+              <div className="space-y-1">
+                 <div className="flex justify-between text-xs font-black uppercase text-amber-700">
+                    <span>{t('karmicProgress').replace('{count}', String(referralCount))}</span>
+                    <span>3 {t('home')}</span>
+                 </div>
+                 <Progress value={(referralCount / 3) * 100} className="h-2 bg-amber-200" />
+                 <p className="text-center text-[10px] italic text-amber-800/60 mt-2 font-bold">
+                    {userProfile?.referralRewardClaimed ? t('karmicRewardUnlocked') : t('inviteMore').replace('{count}', String(Math.max(0, 3 - referralCount)))}
+                 </p>
+              </div>
+           </CardContent>
+        </Card>
+
         {/* Referral Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="bg-primary/5 border-primary/10">
             <CardContent className="p-6 flex flex-col items-center justify-center gap-2">
               <Users className="h-6 w-6 text-primary" />
               <p className="text-sm font-bold text-muted-foreground uppercase">{t('totalReferrals')}</p>
-              <p className="text-3xl font-black text-primary">{userProfile?.totalReferrals || 0}</p>
+              <p className="text-3xl font-black text-primary">{referralCount}</p>
             </CardContent>
           </Card>
           <Card className="bg-primary/5 border-primary/10">
@@ -158,33 +184,23 @@ export default function ReferralPage() {
               <Gift className="h-5 w-5 text-primary" />
               {t('yourReferralLink')}
             </CardTitle>
-            <CardDescription>
-              Share this link to grow the Mantravaahini community.
-            </CardDescription>
+            <CardDescription>Share this link to grow the Mantravaahini community.</CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="flex gap-2">
-              <Input 
-                value={referralLink} 
-                readOnly 
-                className="bg-muted/50 font-mono text-xs sm:text-sm"
-              />
+              <Input value={referralLink} readOnly className="bg-muted/50 font-mono text-xs sm:text-sm" />
               <Button onClick={handleCopy} variant={copied ? "secondary" : "default"} className="shrink-0">
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
             <Button onClick={handleShare} className="w-full h-12 font-bold text-lg" variant="outline">
-              <Share2 className="mr-2 h-5 w-5" />
-              Share App Now
+              <Share2 className="mr-2 h-5 w-5" /> Share App Now
             </Button>
           </CardContent>
         </Card>
 
-        {/* How it works */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-headline">{t('howItWorks')}</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-xl font-headline">{t('howItWorks')}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4">
               <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/30">
@@ -202,19 +218,14 @@ export default function ReferralPage() {
             </div>
           </CardContent>
           <CardFooter className="bg-primary/5 text-center justify-center p-4">
-            <p className="text-xs text-muted-foreground italic">
-              * Commission is credited after manual verification of upgrades.
-            </p>
+            <p className="text-xs text-muted-foreground italic">* Rewards are applied instantly upon reaching the goal.</p>
           </CardFooter>
         </Card>
       </div>
 
       <div className="mt-12 text-center">
         <Button asChild variant="outline">
-          <Link href="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t('backButton')}
-          </Link>
+          <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" />{t('backButton')}</Link>
         </Button>
       </div>
     </div>

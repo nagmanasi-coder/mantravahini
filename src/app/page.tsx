@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -55,10 +55,16 @@ export default function Home() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ referralCode?: string, subscriptionTier?: 'free' | 'premium' }>(userDocRef);
+  const { data: userProfile } = useDoc<{ 
+    referralCode?: string, 
+    subscriptionTier?: 'free' | 'premium',
+    streakCount?: number,
+    lastStreakUpdate?: string
+  }>(userDocRef);
+
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
-  // Testimonials Logic - Restricted to registered users only
+  // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'testimonials'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
@@ -121,38 +127,61 @@ export default function Home() {
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
           </header>
 
-          {!isPaidUser && (
-            <Card className="mb-8 border-2 border-amber-500 bg-amber-50 shadow-lg relative overflow-hidden">
-              <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
-              <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <div className="bg-amber-500 p-4 rounded-full text-white shrink-0"><Zap className="h-8 w-8" /></div>
-                  <div className="flex-1 text-center sm:text-left space-y-2">
-                    <h3 className="font-bold text-amber-900 text-xl">{t('dailyBoostTitle')}</h3>
-                    <p className="text-sm text-amber-800/80">{t('dailyBoostDesc')}</p>
-                    {!boostExpiry || getTimeRemaining() <= 0 ? (
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[10px] uppercase font-black text-amber-700">
-                           <span>Progress</span><span>{boostProgress} / 5</span>
-                        </div>
-                        <Progress value={(boostProgress / 5) * 100} className="h-2 bg-amber-200" />
+          {/* Healing Streak & Boost Area */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+             {/* Streak Card */}
+             {user && (
+                <Card className="bg-primary border-primary shadow-xl overflow-hidden text-primary-foreground relative group">
+                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Flame size={80} />
+                   </div>
+                   <CardContent className="p-6 space-y-2 relative z-10">
+                      <p className="text-[10px] uppercase font-black tracking-widest opacity-80">{t('healingStreakTitle')}</p>
+                      <div className="flex items-center gap-3">
+                         <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <Flame className={cn("h-6 w-6", userProfile?.streakCount ? "fill-white animate-pulse" : "opacity-50")} />
+                         </div>
+                         <div>
+                            <h3 className="text-3xl font-black">{t('daysStreak').replace('{count}', String(userProfile?.streakCount || 0))}</h3>
+                            <p className="text-xs font-bold opacity-80">{userProfile?.streakCount ? t('streakMaintained') : t('streakReset')}</p>
+                         </div>
                       </div>
-                    ) : null}
-                  </div>
-                  {boostExpiry && getTimeRemaining() > 0 ? (
-                    <div className="text-right shrink-0">
-                       <p className="text-[10px] uppercase font-bold text-amber-700">{t('energyBoostActive')}</p>
-                       <p className="text-3xl font-black text-amber-600 flex items-center gap-1 justify-end"><Clock className="h-5 w-5" />{getTimeRemaining()}m</p>
+                   </CardContent>
+                </Card>
+             )}
+
+             {/* Energy Boost Card */}
+             {!isPaidUser && (
+                <Card className="border-2 border-amber-500 bg-amber-50 shadow-lg relative overflow-hidden h-full">
+                  <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
+                  <CardContent className="p-6 h-full flex flex-col justify-center">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-amber-500 p-3 rounded-full text-white shrink-0"><Zap className="h-6 w-6" /></div>
+                      <div className="flex-1 space-y-1">
+                        <h3 className="font-bold text-amber-900 text-sm leading-tight">{t('dailyBoostTitle')}</h3>
+                        {!boostExpiry || getTimeRemaining() <= 0 ? (
+                          <div className="space-y-1">
+                            <Progress value={(boostProgress / 5) * 100} className="h-1.5 bg-amber-200" />
+                            <div className="flex justify-between text-[8px] uppercase font-black text-amber-700">
+                               <span>Progress</span><span>{boostProgress} / 5</span>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                      {boostExpiry && getTimeRemaining() > 0 ? (
+                        <div className="text-right shrink-0">
+                           <p className="text-2xl font-black text-amber-600 flex items-center gap-1 justify-end">{getTimeRemaining()}m</p>
+                        </div>
+                      ) : (
+                        <Button onClick={() => setShowBoostAd(true)} size="sm" className="bg-amber-600 hover:bg-amber-700 font-bold shrink-0 h-10 px-4">
+                          <PlayCircle size={14} className="mr-1" />{boostProgress > 0 ? `${boostProgress}/5` : 'Boost'}
+                        </Button>
+                      )}
                     </div>
-                  ) : (
-                    <Button onClick={() => setShowBoostAd(true)} className="bg-amber-600 hover:bg-amber-700 font-bold shrink-0 h-14 px-6">
-                      <PlayCircle className="h-5 w-5 mr-2" />{boostProgress > 0 ? `Continue (${boostProgress}/5)` : t('watchAdToBoost')}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  </CardContent>
+                </Card>
+             )}
+          </div>
 
           <div className="flex flex-col gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,7 +211,7 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Testimonials / Public Result Display */}
+            {/* Testimonials Display (Authenticated Only) */}
             {user && testimonials && testimonials.length > 0 && (
               <section className={cn("space-y-6 pt-8", cardAnimation)}>
                 <div className="text-center">

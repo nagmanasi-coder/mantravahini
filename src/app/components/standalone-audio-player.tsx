@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
@@ -13,10 +14,11 @@ import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
-import { doc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, collection, addDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
 import { InterstitialAd } from "./ads";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
+import { isToday, isYesterday } from "date-fns";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -37,7 +39,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: 'free' | 'premium', isPranaPractitioner?: boolean }>(userDocRef);
+  const { data: userProfile } = useDoc<{ 
+    subscriptionTier?: 'free' | 'premium', 
+    isPranaPractitioner?: boolean,
+    streakCount?: number,
+    lastStreakUpdate?: string
+  }>(userDocRef);
   
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
@@ -75,6 +82,30 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     return () => clearInterval(interval);
   }, []);
 
+  // STREAK LOGIC
+  const updateStreak = () => {
+    if (!firestore || !user || !userProfile) return;
+
+    const lastUpdate = userProfile.lastStreakUpdate ? new Date(userProfile.lastStreakUpdate) : null;
+    const today = new Date();
+    let newStreak = userProfile.streakCount || 0;
+
+    if (!lastUpdate || isYesterday(lastUpdate)) {
+        newStreak += 1;
+    } else if (!isToday(lastUpdate)) {
+        newStreak = 1;
+    } else {
+        // Already updated today, do nothing
+        return;
+    }
+
+    const ref = doc(firestore, 'users', user.uid);
+    updateDoc(ref, {
+        streakCount: newStreak,
+        lastStreakUpdate: today.toISOString()
+    }).catch(() => {});
+  };
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -92,6 +123,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     };
     const handleEnded = () => {
       setIsPlaying(false);
+      updateStreak();
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
       
       if (!isAdFree && !isAdFreePassActive) {
@@ -116,7 +148,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isAdFree, isAdFreePassActive, sendLocalNotification]);
+  }, [isAdFree, isAdFreePassActive, sendLocalNotification, userProfile]);
 
   const logImpression = (type: string, unitId: string) => {
     if (firestore && user) {
