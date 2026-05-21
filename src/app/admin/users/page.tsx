@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart } from 'lucide-react';
+import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart, Star, Trophy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -56,14 +56,15 @@ interface UserProfile {
   photoURL: string;
   subscriptionTier?: 'free' | 'premium';
   isPranaPractitioner?: boolean;
+  practitionerLevel?: number;
   premiumCycleStartDate?: string | null;
   referredBy?: string;
-  referralCommissionRate?: number;
+  referralCode?: string;
 }
 
 interface AdminUser {
-  id: string; // userId
-  uid?: string; // some docs might use uid field
+  id: string;
+  uid?: string;
   grantedAt: string;
 }
 
@@ -83,7 +84,6 @@ export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
 
-  // Use a listener for the admin status of the current user
   const adminMarkerRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, 'admin_users', user.uid);
@@ -115,7 +115,6 @@ export default function AdminUsersPage() {
   const filteredUsers = useMemo(() => {
     if (!users) return [];
     if (!searchQuery.trim()) return users;
-    
     const query = searchQuery.toLowerCase();
     return users.filter(u => 
       u.displayName.toLowerCase().includes(query) || 
@@ -124,182 +123,58 @@ export default function AdminUsersPage() {
     );
   }, [users, searchQuery]);
 
-  const getUserDisplayName = (uid: string) => {
-    if (!users) return uid;
-    const foundUser = users.find(user => user.uid === uid);
-    return foundUser ? foundUser.displayName : 'Unknown';
-  };
-
   const handleSubscriptionChange = (userToUpdate: UserProfile, tier: 'free' | 'premium') => {
     if (!firestore) return;
-    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
-    
-    const updateData: { subscriptionTier: string; premiumCycleStartDate?: string | null } = {
-      subscriptionTier: tier,
-    };
-
-    if (tier === 'premium') {
-      if (userToUpdate.subscriptionTier !== tier) {
-        updateData.premiumCycleStartDate = new Date().toISOString();
-      }
-    } else {
-      updateData.premiumCycleStartDate = null;
-    }
-    
-    updateDocumentNonBlocking(userDocRef, updateData);
-    toast({ title: "Tier Updated", description: `${userToUpdate.displayName} is now on the ${tier} plan.` });
+    const updateData: any = { subscriptionTier: tier };
+    if (tier === 'premium') updateData.premiumCycleStartDate = new Date().toISOString();
+    else updateData.premiumCycleStartDate = null;
+    updateDocumentNonBlocking(doc(firestore, 'users', userToUpdate.uid), updateData);
+    toast({ title: "Tier Updated" });
   };
   
   const handlePractitionerChange = (userToUpdate: UserProfile, isPractitioner: boolean) => {
     if (!firestore) return;
-    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
-    updateDocumentNonBlocking(userDocRef, { isPranaPractitioner: isPractitioner });
-    toast({ 
-      title: isPractitioner ? "Practitioner Assigned" : "Role Removed", 
-      description: `${userToUpdate.displayName} is ${isPractitioner ? 'now' : 'no longer'} a Prana Vidya practitioner.` 
-    });
+    const updateData: any = { isPranaPractitioner: isPractitioner };
+    if (isPractitioner && !userToUpdate.practitionerLevel) updateData.practitionerLevel = 1;
+    updateDocumentNonBlocking(doc(firestore, 'users', userToUpdate.uid), updateData);
+    toast({ title: isPractitioner ? "Practitioner Assigned" : "Role Removed" });
   };
 
-  const handleCommissionChange = (userToUpdate: UserProfile, commissionRate: number) => {
+  const handleLevelChange = (userId: string, level: string) => {
     if (!firestore) return;
-    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
-    if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
-        toast({
-            variant: "destructive",
-            title: "Invalid Rate",
-            description: "Commission rate must be a number between 0 and 100.",
-        });
-        return;
-    }
-    updateDocumentNonBlocking(userDocRef, { referralCommissionRate: commissionRate });
-    toast({
-        title: "Commission Updated",
-        description: `${userToUpdate.displayName}'s rate is now ${commissionRate}%.`,
-    });
+    updateDocumentNonBlocking(doc(firestore, 'users', userId), { practitionerLevel: parseInt(level) });
+    toast({ title: "Level Updated" });
   };
 
   const toggleAdminStatus = (targetUid: string, isCurrentlyAdmin: boolean) => {
     if (!firestore) return;
     const adminDocRef = doc(firestore, 'admin_users', targetUid);
-    
     if (isCurrentlyAdmin) {
       deleteDocumentNonBlocking(adminDocRef);
-      toast({ title: "Access Revoked", description: `Removed admin privileges for ${getUserDisplayName(targetUid)}.` });
     } else {
-      const data = { uid: targetUid, grantedAt: new Date().toISOString() };
-      setDoc(adminDocRef, data)
-        .catch(async (err) => {
-           errorEmitter.emit('permission-error', new FirestorePermissionError({
-             path: adminDocRef.path,
-             operation: 'create',
-             requestResourceData: data
-           }));
-        });
-      toast({ title: "Access Granted", description: `${getUserDisplayName(targetUid)} is now an Admin.` });
+      setDoc(adminDocRef, { uid: targetUid, grantedAt: new Date().toISOString() });
     }
   };
 
-  const handleDeleteUser = (u: UserProfile) => {
-    if (!firestore) return;
-    const userDocRef = doc(firestore, 'users', u.uid);
-    deleteDocumentNonBlocking(userDocRef);
-    toast({ title: "User Deleted", description: `${u.displayName}'s profile has been removed.` });
-  };
-
-  const form = useForm<z.infer<typeof addUserFormSchema>>({
-    resolver: zodResolver(addUserFormSchema),
-    defaultValues: { uid: '', displayName: '', email: '' },
-  });
-
-  const handleAddUserManual = (values: z.infer<typeof addUserFormSchema>) => {
-    if (!firestore) return;
-    const userDocRef = doc(firestore, 'users', values.uid);
-    const newUserProfile = {
-      ...values,
-      photoURL: '',
-      subscriptionTier: 'free',
-      isPranaPractitioner: false,
-      createdAt: new Date().toISOString(),
-    };
-
-    setDoc(userDocRef, newUserProfile)
-      .catch((serverError) => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: userDocRef.path,
-          operation: 'create',
-          requestResourceData: newUserProfile,
-        }));
-      });
-    
-    form.reset();
-    setIsAddUserDialogOpen(false);
-    toast({ title: "User Created", description: "Manual profile creation successful." });
-  };
-  
   const calculateRemainingDays = (startDateString?: string | null): number | null => {
     if (!startDateString) return null;
-    const startDate = new Date(startDateString);
-    const expiryDate = new Date(startDate);
-    expiryDate.setDate(expiryDate.getDate() + 30);
-    const today = new Date();
-    const timeDiff = expiryDate.getTime() - today.getTime();
-    if (timeDiff < 0) return 0;
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+    const diff = new Date(startDateString).getTime() + (30 * 24 * 60 * 60 * 1000) - new Date().getTime();
+    return diff < 0 ? 0 : Math.ceil(diff / (1000 * 3600 * 24));
   };
 
-  if (userLoading || adminCheckLoading || !hasAdminAccess) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <Card>
-          <CardHeader><CardTitle>Loading User Management...</CardTitle></CardHeader>
-          <CardContent><div className="space-y-4"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div></CardContent>
-        </Card>
-      </div>
-    );
-  }
+  if (userLoading || adminCheckLoading || !hasAdminAccess) return <div className="p-8 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
-      <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add User Override</DialogTitle>
-            <DialogDescription>Manual creation for special cases.</DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleAddUserManual)} className="grid gap-4 py-4">
-              <FormField control={form.control} name="uid" render={({ field }) => (
-                <FormItem><FormLabel>User ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="displayName" render={({ field }) => (
-                <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <DialogFooter><Button type="submit">Create</Button></DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
+    <div className="container mx-auto max-w-7xl px-4 py-8 pb-32">
       <Card className="mb-8">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="text-3xl font-headline text-primary">User Management</CardTitle>
-            <CardDescription>Select actions below to upgrade or manage your spiritual community.</CardDescription>
+            <CardDescription>Manage your spiritual community.</CardDescription>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search name or email..." 
-                className="pl-10" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button onClick={() => setIsAddUserDialogOpen(true)} variant="outline">Manual Add</Button>
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -309,111 +184,57 @@ export default function AdminUsersPage() {
                 <TableHead>User</TableHead>
                 <TableHead>Admin</TableHead>
                 <TableHead>Practitioner</TableHead>
-                <TableHead>Comm %</TableHead>
+                <TableHead>Level</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {usersLoading && (
-                <TableRow><TableCell colSpan={6} className="text-center py-8"><Skeleton className="h-8 w-full" /></TableCell></TableRow>
-              )}
               {filteredUsers.map((u) => {
                 const isAdmin = adminMarkers?.some(a => (a.id === u.uid || a.uid === u.uid)) || u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-                const isPaidUser = u.subscriptionTier === 'premium';
-                const daysLeft = isPaidUser ? calculateRemainingDays(u.premiumCycleStartDate) : null;
-                
+                const daysLeft = u.subscriptionTier === 'premium' ? calculateRemainingDays(u.premiumCycleStartDate) : null;
                 return (
                   <TableRow key={u.uid}>
                     <TableCell>
-                      <div className="flex items-center gap-2 max-w-[200px]">
-                        <Avatar className="h-8 w-8 shrink-0">
-                          <AvatarImage src={u.photoURL} alt={u.displayName} />
-                          <AvatarFallback><UserIcon size={16} /></AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col truncate">
-                          <span className="font-bold truncate text-sm">{u.displayName}</span>
-                          <span className="text-[10px] text-muted-foreground truncate">{u.email}</span>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8"><AvatarImage src={u.photoURL} /><AvatarFallback><UserIcon size={16} /></AvatarFallback></Avatar>
+                        <div className="flex flex-col truncate max-w-[120px]">
+                          <span className="font-bold text-sm truncate">{u.displayName}</span>
+                          <span className="text-[9px] text-muted-foreground truncate">{u.referralCode}</span>
                         </div>
                       </div>
                     </TableCell>
+                    <TableCell><Switch checked={isAdmin} onCheckedChange={() => toggleAdminStatus(u.uid, isAdmin)} disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'} /></TableCell>
+                    <TableCell><Switch checked={!!u.isPranaPractitioner} onCheckedChange={(val) => handlePractitionerChange(u, val)} /></TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Switch 
-                          checked={isAdmin} 
-                          onCheckedChange={() => toggleAdminStatus(u.uid, isAdmin)}
-                          disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'} 
-                        />
-                        {isAdmin ? <ShieldCheck className="h-4 w-4 text-green-500" /> : <ShieldAlert className="h-4 w-4 text-muted-foreground/30" />}
-                      </div>
+                       {u.isPranaPractitioner && (
+                         <Select value={String(u.practitionerLevel || 1)} onValueChange={(val) => handleLevelChange(u.uid, val)}>
+                           <SelectTrigger className="w-16 h-8 text-[10px]"><SelectValue /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="1">L1</SelectItem>
+                             <SelectItem value="2">L2</SelectItem>
+                             <SelectItem value="3">L3</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       )}
                     </TableCell>
                     <TableCell>
-                       <div className="flex items-center gap-2">
-                        <Switch 
-                          checked={!!u.isPranaPractitioner} 
-                          onCheckedChange={(val) => handlePractitionerChange(u, val)}
-                        />
-                        {u.isPranaPractitioner ? <Heart className="h-4 w-4 text-primary fill-primary" /> : <Heart className="h-4 w-4 text-muted-foreground/30" />}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        defaultValue={u.referralCommissionRate ?? 10}
-                        onBlur={(e) => handleCommissionChange(u, parseFloat(e.target.value))}
-                        className="w-16 h-8 text-xs px-1"
-                      />
-                    </TableCell>
-                    <TableCell>
-                       <div className="flex flex-col gap-1">
-                         <Select
-                            value={u.subscriptionTier || 'free'}
-                            onValueChange={(value) => handleSubscriptionChange(u, value as any)}
-                          >
-                            <SelectTrigger className="w-24 h-8 text-xs">
-                              <SelectValue placeholder="Tier" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="free">Free (Ads)</SelectItem>
-                              <SelectItem value="premium">Premium</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {daysLeft !== null && <span className="text-[9px] text-primary font-bold">{daysLeft} days left</span>}
+                       <div className="flex flex-col">
+                         <Select value={u.subscriptionTier || 'free'} onValueChange={(val) => handleSubscriptionChange(u, val as any)}>
+                            <SelectTrigger className="w-24 h-8 text-[10px]"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="free">Free</SelectItem><SelectItem value="premium">Premium</SelectItem></SelectContent>
+                         </Select>
+                         {daysLeft !== null && <span className="text-[9px] font-bold text-primary">{daysLeft}d left</span>}
                        </div>
                     </TableCell>
                     <TableCell>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete User?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will permanently remove <strong>{u.displayName}</strong>'s profile and data. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteUser(u)} className="bg-destructive hover:bg-destructive/90">
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <Button variant="ghost" size="icon" onClick={() => { if(confirm('Delete?')) updateDocumentNonBlocking(doc(firestore, 'users', u.uid), { deleted: true }) }} disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 )
               })}
-              {!usersLoading && filteredUsers.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
-                    No users found matching your search.
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -4,25 +4,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle, Video, Users, Home as HomeIcon, Upload, Loader2, MessageSquareQuote, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Sparkles, Check, Crown, Flame, HeartPulse, AlertCircle, Video, Users, Home as HomeIcon, Upload, Loader2, MessageSquareQuote, CheckCircle2, ChevronRight, TrendingUp, Trophy } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useLanguage } from "@/context/language-context";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { useUser, useFirestore, useDoc, useMemoFirebase, useStorage } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, useMemoFirebase, useStorage, useCollection } from '@/firebase';
+import { doc, collection, addDoc, serverTimestamp, query, where, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
 );
 
 export default function PranaVidyaPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
   const storage = useStorage();
@@ -33,8 +34,65 @@ export default function PranaVidyaPage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ isPranaPractitioner?: boolean, displayName?: string }>(userDocRef);
+  const { data: userProfile } = useDoc<{ 
+    isPranaPractitioner?: boolean, 
+    displayName?: string, 
+    practitionerLevel?: number,
+    referralCode?: string 
+  }>(userDocRef);
+
   const isPractitioner = !!userProfile?.isPranaPractitioner;
+  const currentLevel = userProfile?.practitionerLevel || 1;
+
+  // FETCH MY GROUP (Direct sub-practitioners)
+  const myGroupQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'users'), where('referredBy', '==', userProfile?.referralCode || 'NONE'));
+  }, [firestore, userProfile?.referralCode]);
+
+  const { data: myGroup, isLoading: groupLoading } = useCollection<{ 
+    displayName: string, 
+    isPranaPractitioner: boolean, 
+    practitionerLevel: number 
+  }>(myGroupQuery);
+
+  const subPractitioners = useMemo(() => {
+    return myGroup?.filter(m => m.isPranaPractitioner) || [];
+  }, [myGroup]);
+
+  // PROGRESSION LOGIC
+  useEffect(() => {
+    if (!isPractitioner || !user || !firestore || !subPractitioners) return;
+
+    const checkLevelUp = async () => {
+      let newLevel = currentLevel;
+
+      // Level 1 -> 2: 10 sub-practitioners
+      if (currentLevel === 1 && subPractitioners.length >= 10) {
+        newLevel = 2;
+      }
+
+      // Level 2 -> 3: 10 sub-practitioners who are Level 2+
+      if (currentLevel === 2) {
+        const level2Subs = subPractitioners.filter(p => p.practitionerLevel >= 2);
+        if (level2Subs.length >= 10) {
+          newLevel = 3;
+        }
+      }
+
+      if (newLevel > currentLevel) {
+        const ref = doc(firestore, 'users', user.uid);
+        await updateDoc(ref, { practitionerLevel: newLevel });
+        toast({ 
+          title: t('levelUpSuccess').replace('{level}', String(newLevel)),
+          description: "Your divine mission is growing. Blessings!",
+          className: "bg-green-600 text-white border-none shadow-2xl"
+        });
+      }
+    };
+
+    checkLevelUp();
+  }, [subPractitioners, currentLevel, isPractitioner, user, firestore, t]);
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -53,7 +111,7 @@ export default function PranaVidyaPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 50 * 1024 * 1024) { // 50MB Limit
+      if (file.size > 50 * 1024 * 1024) {
         toast({ variant: "destructive", title: "File too large", description: "Please upload a video smaller than 50MB." });
         return;
       }
@@ -73,11 +131,9 @@ export default function PranaVidyaPage() {
 
     try {
       let videoUrl = '';
-
       if (selectedFile) {
         const fileRef = ref(storage, `testimonials/${user.uid}_${Date.now()}`);
         const uploadTask = uploadBytesResumable(fileRef, selectedFile);
-
         await new Promise<void>((resolve, reject) => {
           uploadTask.on('state_changed', 
             (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
@@ -89,7 +145,6 @@ export default function PranaVidyaPage() {
           );
         });
       }
-
       await addDoc(collection(firestore, 'testimonials'), {
         userId: user.uid,
         userName: userProfile?.displayName || 'Anonymous Healer',
@@ -98,7 +153,6 @@ export default function PranaVidyaPage() {
         status: 'pending',
         createdAt: new Date().toISOString(),
       });
-
       toast({ title: t('submissionSuccess') });
       setTestimonialContent('');
       setSelectedFile(null);
@@ -142,7 +196,7 @@ export default function PranaVidyaPage() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
-        <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8 pb-32">
           <header className="mb-8 text-center animate-fade-in">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
               {t('pranaVidyaTitle')}
@@ -153,6 +207,7 @@ export default function PranaVidyaPage() {
           </header>
 
           <div className="space-y-8">
+            {/* LINEAGE */}
             <Card className="bg-primary/5 border-primary/20 shadow-md">
               <CardContent className="p-6 text-center space-y-4">
                  <div className="flex justify-center gap-4 mb-2">
@@ -163,61 +218,90 @@ export default function PranaVidyaPage() {
                    {t('pranaLineage')}
                  </p>
                  <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">
-                    <span>Guru Gorakhnath</span>
+                    <span>Gorakhnath</span>
                     <span className="h-1 w-1 rounded-full bg-primary" />
-                    <span>Mahavatar Babaji</span>
+                    <span>Babaji</span>
                     <span className="h-1 w-1 rounded-full bg-primary" />
-                    <span>Lord Hanuman</span>
+                    <span>Hanuman</span>
                  </div>
               </CardContent>
             </Card>
 
-            <Card className="overflow-hidden shadow-xl border-2 border-primary">
-              <CardHeader className="bg-primary/5">
-                <CardTitle className="font-headline text-3xl text-center text-primary flex items-center justify-center gap-2">
-                   <Zap className="h-8 w-8" />
-                   {t('hanumanPranaTherapyTitle')}
-                </CardTitle>
-                <CardDescription className="text-center font-bold">
-                  {t('untimelyDeathTitle')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                <div className="relative aspect-video w-full max-w-md mx-auto overflow-hidden rounded-xl border shadow-inner">
-                  {pranaImage && <Image
-                    src={pranaImage.imageUrl}
-                    alt={pranaImage.description}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={pranaImage.imageHint}
-                  />}
-                </div>
-                
-                <div className="grid gap-4">
-                    {levels.map((level) => (
-                        <div key={level.id} className={cn("bg-muted/50 p-4 rounded-xl border-2 border-dashed space-y-2", level.color)}>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    {level.icon}
-                                    <h3 className="font-headline text-xl font-bold text-primary">{level.title}</h3>
-                                </div>
-                            </div>
-                            <p className="font-bold text-muted-foreground text-sm">{level.description}</p>
-                            <p className="text-sm font-black text-accent">{level.fee}</p>
-                        </div>
-                    ))}
-                </div>
+            {/* PRACTITIONER EXCLUSIVE DASHBOARD */}
+            {isPractitioner && (
+              <div className="space-y-6 animate-fade-in-up">
+                 {/* My Level Stats */}
+                 <Card className="border-2 border-primary bg-primary/5 shadow-xl overflow-hidden">
+                    <CardHeader className="bg-primary text-primary-foreground">
+                       <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-xl font-headline flex items-center gap-2">
+                               <Trophy className="h-5 w-5" />
+                               {t('practitionerLevelPrefix')} {currentLevel}
+                            </CardTitle>
+                            <CardDescription className="text-primary-foreground/80 font-bold">
+                               {currentLevel === 1 ? "Pranasparshi" : currentLevel === 2 ? "Prana Chikitsaka" : "Prana Acharya"}
+                            </CardDescription>
+                          </div>
+                          <div className="bg-white/20 p-2 rounded-lg text-xs font-black uppercase">
+                             {subPractitioners.length} {t('membersCount').replace('{count}', '')}
+                          </div>
+                       </div>
+                    </CardHeader>
+                    <CardContent className="pt-6 space-y-4">
+                       <div className="space-y-1">
+                          <div className="flex justify-between text-xs font-bold uppercase text-primary">
+                             <span>{t('groupGrowthTitle')}</span>
+                             <span>{currentLevel === 3 ? "MAX" : `${subPractitioners.length} / 10`}</span>
+                          </div>
+                          <Progress value={currentLevel === 3 ? 100 : (subPractitioners.length / 10) * 100} className="h-2" />
+                          <p className="text-[10px] text-muted-foreground italic text-center mt-2">
+                             {currentLevel === 1 ? t('needMoreMembers').replace('{count}', String(10 - subPractitioners.length)) : 
+                              currentLevel === 2 ? t('subPractitionersLevel2Required') : 
+                              "Highest Spiritual Rank Achieved."}
+                          </p>
+                       </div>
+                    </CardContent>
+                 </Card>
 
-                {isPractitioner && (
-                  <Card className="border-accent border-2 bg-accent/5 shadow-inner animate-fade-in">
+                 {/* Group Members List */}
+                 <Card className="border-2 border-primary/20">
+                    <CardHeader className="pb-2">
+                       <CardTitle className="text-lg flex items-center gap-2 font-headline">
+                          <Users className="h-5 w-5 text-primary" />
+                          {t('myHealingGroup')}
+                       </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                       {groupLoading ? <Skeleton className="h-20 w-full" /> : 
+                        subPractitioners.length === 0 ? <p className="text-sm italic text-muted-foreground text-center py-4">{t('noMembersYet')}</p> : 
+                        <div className="divide-y">
+                           {subPractitioners.map((member, i) => (
+                             <div key={i} className="py-3 flex justify-between items-center group">
+                                <div className="flex items-center gap-3">
+                                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">
+                                      {member.displayName.charAt(0)}
+                                   </div>
+                                   <div>
+                                      <p className="text-sm font-bold">{member.displayName}</p>
+                                      <p className="text-[10px] uppercase font-black text-muted-foreground tracking-widest">{t('practitionerLevelPrefix')} {member.practitionerLevel}</p>
+                                   </div>
+                                </div>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                             </div>
+                           ))}
+                        </div>
+                       }
+                    </CardContent>
+                 </Card>
+
+                 {/* Guide & Testimonial Form */}
+                 <Card className="border-accent border-2 bg-accent/5 shadow-inner">
                       <CardHeader className="pb-2">
                           <CardTitle className="text-accent flex items-center gap-2 font-headline text-2xl">
                               <Sparkles className="h-6 w-6" />
                               {t('practitionerGuideTitle')}
                           </CardTitle>
-                          <CardDescription className="font-bold text-accent/80">
-                              {t('practitionerGuideSubtitle')}
-                          </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                           <div className="space-y-3">
@@ -288,11 +372,46 @@ export default function PranaVidyaPage() {
                             </DialogContent>
                           </Dialog>
                       </CardContent>
-                      <CardFooter className="bg-accent/10 py-3 text-center justify-center">
-                          <p className="text-[10px] uppercase font-black tracking-widest text-accent italic">Divine Healer's Mission</p>
-                      </CardFooter>
                   </Card>
-                )}
+              </div>
+            )}
+
+            {/* PUBLIC THERAPY INFO */}
+            <Card className="overflow-hidden shadow-xl border-2 border-primary">
+              <CardHeader className="bg-primary/5">
+                <CardTitle className="font-headline text-3xl text-center text-primary flex items-center justify-center gap-2">
+                   <Zap className="h-8 w-8" />
+                   {t('hanumanPranaTherapyTitle')}
+                </CardTitle>
+                <CardDescription className="text-center font-bold">
+                  {t('untimelyDeathTitle')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="relative aspect-video w-full max-w-md mx-auto overflow-hidden rounded-xl border shadow-inner">
+                  {pranaImage && <Image
+                    src={pranaImage.imageUrl}
+                    alt={pranaImage.description}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={pranaImage.imageHint}
+                  />}
+                </div>
+                
+                <div className="grid gap-4">
+                    {levels.map((level) => (
+                        <div key={level.id} className={cn("bg-muted/50 p-4 rounded-xl border-2 border-dashed space-y-2", level.color)}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    {level.icon}
+                                    <h3 className="font-headline text-xl font-bold text-primary">{level.title}</h3>
+                                </div>
+                            </div>
+                            <p className="font-bold text-muted-foreground text-sm">{level.description}</p>
+                            <p className="text-sm font-black text-accent">{level.fee}</p>
+                        </div>
+                    ))}
+                </div>
 
                 <div className="text-center text-muted-foreground text-sm space-y-3 pt-4">
                     <p className="font-medium text-foreground">{t('pranaInfo1')}</p>
