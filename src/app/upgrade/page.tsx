@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Star, PlayCircle } from "lucide-react";
+import { ArrowLeft, Check, Star, PlayCircle, Zap } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useEffect, useState } from "react";
 
@@ -24,13 +24,7 @@ export default function UpgradePage() {
   const freeFeatures = [
     t('featureAdSupportedAccess'),
     t('featurePainMantra'),
-    t('featureLimitedPlays'),
-  ];
-  
-  const basicFeatures = [
-    t('featureRemoveAds') || "Remove Banner Ads",
-    t('featureUnlimitedAudioPlays'),
-    t('featureNewMantras'),
+    "Unlimited Ad-Supported Plays",
   ];
 
   const premiumFeatures = [
@@ -39,7 +33,8 @@ export default function UpgradePage() {
     t('featureGuruDiksha'),
     t('featurePranaVidya'),
     "Priority Spiritual Support",
-    "Referral Program Access"
+    "Referral Program Access",
+    "Offline Mode Support"
   ];
 
   if (!isMounted) return null;
@@ -47,21 +42,21 @@ export default function UpgradePage() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <main className="flex-1">
-        <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 text-center animate-fade-in">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
-              Go Ad-Free & Premium
+              {t('upgradeTitle')}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Support our spiritual mission and unlock an uninterrupted experience.
+              {t('upgradeSubtitle')}
             </p>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-3xl mx-auto">
             <Card className="animate-fade-in-up flex flex-col h-full border-muted-foreground/20">
               <CardHeader>
                 <CardTitle className="font-headline text-2xl">{t('freePlanTitle')}</CardTitle>
-                <CardDescription>Enjoy mantras with occasional ads.</CardDescription>
+                <CardDescription>{t('freePlanDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 flex-grow">
                 <ul className="space-y-2">
@@ -78,60 +73,34 @@ export default function UpgradePage() {
               </CardFooter>
             </Card>
 
-            <Card className="border-secondary border-2 shadow-lg animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.2s'}}>
-              <CardHeader className="text-center">
-                 <CardTitle className="font-headline text-3xl text-secondary-foreground">Basic (Ad-Free)</CardTitle>
-                 <CardDescription className="text-xl font-bold">₹199 / month</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 flex-grow">
-                <ul className="space-y-2">
-                  {basicFeatures.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-500" />
-                      <span className="text-foreground font-medium">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button asChild className="w-full" size="lg" variant="secondary">
-                    <Link href={whatsAppUrl} target="_blank">
-                        <WhatsAppIcon />
-                        <span>Upgrade for Ad-Free</span>
-                    </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-            
-            <Card className="border-primary border-2 shadow-xl animate-fade-in-up flex flex-col h-full" style={{animationDelay: '0.4s'}}>
-              <CardHeader className="text-center bg-primary/5 py-6">
-                <div className="flex justify-center items-center gap-2">
+            <Card className="border-primary border-2 shadow-xl animate-fade-in-up flex flex-col h-full bg-primary/5" style={{animationDelay: '0.2s'}}>
+              <CardHeader className="text-center py-6">
+                <div className="flex justify-center items-center gap-2 mb-2">
                     <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                    <CardTitle className="font-headline text-3xl text-primary">Pro + Ad-Free</CardTitle>
+                    <CardTitle className="font-headline text-3xl text-primary">{t('premiumPlanTitle')}</CardTitle>
                     <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
                 </div>
-                <CardDescription className="text-xl font-bold text-accent">₹499 / month</CardDescription>
+                <CardDescription className="text-2xl font-black text-accent">{t('premiumPlanPrice')}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 flex-grow pt-6">
-                <ul className="space-y-2">
+              <CardContent className="space-y-4 flex-grow pt-2">
+                 <p className="text-xs font-bold text-center text-muted-foreground uppercase tracking-widest">{t('premiumPlanDescription')}</p>
+                <ul className="space-y-2 mt-4">
                   {premiumFeatures.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-primary" />
+                    <li key={index} className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                       <span className="text-foreground font-bold text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               <CardFooter className="flex-col gap-4">
-                 <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Includes Specialized Sciences & Private Support.</p>
-                </div>
-                <Button asChild className="w-full" size="lg">
+                <Button asChild className="w-full h-14 text-lg font-black" size="lg shadow-lg">
                     <Link href={whatsAppUrl} target="_blank">
                         <WhatsAppIcon />
-                        <span>Go Pro Ad-Free</span>
+                        <span>{t('upgradeButton')}</span>
                     </Link>
                 </Button>
+                <p className="text-[10px] text-center text-muted-foreground italic">Includes specialized healing & direct center support.</p>
               </CardFooter>
             </Card>
           </div>

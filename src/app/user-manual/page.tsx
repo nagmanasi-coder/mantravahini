@@ -56,7 +56,6 @@ export default function UserManualPage() {
   };
 
   const freeFeatures = t('manualFreeTierFeatures').split('|');
-  const basicFeatures = t('manualBasicTierFeatures').split('|');
   const premiumFeatures = t('manualPremiumTierFeatures').split('|');
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
@@ -168,36 +167,21 @@ export default function UserManualPage() {
                         </ul>
                     </CardContent>
                 </Card>
-                <Card className="border-secondary border-2">
-                    <CardHeader>
-                        <CardTitle className="text-lg">{t('manualBasicTierTitle') || 'Basic Tier'}</CardTitle>
-                        <CardDescription>{t('basicPlanDescription')}</CardDescription>
-                    </CardHeader>
-                     <CardContent>
-                        <ul className="space-y-2">
-                            {basicFeatures.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                    <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                                    <span className="text-foreground text-sm">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-                 <Card className="border-primary border-2 shadow-md">
+                 <Card className="border-primary border-2 shadow-md bg-primary/5">
                     <CardHeader>
                          <CardTitle className="flex items-center gap-2 text-lg">
                             <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                            <span>{t('manualPremiumTierTitle') || 'Premium Tier'}</span>
+                            <span>{t('premiumPlanTitle')}</span>
                             <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                          </CardTitle>
+                         <CardDescription>{t('premiumPlanDescription')}</CardDescription>
                     </CardHeader>
                      <CardContent>
                         <ul className="space-y-2">
                             {premiumFeatures.map((feature, index) => (
                                 <li key={index} className="flex items-start gap-2">
                                     <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                                    <span className="font-medium text-foreground text-sm">{feature}</span>
+                                    <span className="font-bold text-foreground text-sm">{feature}</span>
                                 </li>
                             ))}
                         </ul>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -53,7 +52,7 @@ interface UserProfile {
   displayName: string;
   email: string;
   photoURL: string;
-  subscriptionTier?: 'free' | 'basic' | 'premium';
+  subscriptionTier?: 'free' | 'premium';
   premiumCycleStartDate?: string | null;
   referredBy?: string;
   referralCommissionRate?: number;
@@ -127,7 +126,7 @@ export default function AdminUsersPage() {
     return foundUser ? foundUser.displayName : 'Unknown';
   };
 
-  const handleSubscriptionChange = (userToUpdate: UserProfile, tier: 'free' | 'basic' | 'premium') => {
+  const handleSubscriptionChange = (userToUpdate: UserProfile, tier: 'free' | 'premium') => {
     if (!firestore) return;
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
     
@@ -135,7 +134,7 @@ export default function AdminUsersPage() {
       subscriptionTier: tier,
     };
 
-    if (tier === 'basic' || tier === 'premium') {
+    if (tier === 'premium') {
       if (userToUpdate.subscriptionTier !== tier) {
         updateData.premiumCycleStartDate = new Date().toISOString();
       }
@@ -306,7 +305,7 @@ export default function AdminUsersPage() {
               )}
               {filteredUsers.map((u) => {
                 const isAdmin = adminMarkers?.some(a => (a.id === u.uid || a.uid === u.uid)) || u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-                const isPaidUser = u.subscriptionTier === 'basic' || u.subscriptionTier === 'premium';
+                const isPaidUser = u.subscriptionTier === 'premium';
                 const daysLeft = isPaidUser ? calculateRemainingDays(u.premiumCycleStartDate) : null;
                 
                 return (
@@ -354,8 +353,7 @@ export default function AdminUsersPage() {
                               <SelectValue placeholder="Tier" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="free">Free</SelectItem>
-                              <SelectItem value="basic">Basic</SelectItem>
+                              <SelectItem value="free">Free (Ads)</SelectItem>
                               <SelectItem value="premium">Premium</SelectItem>
                             </SelectContent>
                           </Select>
