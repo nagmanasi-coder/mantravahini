@@ -21,7 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { differenceInDays } from 'date-fns';
 
 type UserProfileType = {
-  subscriptionTier?: 'free' | 'basic' | 'premium';
+  subscriptionTier?: 'free' | 'premium';
   premiumCycleStartDate?: string | null;
   referralCode?: string;
   createdAt?: string;
@@ -93,7 +93,7 @@ export function UserProfile() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
-  const isPaidUser = userProfile?.subscriptionTier === 'basic' || userProfile?.subscriptionTier === 'premium';
+  const isPaidUser = userProfile?.subscriptionTier === 'premium';
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
   const remainingDays = isPaidUser ? calculateRemainingDays(userProfile?.premiumCycleStartDate) : null;
 
