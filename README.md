@@ -5,48 +5,58 @@ A serene mantra playback and healing application built with Next.js, Firebase, a
 
 ## 🚀 Mobile APK Strategy: Option A (Web-Shell)
 
-We have chosen **Option A (Remote URL wrapper)** for this app. 
+We have chosen **Option A (Remote URL wrapper)** for this app. This allows for **Live Updates** without re-submitting to the Play Store.
 
-### Why Option A?
-*   **AI Support**: Your Genkit AI flows (Server Actions) require a live server connection. Bundling locally would break them.
-*   **Live Updates**: Any change you push to GitHub will instantly update the app on users' phones without needing a new Play Store submission.
-*   **Play Store Ready**: Our UI includes a native-feeling Splash Screen, professional styling, and Bottom Ads, ensuring a high-quality experience for Google reviewers.
+### 🛠 Local Build Environment (ZEB-PC)
+*   **Java Version**: OpenJDK 17 (Java 17)
+*   **Capacitor Version**: 6.x
+*   **SDK Path**: `C:/Users/ZEB-PC/AppData/Local/Android/Sdk`
+*   **Wrapper Folder**: `C:\Users\ZEB-PC\.gemini\antigravity\scratch\pwa-android-wrapper`
 
 ## 🎨 App Icon & Native Splash Screen
 While our web code has a splash screen, the "Home Screen Icon" and the "Initial Loading Image" are part of the Android project.
 1.  **Icon**: Open your project in Android Studio, right-click the `app` folder -> `New` -> `Image Asset`.
 2.  **Native Splash**: Use the `@capacitor/assets` tool or replace the `splash.png` files in `android/app/src/main/res/`.
 
-## 🛠 Step-by-Step APK Guide for Antigravity 2.0
+## ⚡ Step-by-Step APK Guide for Antigravity 2.0
 
-### 1. Prepare Environment
-*   Ensure your latest code is pushed to your GitHub repository.
-*   Ensure your Vercel deployment (`https://mantravahini.vercel.app`) is active.
-
-### 2. Antigravity 2.0 Setup (Windows)
-*   **Install Antigravity 2.0** and log in.
-*   **Clone** your repository to a folder on your `C:` drive.
-*   Open the terminal inside Antigravity and run:
-
-```bash
-# Install dependencies
-npm install
-
-# Build the project (creates the 'out' folder)
-npm run build
-
-# Sync the code to the Android project
-npx cap sync
+### 1. Update Project URL
+If you change your Vercel URL, update `capacitor.config.ts` (or `capacitor.config.json`) in your project root:
+```json
+"server": {
+  "url": "https://mantravahini.vercel.app",
+  "cleartext": true
+}
 ```
 
-### 3. Generate the APK (Android Studio)
-*   In the Antigravity terminal, run: `npx cap open android`.
-*   **Android Studio** will launch automatically.
-*   Wait for the "Gradle Sync" to finish.
-*   Go to **Build** -> **Build Bundle(s) / APK(s)** -> **Build APK(s)**.
-*   Click "locate" in the popup to find your `.apk` file!
+### 2. Synchronize & Compile (Debug APK)
+Open the Antigravity 2.0 terminal in your project directory and run:
+```bash
+# Sync web changes to the Android folder
+npx cap sync android
+
+# Move into the android folder and build the testing APK
+cd android
+.\gradlew.bat assembleDebug
+```
+The testing APK will be located at: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### 3. Build Production AAB (Play Store Release)
+When ready to publish, generate the App Bundle:
+```bash
+cd android
+.\gradlew.bat bundleRelease
+```
+The release bundle will be located at: `android/app/build/outputs/bundle/release/app-release.aab`
+*Note: Ensure your Production AdMob App ID is set in `AndroidManifest.xml` before building.*
+
+## 🔄 Live Update Workflow
+1.  **Change Code**: Edit here in Firebase Studio.
+2.  **Push to Git**: Push your changes to GitHub.
+3.  **Vercel Auto-Deploy**: Vercel updates the web version.
+4.  **Automatic Sync**: Your installed APKs will automatically show the latest version the next time they are opened. **No need to rebuild the APK!**
 
 ## 🛠 Admin & Developer Access
 *   **Developer UID**: `LPBTRz3AMafKtZVgzJWm5Aisxc53`
-*   **Manage Users**: Accessible via the profile menu when logged in as the developer.
-*   **Manage Testimonials**: Admins can delete submissions directly from the management interface.
+*   **Manage Users**: Accessible via the profile menu.
+*   **Manage Testimonials**: Admins can delete submissions directly.

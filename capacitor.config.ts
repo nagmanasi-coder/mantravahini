@@ -12,7 +12,10 @@ const config: CapacitorConfig = {
     cleartext: true
   },
   android: {
-    allowMixedContent: true
+    allowMixedContent: true,
+    // Capacitor 6 specific settings for remote URL stability
+    captureInput: true,
+    webContentsDebuggingEnabled: true
   }
 };
 
