@@ -1,7 +1,7 @@
 
 /**
  * FIRESTORE SECURITY RULES
- * Updated: 2024-06-03 (Simplest possible rules to fix persistent listing errors)
+ * Updated: 2024-06-03 (Simplified for local development and APK stability)
  */
 
 rules_version = '2';
@@ -14,12 +14,10 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Direct check for the developer UID
     function isDeveloper() {
       return isSignedIn() && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
 
-    // Admins are either the developer or listed in the admin_users collection
     function isAdmin() {
       return isDeveloper() || (isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)));
     }
@@ -50,13 +48,13 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Simplest rule: Anyone logged in can read. This fixes all "list" permission errors.
+      // Allow any signed-in user to read. This is the most stable rule for listing.
       allow read: if isSignedIn();
       
       // Allow practitioners and admins to submit results
       allow create: if isSignedIn() && (isPractitioner() || isAdmin());
       
-      // Admins have full control for deletion
+      // Admins have full control for moderation
       allow update, delete: if isAdmin();
     }
 
