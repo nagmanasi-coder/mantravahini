@@ -3,53 +3,45 @@
 
 A serene mantra playback and healing application built with Next.js, Firebase, and Genkit.
 
-## 📱 Mobile APK Workflow (The Big Picture)
+## 🚀 Mobile APK Strategy: Option A (Web-Shell)
 
-To turn this web app into a mobile app, you use three tools in harmony:
+We have chosen **Option A (Remote URL wrapper)** for this app. 
 
-1.  **Firebase Studio (This Editor)**: Your primary home. Change UI, add mantras, and update logic here.
-2.  **Antigravity 2.0 (Local Manager)**: The bridge. It pulls your code from the cloud and prepares it for Android.
-3.  **Android Studio (The Factory)**: The final step. It takes the bridged project and compiles it into the actual `.apk` file.
+### Why Option A?
+*   **AI Support**: Your Genkit AI flows (Server Actions) require a live server connection. Bundling locally would break them.
+*   **Live Updates**: Any change you push to GitHub will instantly update the app on users' phones without needing a new Play Store submission.
+*   **Play Store Ready**: Our UI includes a native-feeling Splash Screen, professional styling, and Bottom Ads, ensuring a high-quality experience for Google reviewers.
 
-### 🚀 Live Updates (No Rebuilds Required)
-Because this app is a **Web-Shell** pointing to your Vercel URL:
-- **Push to Git = Update APK**. 
-- Any change you make here in Firebase Studio and push to GitHub will automatically update the app on every user's phone instantly.
-- You only need to build a new APK again if you change the App Icon, Splash Screen, or App Name.
+## 🛠 Step-by-Step APK Guide for Antigravity 2.0
 
-## 🛠 Step-by-Step APK Guide
+### 1. Prepare Environment
+*   Ensure your latest code is pushed to your GitHub repository.
+*   Ensure your Vercel deployment (`https://mantravahini.vercel.app`) is active and working.
 
-### 1. Prepare Code here in Firebase Studio
-Make your changes and ensure your code is pushed to your GitHub repository.
-
-### 2. Setup Antigravity 2.0 on Windows
-- **Download & Install**: Choose **Antigravity 2.0**.
-- **Login**: Use your account to see your project.
-- **Clone**: Pull the project to a folder on your local `C:` or `D:` drive.
-
-### 3. Build & Sync (The "Bridge" Step)
-Open the terminal inside Antigravity (or VS Code locally) and run:
+### 2. Antigravity 2.0 Setup (Windows)
+*   **Install Antigravity 2.0** and log in.
+*   **Clone** your repository to a folder on your `C:` drive.
+*   Open the terminal inside Antigravity and run:
 
 ```bash
-# Install dependencies locally
+# Install dependencies
 npm install
 
-# Prepare the web files
+# Build the project (creates the 'out' folder required by Capacitor)
 npm run build
 
-# Sync to Android
+# Sync the code to the Android project
 npx cap sync
 ```
 
-### 4. Create the APK (The "Factory" Step)
-- In the terminal, run: `npx cap open android`.
-- **Android Studio** will open.
-- Wait for the "Gradle Sync" to finish (the bar at the bottom).
-- Go to **Build** -> **Build Bundle(s) / APK(s)** -> **Build APK(s)**.
-- Once finished, a notification will pop up. Click "locate" to find your `.apk` file!
+### 3. Generate the APK (Android Studio)
+*   In the Antigravity terminal, run: `npx cap open android`.
+*   **Android Studio** will launch automatically.
+*   Wait for the "Gradle Sync" to finish.
+*   Go to **Build** -> **Build Bundle(s) / APK(s)** -> **Build APK(s)**.
+*   Click "locate" in the popup to find your file!
 
-## 🛠 Admin Access
-
-To access administrative features:
-1. **Log in** to the app.
-2. **Promote your account**: The developer UID is `LPBTRz3AMafKtZVgzJWm5Aisxc53`. If you are using a different account, update the UID in `firestore.rules` and `src/app/admin/users/page.tsx`.
+## 🛠 Admin & Developer Access
+*   **Developer UID**: `LPBTRz3AMafKtZVgzJWm5Aisxc53`
+*   **Manage Users**: Accessible via the profile menu when logged in as the developer.
+*   **Manage Testimonials**: Admins can delete submissions directly from the management interface.

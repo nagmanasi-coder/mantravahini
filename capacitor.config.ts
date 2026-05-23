@@ -6,8 +6,8 @@ const config: CapacitorConfig = {
   appName: 'Mantravaahini',
   webDir: 'out',
   server: {
-    // This allows the APK to point directly to your Vercel deployment
-    // ensuring Genkit and Firebase features work seamlessly.
+    // This points to your LIVE Vercel production URL.
+    // This is required for Genkit AI flows and Firebase Auth to work in the APK.
     url: 'https://mantravahini.vercel.app',
     cleartext: true
   },

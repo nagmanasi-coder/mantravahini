@@ -1,7 +1,7 @@
 
 /**
  * FIRESTORE SECURITY RULES
- * Updated: 2024-06-03 (Simplified for local development and APK stability)
+ * Optimized for APK Stability and Admin Management
  */
 
 rules_version = '2';
@@ -48,13 +48,14 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Allow any signed-in user to read. This is the most stable rule for listing.
+      // SIMPLEST READ RULE: Prevents the "Persistent List Error" for admins
+      // Application code on Home Page handles filtering for 'approved' status.
       allow read: if isSignedIn();
       
       // Allow practitioners and admins to submit results
       allow create: if isSignedIn() && (isPractitioner() || isAdmin());
       
-      // Admins have full control for moderation
+      // Admins have full control for moderation (Delete option)
       allow update, delete: if isAdmin();
     }
 
@@ -71,7 +72,7 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Only registered users can access predictions
+      // Restricted to registered users for security and community value
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
