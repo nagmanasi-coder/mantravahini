@@ -48,7 +48,7 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Allow everyone to read testimonials for the public wall
+      // Simplest rule for public wall reading to prevent "Missing Permissions" errors.
       allow read: if true;
       
       // Allow practitioners and admins to submit results

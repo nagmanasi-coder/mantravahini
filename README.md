@@ -11,13 +11,18 @@ This guide is for building your production **Android App Bundle (.aab)** manuall
 ---
 
 ## 📦 Step 1: Prepare the Project (Terminal)
-Open a terminal in your project root and run these commands to sync your latest web changes (from Git/Vercel) to the Android wrapper:
+Open a terminal (PowerShell or Command Prompt) in your project root and run:
 
 ```bash
-# 1. Update your Capacitor configuration if you changed the Vercel URL
-# 2. Synchronize your project
+# This command "Syncs" your Vercel URL and AdMob settings into the Android project.
 npx cap sync android
 ```
+
+### 💡 What does `npx cap sync android` do?
+*   **npx**: Runs a command from your project folders.
+*   **cap**: Short for Capacitor (the bridge between web and phone).
+*   **sync**: It updates the "android" folder with your latest Vercel URL and plugin settings.
+*   **android**: Target platform.
 
 ---
 
@@ -32,7 +37,7 @@ Open your project folder in **Android Studio**.
 ### B. AdMob App ID
 1.  Open `android/app/src/main/AndroidManifest.xml`.
 2.  Find the `<meta-data>` tag with `com.google.android.gms.ads.APPLICATION_ID`.
-3.  Replace the **Test ID** with your **Real Production AdMob App ID** from the Google AdMob Console.
+3.  Replace the **Test ID** with your **Real Production AdMob App ID**.
 
 ---
 
@@ -48,7 +53,6 @@ Open your project folder in **Android Studio**.
 ---
 
 ## 🔄 Live Update Workflow (No Re-build Needed)
-Since we are using **Option A (Remote URL)**:
 1.  Edit code here in Firebase Studio.
 2.  Push to Git.
 3.  Vercel updates the website.
@@ -58,4 +62,4 @@ Since we are using **Option A (Remote URL)**:
 
 ## 🛠 Security & Admin
 *   **Admin Access**: Managed via the user profile menu.
-*   **Testimonials**: No approval needed. All results are live. Admins can delete via the "Manage Testimonials" section.
+*   **Testimonials**: All results are live. Admins can delete via the "Manage Testimonials" section.
