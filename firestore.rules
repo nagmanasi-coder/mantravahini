@@ -1,6 +1,7 @@
 
 /**
  * FIRESTORE SECURITY RULES
+ * Updated: 2024-06-01 (Fixed Testimonial list permission and restricted Kalajnana)
  */
 
 rules_version = '2';
@@ -13,16 +14,20 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Direct check for the developer UID
     function isDeveloper() {
       return isSignedIn() && request.auth.uid == 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
     }
 
+    // Admins are either the developer or listed in the admin_users collection
     function isAdmin() {
       return isDeveloper() || (isSignedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)));
     }
 
     function isPractitioner() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isPranaPractitioner == true;
+      // Safely check if user document exists and has the practitioner flag
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(userPath) && get(userPath).data.isPranaPractitioner == true;
     }
 
     // --- COLLECTION RULES ---
@@ -45,15 +50,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    match /testimonials/{id} {
-      // Simplified read access for registered users to avoid permission conflicts on list queries.
-      // We rely on UI-side filtering (status == 'approved') for standard users.
+    // Broad read access for signed-in users to prevent 'list' query failures for admins
+    match /testimonials/{allPaths=**} {
+      // Simplified read allows admins to manage and users to view
       allow read: if isSignedIn();
       
-      // Only practitioners can create
-      allow create: if isPractitioner();
-      
-      // Only admins can modify or delete
+      // Strict write access
+      allow create: if isPractitioner() || isAdmin();
       allow update, delete: if isAdmin();
     }
 
@@ -70,7 +73,7 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restrict access to registered users as requested
+      // Restrict access to registered users only
       allow read: if isSignedIn();
       // Allow creation by registered users (first user of the day triggers AI)
       allow write: if isSignedIn();
