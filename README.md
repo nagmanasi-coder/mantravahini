@@ -1,17 +1,24 @@
 
 # ಮಂತ್ರವಾಹಿನಿ (Mantravaahini) - ZEB-PC Manual AAB Guide
 
-This guide is for building your production **Android App Bundle (.aab)** manually using Android Studio on your local Windows machine.
+This guide is for building your production **Android App Bundle (.aab)** manually using Android Studio on your local Windows machine, and keeping your web code synced via Vercel.
 
-## 🛠 Prerequisites for ZEB-PC
-*   **Android Studio**: Latest version installed.
-*   **Java**: OpenJDK 17 (C:/Users/ZEB-PC/AppData/Local/Android/Sdk/...)
-*   **Project Location**: `C:\Users\ZEB-PC\.gemini\antigravity\scratch\pwa-android-wrapper`
+---
+
+## 🚀 Step 0: Publish to Vercel (Web Code)
+To make your app live and update your APKs automatically:
+1.  **Connect GitHub**: In the Firebase Studio UI, look for the **"Source Control"** or **"Git"** tab.
+2.  **Initialize & Push**: Create a new repository on GitHub (e.g., `mantravaahini-app`) and push your code from here.
+3.  **Import to Vercel**: 
+    *   Go to [Vercel.com](https://vercel.com) and click **"Add New" > "Project"**.
+    *   Select your GitHub repository.
+    *   **Environment Variables**: Add your Firebase keys (from `src/firebase/config.ts`) as Environment Variables in the Vercel dashboard.
+4.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
 
 ---
 
 ## 📦 Step 1: Prepare the Project (Terminal)
-Open a terminal (PowerShell or Command Prompt) in your project root and run:
+Once your Vercel site is live, open a terminal on your **ZEB-PC** in the project root:
 
 ```bash
 # This command "Syncs" your Vercel URL and AdMob settings into the Android project.
@@ -19,10 +26,7 @@ npx cap sync android
 ```
 
 ### 💡 What does `npx cap sync android` do?
-*   **npx**: Runs a command from your project folders.
-*   **cap**: Short for Capacitor (the bridge between web and phone).
-*   **sync**: It updates the "android" folder with your latest Vercel URL and plugin settings.
-*   **android**: Target platform.
+*   **Sync**: It updates the "android" folder with your latest Vercel URL (from `capacitor.config.ts`) and links native plugins like AdMob.
 
 ---
 
@@ -56,7 +60,7 @@ Open your project folder in **Android Studio**.
 1.  Edit code here in Firebase Studio.
 2.  Push to Git.
 3.  Vercel updates the website.
-4.  **Done!** Your installed APKs/AABs will show the new code immediately when opened.
+4.  **Done!** Your installed APKs/AABs will show the new code immediately when opened because they load the Vercel URL directly.
 
 ---
 
