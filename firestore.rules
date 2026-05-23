@@ -50,9 +50,10 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Broad read access for signed-in users to prevent 'list' query failures for admins
-    match /testimonials/{allPaths=**} {
-      // Simplified read allows admins to manage and users to view
+    // Simplified match for testimonials to ensure broad 'list' query compatibility
+    match /testimonials/{testimonialId} {
+      // Allows all signed-in users to read testimonials
+      // Application logic handles filtering for 'approved' status on public pages
       allow read: if isSignedIn();
       
       // Strict write access
@@ -73,7 +74,7 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restrict access to registered users only
+      // Restrict access to registered users only as requested
       allow read: if isSignedIn();
       // Allow creation by registered users (first user of the day triggers AI)
       allow write: if isSignedIn();
