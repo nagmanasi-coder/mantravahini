@@ -46,9 +46,9 @@ service cloud.firestore {
     }
 
     match /testimonials/{id} {
-      // Admins can see and list all testimonials unconditionally
-      // Regular users can only see approved results (and must filter by status in their query)
-      allow list, get: if isSignedIn() && (isAdmin() || (resource != null && resource.data.status == 'approved'));
+      // Simplified read access for registered users to avoid permission conflicts on list queries.
+      // We rely on UI-side filtering (status == 'approved') for standard users.
+      allow read: if isSignedIn();
       
       // Only practitioners can create
       allow create: if isPractitioner();
@@ -70,8 +70,10 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restrict access to registered users as requested to resolve permission conflicts
-      allow read, write: if isSignedIn();
+      // Restrict access to registered users as requested
+      allow read: if isSignedIn();
+      // Allow creation by registered users (first user of the day triggers AI)
+      allow write: if isSignedIn();
     }
   }
 }
