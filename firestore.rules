@@ -48,8 +48,7 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // SIMPLEST READ RULE: Prevents the "Persistent List Error" for admins
-      // Application code on Home Page handles filtering for 'approved' status.
+      // Simplest possible rule to prevent "Missing Permissions" error during listing
       allow read: if isSignedIn();
       
       // Allow practitioners and admins to submit results
