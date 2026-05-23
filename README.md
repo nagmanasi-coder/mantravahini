@@ -17,6 +17,38 @@ To access the administrative features (User Management):
 4. **Deploy**: Once updated, redeploy your application.
 5. **Access**: You will now see the **'Manage Users'** option in your profile menu.
 
+## How to Push to Git for Vercel Deployment
+
+If you move this project to a local machine or another environment, follow these steps to sync with GitHub and Vercel:
+
+### 1. Initialize Git & Push to GitHub
+Open your terminal in the project root:
+```bash
+# Initialize git
+git init
+
+# Add all files
+git add .
+
+# Commit changes
+git commit -m "Transfer from Studio"
+
+# Create a repository on GitHub, then link it:
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+# Push to the main branch
+git push -u origin main
+```
+
+### 2. Connect to Vercel
+1. Go to the [Vercel Dashboard](https://vercel.com/dashboard).
+2. Click **"Add New..."** -> **"Project"**.
+3. Import your GitHub repository.
+4. **Crucial**: In the **Environment Variables** section, add your `SARVAM_AI_API_KEY` and any other secrets from your `.env` file.
+5. Click **Deploy**.
+
+Vercel will now automatically redeploy your app every time you `git push` to your GitHub repository.
+
 ## Features
 
 - **Mantra Playback**: Specialized mantras for pain relief and eye health.
