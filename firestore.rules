@@ -48,8 +48,7 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Simplest possible rule to prevent "Missing Permissions" error during listing.
-      // Filtering "approved" status is handled in the app UI for standard users.
+      // Allow everyone to read testimonials for the public wall
       allow read: if true;
       
       // Allow practitioners and admins to submit results

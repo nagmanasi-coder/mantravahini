@@ -1,62 +1,61 @@
 
-# ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)
+# ಮಂತ್ರವಾಹಿನಿ (Mantravaahini) - ZEB-PC Manual AAB Guide
 
-A serene mantra playback and healing application built with Next.js, Firebase, and Genkit.
+This guide is for building your production **Android App Bundle (.aab)** manually using Android Studio on your local Windows machine.
 
-## 🚀 Mobile APK Strategy: Option A (Web-Shell)
+## 🛠 Prerequisites for ZEB-PC
+*   **Android Studio**: Latest version installed.
+*   **Java**: OpenJDK 17 (C:/Users/ZEB-PC/AppData/Local/Android/Sdk/...)
+*   **Project Location**: `C:\Users\ZEB-PC\.gemini\antigravity\scratch\pwa-android-wrapper`
 
-We have chosen **Option A (Remote URL wrapper)** for this app. This allows for **Live Updates** without re-submitting to the Play Store.
+---
 
-### 🛠 Local Build Environment (ZEB-PC)
-*   **Java Version**: OpenJDK 17 (Java 17)
-*   **Capacitor Version**: 6.x
-*   **SDK Path**: `C:/Users/ZEB-PC/AppData/Local/Android/Sdk`
-*   **Wrapper Folder**: `C:\Users\ZEB-PC\.gemini\antigravity\scratch\pwa-android-wrapper`
+## 📦 Step 1: Prepare the Project (Terminal)
+Open a terminal in your project root and run these commands to sync your latest web changes (from Git/Vercel) to the Android wrapper:
 
-## 🎨 App Icon & Native Splash Screen
-While our web code has a splash screen, the "Home Screen Icon" and the "Initial Loading Image" are part of the Android project.
-1.  **Icon**: Open your project in Android Studio, right-click the `app` folder -> `New` -> `Image Asset`.
-2.  **Native Splash**: Use the `@capacitor/assets` tool or replace the `splash.png` files in `android/app/src/main/res/`.
-
-## ⚡ Step-by-Step APK Guide for Antigravity 2.0
-
-### 1. Update Project URL
-If you change your Vercel URL, update `capacitor.config.ts` (or `capacitor.config.json`) in your project root:
-```json
-"server": {
-  "url": "https://mantravahini.vercel.app",
-  "cleartext": true
-}
-```
-
-### 2. Synchronize & Compile (Debug APK)
-Open the Antigravity 2.0 terminal in your project directory and run:
 ```bash
-# Sync web changes to the Android folder
+# 1. Update your Capacitor configuration if you changed the Vercel URL
+# 2. Synchronize your project
 npx cap sync android
-
-# Move into the android folder and build the testing APK
-cd android
-.\gradlew.bat assembleDebug
 ```
-The testing APK will be located at: `android/app/build/outputs/apk/debug/app-debug.apk`
 
-### 3. Build Production AAB (Play Store Release)
-When ready to publish, generate the App Bundle:
-```bash
-cd android
-.\gradlew.bat bundleRelease
-```
-The release bundle will be located at: `android/app/build/outputs/bundle/release/app-release.aab`
-*Note: Ensure your Production AdMob App ID is set in `AndroidManifest.xml` before building.*
+---
 
-## 🔄 Live Update Workflow
-1.  **Change Code**: Edit here in Firebase Studio.
-2.  **Push to Git**: Push your changes to GitHub.
-3.  **Vercel Auto-Deploy**: Vercel updates the web version.
-4.  **Automatic Sync**: Your installed APKs will automatically show the latest version the next time they are opened. **No need to rebuild the APK!**
+## 🎨 Step 2: Set Native Assets (Android Studio)
+Open your project folder in **Android Studio**.
 
-## 🛠 Admin & Developer Access
-*   **Developer UID**: `LPBTRz3AMafKtZVgzJWm5Aisxc53`
-*   **Manage Users**: Accessible via the profile menu.
-*   **Manage Testimonials**: Admins can delete submissions directly.
+### A. App Icon
+1.  In the Project view (left), right-click the `app` folder.
+2.  Select **New > Image Asset**.
+3.  Choose your icon file and follow the wizard to generate all resolutions.
+
+### B. AdMob App ID
+1.  Open `android/app/src/main/AndroidManifest.xml`.
+2.  Find the `<meta-data>` tag with `com.google.android.gms.ads.APPLICATION_ID`.
+3.  Replace the **Test ID** with your **Real Production AdMob App ID** from the Google AdMob Console.
+
+---
+
+## 🔐 Step 3: Generate Signed AAB (The Factory)
+1.  In Android Studio, go to **Build > Generate Signed Bundle / APK...**.
+2.  Select **Android App Bundle** and click Next.
+3.  **Key store path**: Click "Create new..." if you don't have one. Save this file safely! (e.g., `mantravaahini.jks`).
+4.  Fill in the passwords and alias. **Write these down; you need them for every update.**
+5.  Select **release** variant and click Finish.
+
+**Location of your file**: `android/app/release/app-release.aab`
+
+---
+
+## 🔄 Live Update Workflow (No Re-build Needed)
+Since we are using **Option A (Remote URL)**:
+1.  Edit code here in Firebase Studio.
+2.  Push to Git.
+3.  Vercel updates the website.
+4.  **Done!** Your installed APKs/AABs will show the new code immediately when opened.
+
+---
+
+## 🛠 Security & Admin
+*   **Admin Access**: Managed via the user profile menu.
+*   **Testimonials**: No approval needed. All results are live. Admins can delete via the "Manage Testimonials" section.

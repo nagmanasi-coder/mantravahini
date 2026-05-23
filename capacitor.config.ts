@@ -7,15 +7,14 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     // This points to your LIVE Vercel production URL.
-    // This is required for Genkit AI flows and Firebase Auth to work in the APK.
+    // This allows for Live Updates without re-submitting to the Play Store.
     url: 'https://mantravahini.vercel.app',
     cleartext: true
   },
   android: {
     allowMixedContent: true,
-    // Capacitor 6 specific settings for remote URL stability
     captureInput: true,
-    webContentsDebuggingEnabled: true
+    webContentsDebuggingEnabled: false
   }
 };
 
