@@ -89,7 +89,7 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent className="text-sm">
             <p>For data removal requests or privacy queries, contact our nodal officer:</p>
-            <p className="font-bold mt-2">Email: privacy@mantravaahini.com</p>
+            <p className="font-bold mt-2">Email: nagmanasi@gmail.com</p>
             <p className="font-bold">WhatsApp: +91 7022070287</p>
           </CardContent>
         </Card>
