@@ -37,7 +37,14 @@ In **Android Studio**:
 - Select **Build** -> **Build Bundle(s) / APK(s)** -> **Build APK(s)**.
 - Once finished, you can install the `.apk` on any Android device.
 
-## Admin Access Instructions
+## 🚀 Live Updates (No APK Rebuild Required)
+
+Since this APK is configured as a **Web-Shell** pointing to your Vercel URL:
+- **Any changes you push to Git will update the APK automatically.**
+- Users do **not** need to download a new APK to see UI changes, new mantras, or logic updates.
+- You only need to rebuild the APK if you change the App Icon, App Name, or add new native hardware plugins.
+
+## 🛠 Admin Access Instructions
 
 To access administrative features (User Management):
 

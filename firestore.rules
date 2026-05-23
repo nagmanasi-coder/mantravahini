@@ -1,7 +1,7 @@
 
 /**
  * FIRESTORE SECURITY RULES
- * Updated: 2024-06-02 (Removed Testimonial approval logic and simplified read access)
+ * Updated: 2024-06-03 (Simplified testimonials to fix persistent listing errors)
  */
 
 rules_version = '2';
@@ -25,7 +25,6 @@ service cloud.firestore {
     }
 
     function isPractitioner() {
-      // Safely check if user document exists and has the practitioner flag
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
       return isSignedIn() && exists(userPath) && get(userPath).data.isPranaPractitioner == true;
     }
@@ -51,11 +50,13 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Approval removed: allow all signed-in users to read all testimonials
+      // Allow any signed-in user to read/list testimonials to avoid permission errors in UI
       allow read: if isSignedIn();
       
-      // Strict write access
-      allow create: if isPractitioner() || isAdmin();
+      // Allow practitioners and admins to submit results
+      allow create: if isSignedIn() && (isPractitioner() || isAdmin());
+      
+      // Admins have full control
       allow update, delete: if isAdmin();
     }
 
@@ -63,7 +64,7 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if isAdmin();
       allow create: if isAdmin();
-      allow update, delete: if isAdmin() && resource != null;
+      allow update, delete: if isAdmin();
     }
 
     match /ad_impressions/{id} {
@@ -72,9 +73,7 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restrict access to registered users only
       allow read: if isSignedIn();
-      // Allow creation by registered users
       allow write: if isSignedIn();
     }
   }
