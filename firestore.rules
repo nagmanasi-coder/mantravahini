@@ -1,7 +1,7 @@
 
 /**
  * FIRESTORE SECURITY RULES
- * Updated: 2024-06-01 (Fixed Testimonial list permission and restricted Kalajnana)
+ * Updated: 2024-06-02 (Removed Testimonial approval logic and simplified read access)
  */
 
 rules_version = '2';
@@ -50,10 +50,8 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Simplified match for testimonials to ensure broad 'list' query compatibility
     match /testimonials/{testimonialId} {
-      // Allows all signed-in users to read testimonials
-      // Application logic handles filtering for 'approved' status on public pages
+      // Approval removed: allow all signed-in users to read all testimonials
       allow read: if isSignedIn();
       
       // Strict write access
@@ -74,9 +72,9 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restrict access to registered users only as requested
+      // Restrict access to registered users only
       allow read: if isSignedIn();
-      // Allow creation by registered users (first user of the day triggers AI)
+      // Allow creation by registered users
       allow write: if isSignedIn();
     }
   }

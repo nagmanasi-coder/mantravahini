@@ -3,14 +3,13 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
-import { useCollection, useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Trash2, Video, Loader2, ArrowLeft } from 'lucide-react';
+import { Trash2, Video, Loader2, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
 
@@ -20,7 +19,6 @@ interface Testimonial {
   userName: string;
   content: string;
   videoUrl?: string;
-  status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
 }
 
@@ -44,21 +42,13 @@ export default function AdminTestimonialsPage() {
     if (!isUserLoading && !isDeveloper) router.push('/');
   }, [user, isUserLoading, isDeveloper, router]);
 
-  const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
-    if (!firestore) return;
-    try {
-      await updateDoc(doc(firestore, 'testimonials', id), { status });
-      toast({ title: `Testimonial ${status}` });
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Action Failed", description: e.message });
-    }
-  };
-
   const handleDelete = async (id: string) => {
     if (!firestore) return;
+    if (!confirm("Are you sure you want to delete this testimonial?")) return;
+    
     try {
       await deleteDoc(doc(firestore, 'testimonials', id));
-      toast({ title: "Deleted" });
+      toast({ title: "Deleted Successfully" });
     } catch (e: any) {
       toast({ variant: "destructive", title: "Delete Failed", description: e.message });
     }
@@ -72,7 +62,7 @@ export default function AdminTestimonialsPage() {
         <div>
           <Button asChild variant="ghost" className="mb-2"><Link href="/admin/users"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Link></Button>
           <h1 className="text-3xl font-headline font-bold text-primary">{t('manageTestimonials')}</h1>
-          <p className="text-muted-foreground">Approve practitioner results for home page display.</p>
+          <p className="text-muted-foreground">Manage practitioner results. Submissions are live by default.</p>
         </div>
       </header>
 
@@ -84,7 +74,7 @@ export default function AdminTestimonialsPage() {
                 <TableHead>Practitioner</TableHead>
                 <TableHead>Content</TableHead>
                 <TableHead>Video</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -102,23 +92,13 @@ export default function AdminTestimonialsPage() {
                       </a>
                     ) : 'None'}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={test.status === 'approved' ? 'default' : test.status === 'pending' ? 'outline' : 'destructive'}>
-                      {test.status}
-                    </Badge>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {new Date(test.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="icon" variant="ghost" onClick={() => handleUpdateStatus(test.id, 'approved')} className="text-green-600">
-                        <CheckCircle2 size={18} />
-                      </Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleUpdateStatus(test.id, 'rejected')} className="text-amber-600">
-                        <XCircle size={18} />
-                      </Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleDelete(test.id)} className="text-destructive">
-                        <Trash2 size={18} />
-                      </Button>
-                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => handleDelete(test.id)} className="text-destructive hover:bg-destructive/10">
+                      <Trash2 size={18} />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

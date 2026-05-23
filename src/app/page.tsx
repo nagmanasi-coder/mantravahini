@@ -64,10 +64,10 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
-  // Testimonials Logic
+  // Testimonials Logic: Approval process removed, showing all newest submissions
   const testimonialsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'testimonials'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
+    return query(collection(firestore, 'testimonials'), orderBy('createdAt', 'desc'));
   }, [firestore, user]);
   const { data: testimonials } = useCollection(testimonialsQuery);
 

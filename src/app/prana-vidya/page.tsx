@@ -46,8 +46,8 @@ export default function PranaVidyaPage() {
 
   // FETCH MY GROUP (Direct sub-practitioners)
   const myGroupQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'users'), where('referredBy', '==', userProfile?.referralCode || 'NONE'));
+    if (!firestore || !userProfile?.referralCode) return null;
+    return query(collection(firestore, 'users'), where('referredBy', '==', userProfile.referralCode));
   }, [firestore, userProfile?.referralCode]);
 
   const { data: myGroup, isLoading: groupLoading } = useCollection<{ 
@@ -145,15 +145,16 @@ export default function PranaVidyaPage() {
           );
         });
       }
+      // Status 'approved' automatically to skip legacy approval process
       await addDoc(collection(firestore, 'testimonials'), {
         userId: user.uid,
         userName: userProfile?.displayName || 'Anonymous Healer',
         content: testimonialContent,
         videoUrl,
-        status: 'pending',
+        status: 'approved', 
         createdAt: new Date().toISOString(),
       });
-      toast({ title: t('submissionSuccess') });
+      toast({ title: "Submission Live!", description: "Your result is now visible on the home page." });
       setTestimonialContent('');
       setSelectedFile(null);
       setIsUploadDialogOpen(false);
@@ -329,7 +330,7 @@ export default function PranaVidyaPage() {
                             <DialogContent className="max-w-md">
                               <DialogHeader>
                                 <DialogTitle>{t('submitTestimonial')}</DialogTitle>
-                                <DialogDescription>Share your healing result with the divine community.</DialogDescription>
+                                <DialogDescription>Share your healing result with the divine community. It will be live instantly.</DialogDescription>
                               </DialogHeader>
                               <div className="space-y-4 py-4">
                                 <Textarea 

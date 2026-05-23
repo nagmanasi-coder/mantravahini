@@ -74,17 +74,17 @@
     "Testimonial": {
       "title": "Testimonial",
       "type": "object",
-      "description": "Practitioner submitted results and testimonials.",
+      "description": "Practitioner submitted results and testimonials. Approval process removed.",
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string" },
         "userName": { "type": "string" },
         "content": { "type": "string" },
         "videoUrl": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "status": { "type": "string", "enum": ["approved"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["userId", "content", "status", "createdAt"]
+      "required": ["userId", "content", "createdAt"]
     },
     "AdImpression": {
       "title": "AdImpression",
@@ -122,7 +122,7 @@
     },
     "/testimonials/{id}": {
       "schema": { "$ref": "#/backend/entities/Testimonial" },
-      "description": "Practitioner healing results."
+      "description": "Practitioner healing results. No approval required."
     },
     "/ad_impressions/{impressionId}": {
       "schema": { "$ref": "#/backend/entities/AdImpression" },
