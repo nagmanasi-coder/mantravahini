@@ -10,9 +10,16 @@
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "static": "next build && next export",
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/status-bar": "^6.0.2",
     "@ducanh2912/next-pwa": "^10.2.7",
     "@genkit-ai/google-genai": "^1.20.0",
     "@genkit-ai/next": "^1.20.0",
