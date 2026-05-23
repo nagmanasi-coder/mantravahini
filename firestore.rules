@@ -46,12 +46,9 @@ service cloud.firestore {
     }
 
     match /testimonials/{id} {
-      // Admins can see and list all testimonials regardless of status
-      allow list, get: if isSignedIn() && isAdmin();
-      
-      // Regular users can only list and see approved results
-      // Note: Regular users must include the 'status == approved' filter in their queries
-      allow list, get: if isSignedIn() && resource.data.status == 'approved';
+      // Admins can see and list all testimonials unconditionally
+      // Regular users can only see approved results (and must filter by status in their query)
+      allow list, get: if isSignedIn() && (isAdmin() || (resource != null && resource.data.status == 'approved'));
       
       // Only practitioners can create
       allow create: if isPractitioner();
@@ -73,10 +70,8 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Kalajnana is public information available to all users to drive engagement
-      allow read: if true;
-      // Only signed-in users can trigger the daily AI generation to prevent spam/abuse
-      allow write: if isSignedIn();
+      // Restrict access to registered users as requested to resolve permission conflicts
+      allow read, write: if isSignedIn();
     }
   }
 }

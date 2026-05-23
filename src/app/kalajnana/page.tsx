@@ -32,10 +32,11 @@ export default function KalajnanaPage() {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Prevent data fetching if user is not signed in to avoid Firestore permission errors
   const horoscopeRef = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return doc(firestore, 'daily_horoscope', todayStr);
-  }, [firestore, todayStr]);
+  }, [firestore, todayStr, user]);
 
   const { data: horoscope, isLoading: horoscopeLoading } = useDoc<HoroscopeData>(horoscopeRef);
 
@@ -47,7 +48,6 @@ export default function KalajnanaPage() {
   ];
 
   // Lazy Initialization: Generate if today's prediction doesn't exist
-  // We only allow authenticated users to trigger the actual write to Firestore
   useEffect(() => {
     if (!horoscopeLoading && !horoscope && firestore && !isGenerating && user) {
       const triggerGeneration = async () => {
@@ -91,10 +91,10 @@ export default function KalajnanaPage() {
     return data[String(selectedSignIndex)];
   }, [horoscope, selectedSignIndex, selectedType]);
 
-  // If data doesn't exist and user is guest, prompt them to sign in to "awaken" the predictions
-  const needsAuthToGenerate = !horoscopeLoading && !horoscope && !user && !isGenerating;
+  // If user is guest, show a prompt to sign in instead of the sign cards
+  const needsAuthToView = !userLoading && !user;
 
-  if (isGenerating || horoscopeLoading) {
+  if (userLoading || isGenerating || (user && horoscopeLoading)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -120,15 +120,15 @@ export default function KalajnanaPage() {
         <p className="mt-4 text-lg text-muted-foreground">{t('dinaBhavishya')} - {new Date().toLocaleDateString(language === 'kn' ? 'kn-IN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 
-      {needsAuthToGenerate ? (
+      {needsAuthToView ? (
         <Card className="border-2 border-dashed border-primary/40 bg-primary/5">
            <CardContent className="p-12 text-center space-y-6">
               <UserCheck className="h-16 w-16 text-primary mx-auto opacity-50" />
               <div className="space-y-2">
-                <h2 className="text-2xl font-headline font-bold text-primary">Join the Mission to Awaken Predictions</h2>
-                <p className="text-muted-foreground">Today's divine insights have not been unlocked yet. Sign in to help trigger the daily Kalajnana for yourself and the community.</p>
+                <h2 className="text-2xl font-headline font-bold text-primary">Sign In to Reveal the Divine Path</h2>
+                <p className="text-muted-foreground">Daily predictions are exclusively available for our registered community members. Join us to start your day with divine guidance.</p>
               </div>
-              <Button asChild size="lg" className="font-bold">
+              <Button asChild size="lg" className="font-bold w-full sm:w-auto px-12">
                  <Link href="/login">{t('loginRegister')}</Link>
               </Button>
            </CardContent>
