@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { useCollection, useFirestore, useUser, useDoc, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -16,37 +15,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart, Star, Trophy, Loader2 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { User as UserIcon, Search, Trash2, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useLanguage } from '@/context/language-context';
 
 interface UserProfile {
@@ -68,12 +42,6 @@ interface AdminUser {
   uid?: string;
   grantedAt: string;
 }
-
-const addUserFormSchema = z.object({
-  uid: z.string().min(1, 'UID is required.'),
-  displayName: z.string().min(1, 'Display Name is required.'),
-  email: z.string().email('Please enter a valid email.'),
-});
 
 export default function AdminUsersPage() {
   const { user, isUserLoading: userLoading } = useUser();
@@ -164,7 +132,14 @@ export default function AdminUsersPage() {
     return diff < 0 ? 0 : Math.ceil(diff / (1000 * 3600 * 24));
   };
 
-  if (userLoading || adminCheckLoading || !hasAdminAccess) return <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]"><Loader2 className="animate-spin h-8 w-8 text-primary mb-4" /><p className="text-sm font-medium">Verifying access...</p></div>;
+  if (userLoading || adminCheckLoading || !hasAdminAccess) {
+    return (
+      <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="animate-spin h-8 w-8 text-primary mb-4" />
+        <p className="text-sm font-medium">Verifying access...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 pb-32">

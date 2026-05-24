@@ -1,18 +1,23 @@
 
-# ಮಂತ್ರವಾಹಿನಿ (Mantravaahini) - ZEB-PC Manual AAB Guide
+# ಮಂತ್ರವಾಹಿನಿ (Mantravaahini) - Production Release Guide
 
-This guide is for building your production **Android App Bundle (.aab)** manually using Android Studio on your local Windows machine, and keeping your web code synced via Vercel.
+This guide covers building your **Android App Bundle (.aab)** and deploying your web code to **Vercel**.
 
 ---
 
-## 🚀 Step 0: Publish to Vercel (Web Code)
+## 🌍 Step 0: Publish to Vercel (Web Code)
 To make your app live and update your APKs automatically:
-1.  **Connect GitHub**: In the Firebase Studio UI, look for the **"Source Control"** or **"Git"** tab.
-2.  **Initialize & Push**: Create a new repository on GitHub (e.g., `mantravaahini-app`) and push your code from here.
-3.  **Import to Vercel**: 
+
+1.  **Connect GitHub**: In the Firebase Studio UI, push your latest code to a GitHub repository.
+2.  **Import to Vercel**: 
     *   Go to [Vercel.com](https://vercel.com) and click **"Add New" > "Project"**.
     *   Select your GitHub repository.
-    *   **Environment Variables**: Add your Firebase keys (from `src/firebase/config.ts`) as Environment Variables in the Vercel dashboard.
+3.  **Environment Variables (CRITICAL)**: 
+    *   In the Vercel dashboard for your project, go to **Settings > Environment Variables**.
+    *   Add the following keys exactly as shown (do NOT use `NEXT_PUBLIC_` for these):
+        *   `GOOGLE_GENAI_API_KEY`: Your Gemini API Key (Found in Firebase Studio settings).
+        *   `SARVAM_AI_API_KEY`: Your Sarvam AI key (Used for Kannada AI features).
+    *   Copy all fields from `src/firebase/config.ts` if needed for browser-side Firebase access.
 4.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
 
 ---
@@ -26,7 +31,7 @@ npx cap sync android
 ```
 
 ### 💡 What does `npx cap sync android` do?
-*   **Sync**: It updates the "android" folder with your latest Vercel URL (from `capacitor.config.ts`) and links native plugins like AdMob.
+It updates the "android" folder with your latest Vercel URL and links native plugins like AdMob.
 
 ---
 
@@ -48,22 +53,21 @@ Open your project folder in **Android Studio**.
 ## 🔐 Step 3: Generate Signed AAB (The Factory)
 1.  In Android Studio, go to **Build > Generate Signed Bundle / APK...**.
 2.  Select **Android App Bundle** and click Next.
-3.  **Key store path**: Click "Create new..." if you don't have one. Save this file safely! (e.g., `mantravaahini.jks`).
-4.  Fill in the passwords and alias. **Write these down; you need them for every update.**
-5.  Select **release** variant and click Finish.
+3.  **Key store path**: Create a new `.jks` file and save it safely. **You need this for every update.**
+4.  Select **release** variant and click Finish.
 
-**Location of your file**: `android/app/release/app-release.aab`
+**File Location**: `android/app/release/app-release.aab`
 
 ---
 
 ## 🔄 Live Update Workflow (No Re-build Needed)
-1.  Edit code here in Firebase Studio.
+1.  Edit code in Firebase Studio.
 2.  Push to Git.
 3.  Vercel updates the website.
-4.  **Done!** Your installed APKs/AABs will show the new code immediately when opened because they load the Vercel URL directly.
+4.  **Done!** Your installed APKs will show the new code immediately because they load the Vercel URL directly.
 
 ---
 
 ## 🛠 Security & Admin
-*   **Admin Access**: Managed via the user profile menu.
-*   **Testimonials**: All results are live. Admins can delete via the "Manage Testimonials" section.
+*   **Admin Access**: Managed via the user profile menu for the developer UID.
+*   **Permissions**: Security rules are optimized to allow public reading of testimonials for a smooth community wall experience.
