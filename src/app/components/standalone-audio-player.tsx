@@ -61,16 +61,16 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [showStartAd, setShowStartAd] = useState(false);
   const [showEndAd, setShowEndAd] = useState(false);
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
+  const [adRefreshKey, setAdRefreshKey] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const adVideoRef = useRef<HTMLVideoElement>(null);
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
-  // Revenue Strategy: Show loopable ad video during playback for free users
-  const showVisualAdVideo = isPlaying && !isAdFree && !isAdFreePassActive;
+  // Revenue Strategy: Show banner ad in slot during playback for free users
+  const showVisualBannerAd = isPlaying && !isAdFree && !isAdFreePassActive;
 
   useEffect(() => {
     const checkPass = () => {
@@ -81,6 +81,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     const interval = setInterval(checkPass, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  // Ad Refresh Logic for internal slot
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showVisualBannerAd) {
+      interval = setInterval(() => {
+        setAdRefreshKey(prev => prev + 1);
+      }, 30000);
+    }
+    return () => clearInterval(interval);
+  }, [showVisualBannerAd]);
 
   // STREAK LOGIC
   const updateStreak = () => {
@@ -95,7 +106,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     } else if (!isToday(lastUpdate)) {
         newStreak = 1;
     } else {
-        // Already updated today, do nothing
         return;
     }
 
@@ -166,7 +176,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   useEffect(() => {
     const audio = audioRef.current;
     const video = videoRef.current;
-    const adVideo = adVideoRef.current;
 
     if (!audio || hasMediaError || !audioSrc) return;
     
@@ -175,13 +184,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
         if (e.name !== 'AbortError') setIsPlaying(false);
       });
       if (video) video.play().catch(() => {});
-      if (adVideo) adVideo.play().catch(() => {});
     } else {
       audio.pause();
       if (video) video.pause();
-      if (adVideo) adVideo.pause();
     }
-  }, [isPlaying, hasMediaError, audioSrc, showVisualAdVideo]);
+  }, [isPlaying, hasMediaError, audioSrc]);
 
   const handlePlayPause = async () => {
     if (isPlaying) {
@@ -254,28 +261,26 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
         <CardContent className="space-y-6">
           <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
-            {showVisualAdVideo ? (
-              <div className="relative h-full w-full">
-                <video 
-                  ref={adVideoRef}
-                  src={ADMOB_CONFIG.simulationAdVideoUrl} 
-                  className="w-full h-full object-cover grayscale opacity-60" 
-                  loop 
-                  muted 
-                  playsInline
-                  autoPlay
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white p-4">
-                  <Badge variant="outline" className="mb-2 border-white/40 text-white uppercase text-[9px] font-black tracking-widest bg-black/20">
-                    Sponsored Content
-                  </Badge>
-                  <p className="text-[10px] text-center font-bold opacity-80 uppercase tracking-tighter">
-                    {language === 'kn' ? 'ಜಾಹೀರಾತು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ' : 'AD PLAYING DURING MANTRA'}
-                  </p>
-                  <Button variant="outline" size="sm" className="mt-4 h-7 text-[10px] bg-white/10 hover:bg-white/20 border-white/20" onClick={() => onUpgradeRequest("Remove Visual Ads", "Upgrade to Premium to see sacred healing loops instead of sponsored content.")}>
-                    <VolumeX className="h-3 w-3 mr-1" /> {t('headerUpgrade')}
-                  </Button>
-                </div>
+            {showVisualBannerAd ? (
+              <div key={adRefreshKey} className="relative h-full w-full bg-muted flex flex-col items-center justify-center p-6 animate-fade-in">
+                 <div className="border-2 border-dashed border-primary/20 rounded-xl p-6 text-center space-y-4 bg-card shadow-inner w-full max-w-[320px]">
+                    <Badge variant="outline" className="border-primary/40 text-primary uppercase text-[9px] font-black tracking-widest bg-primary/5">
+                       Sponsored Ad Slot
+                    </Badge>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                       {language === 'kn' ? 'ಜಾಹೀರಾತು' : 'ADVERTISEMENT'}
+                    </p>
+                    <div className="h-16 flex flex-col items-center justify-center border bg-muted/20 rounded font-mono text-[9px] text-muted-foreground/60 space-y-1">
+                       <p>UNIT: {ADMOB_CONFIG.units.banner.android.slice(-8)}</p>
+                       <div className="flex items-center gap-1">
+                          <RefreshCw size={8} className="animate-spin-slow" />
+                          <span>Refreshing: {30 - (adRefreshKey % 1 === 0 ? 0 : 0)}s</span>
+                       </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full h-8 text-[10px] font-bold border-primary/20 hover:bg-primary/5" onClick={() => onUpgradeRequest("Remove In-Player Ads", "Upgrade to Premium to remove these banners and see sacred loops instead.")}>
+                       <VolumeX size={10} className="mr-1" /> {t('headerUpgrade')}
+                    </Button>
+                 </div>
               </div>
             ) : videoUrl ? (
               <video 
@@ -301,7 +306,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
               </div>
             )}
             
-            {(videoUrl || showVisualAdVideo) && (
+            {(videoUrl || showVisualBannerAd) && (
                <div className="absolute bottom-2 right-2 bg-black/40 p-1 rounded backdrop-blur-sm">
                   <Film className="h-3 w-3 text-white/50" />
                </div>
