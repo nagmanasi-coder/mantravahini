@@ -43,7 +43,7 @@ export const translations = {
     donateButton: "ದೇಣಿಗೆ ನೀಡಿ",
     joinGroupButton: "ದೈವಿಕ ಗುಂಪಿಗೆ ಸೇರಿ",
     shareAppButton: "ಸೇವೆ ಮಾಡಲು ಅಪ್ಲಿಕೇಶನ್ ಹಂಚಿಕೊಳ್ಳಿ",
-    finalMessage: "ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!",
+    finalMessage: "ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ समस्याಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!",
     contactForServices: "ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ. 1.ಪ್ರೀಮಿಯಂ ಅಪ್‌ಗ್ರೇಡ್ 2.ಇತರೆ ಸೇವೆಗಳು",
     contactOnWhatsApp: "WhatsApp ನಲ್ಲಿ ಸಂಪಂತಿಸಿ",
     hosadurga: "ಹೊಸದುರ್ಗ",
@@ -76,7 +76,7 @@ export const translations = {
     tagline3: "ಅನುಭವದಿಂದ ಜನೋಪಯೋಗಕ್ಕೆ",
     backButton: "ಹಿಂದಕ್ಕೆ",
     pranaVidyaTitle: "ಪ್ರಾಣ ವಿದ್ಯಾ - ಜೀವನ ಶಕ್ತಿಯ ರಹಸ್ಯ",
-    pranaVidyaSubtitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ಚಿಕಿತ್ಸೆಯ ಮೂಲಕ ಜೀವನದ ರಕ್ಷಣೆ ಮತ್ತು ಆಯಸ್ಸು ವೃದ್ಧಿ",
+    pranaVidyaSubtitle: "Longevity and protection through Hanuman Prana Therapy",
     pranaLineage: "ಗುರು ಗೋರಖನಾಥ್ ಮತ್ತು ಮಹಾವತಾರ ಬಾಬಾಜಿ ನೀಡಿದ ಮತ್ತು ಭಗವಾನ್ ಹನುಮಂತನಿಂದ ಚಾಲಿತವಾದ ವಿಧಾನಗಳು.",
     pranaLevel1Title: "ಹಂತ ೧: ಪ್ರಾಣಸ್ಪರ್ಶಿ (Pranasparshi)",
     pranaLevel1Desc: "ತೀವ್ರ ಕಾಯಿಲೆಗಳ (Acute Diseases) ಗುಣಪಡಿಸುವಿಕೆ",
@@ -190,7 +190,7 @@ export const translations = {
     loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
     loginRegister: "ನೋಂದಣಿ / ಲಾಗಿನ್",
     mantraHubTitle: "ಮಂತ್ರ ಸಂಗ್ರಹಗಳು",
-    healthyLifeTitle: "ಜೀವನದ ಸಮಸ್ಯೆಗಳಿಗೆ (Healthy Life)",
+    healthyLifeTitle: "ಜೀವನದ समस्याಗಳಿಗೆ (Healthy Life)",
     healthyBodyTitle: "ಕಾಯಿಲೆಗಳಿಗೆ (Healthy Body & Mind)",
     backToMain: "ಮುಖ್ಯ ಪುಟಕ್ಕೆ",
     backToMantras: "ಮಂತ್ರ ಸಂಗ್ರಹಕ್ಕೆ",
@@ -222,7 +222,9 @@ export const translations = {
     karmicRewardsDesc: "Invite 3 active friends to unlock 1 month of Premium for FREE.",
     karmicProgress: "Karmic Progress: {count}/3",
     karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
-    inviteMore: "Invite {count} more friends to reach the goal."
+    inviteMore: "Invite {count} more friends to reach the goal.",
+    supportUsButton: "ನಮ್ಮನ್ನು ಬೆಂಬಲಿಸಿ (Support Us)",
+    supportUsDescription: "ಜಾಹೀರಾತನ್ನು ನೋಡುವ ಮೂಲಕ ನಮ್ಮ ಸೇವೆಯನ್ನು ಮುಂದುವರಿಸಲು ಸಹಾಯ ಮಾಡಿ."
   },
   en: {
     appTitle: "Mantravaahini",
@@ -443,6 +445,8 @@ export const translations = {
     karmicRewardsDesc: "Invite 3 active friends to unlock 1 month of Premium for FREE.",
     karmicProgress: "Karmic Progress: {count}/3",
     karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
-    inviteMore: "Invite {count} more friends to reach the goal."
+    inviteMore: "Invite {count} more friends to reach the goal.",
+    supportUsButton: "Support Us",
+    supportUsDescription: "Help us keep this service free by watching a quick ad."
   }
 };

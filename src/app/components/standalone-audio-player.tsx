@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck, Film, ExternalLink } from "lucide-react";
+import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck, Film, ExternalLink, Heart } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
   const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaybackFinished, setIsPlaybackFinished] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -133,13 +134,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     };
     const handleEnded = () => {
       setIsPlaying(false);
+      setIsPlaybackFinished(true);
       updateStreak();
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
-      
-      if (!isAdFree && !isAdFreePassActive) {
-         setShowEndAd(true);
-         logImpression("post_playback_interstitial", ADMOB_CONFIG.units.interstitial.android);
-      }
     };
     const handleError = () => {
       setHasMediaError(true);
@@ -207,6 +204,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     if (isAdFree || isUnlockedByAd || isAdFreePassActive) {
       setIsPlaying(true);
+      setIsPlaybackFinished(false);
       return;
     }
 
@@ -218,6 +216,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     setIsUnlockedByAd(true);
     logImpression("rewarded_unlock_start", ADMOB_CONFIG.units.rewarded.android);
     setIsPlaying(true);
+    setIsPlaybackFinished(false);
+  };
+
+  const handleSupportUs = () => {
+    setShowEndAd(true);
+    logImpression("optional_support_interstitial", ADMOB_CONFIG.units.interstitial.android);
   };
 
   const formatTime = (time: number) => {
@@ -274,7 +278,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
                        <p>UNIT: {ADMOB_CONFIG.units.banner.android.slice(-8)}</p>
                        <div className="flex items-center gap-1">
                           <RefreshCw size={8} className="animate-spin-slow" />
-                          <span>Refreshing: {30 - (adRefreshKey % 1 === 0 ? 0 : 0)}s</span>
+                          <span>Refreshing...</span>
                        </div>
                     </div>
                     <Button variant="outline" size="sm" className="w-full h-8 text-[10px] font-bold border-primary/20 hover:bg-primary/5" onClick={() => onUpgradeRequest("Remove In-Player Ads", "Upgrade to Premium to remove these banners and see sacred loops instead.")}>
@@ -322,13 +326,30 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
           </div>
         </CardContent>
 
-        <CardFooter className="flex items-center justify-center gap-2 bg-muted/50 p-4">
-          {isBuffering ? (
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          ) : (
-            <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" disabled={hasMediaError}>
-              {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
-            </Button>
+        <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
+          <div className="flex items-center justify-center gap-4">
+            {isBuffering ? (
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            ) : (
+              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" disabled={hasMediaError}>
+                {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+              </Button>
+            )}
+          </div>
+
+          {isPlaybackFinished && !isAdFree && !isAdFreePassActive && (
+            <div className="flex flex-col items-center gap-2 animate-fade-in">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('supportUsDescription')}</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-primary/40 text-primary hover:bg-primary/5 font-black uppercase tracking-tighter h-10 px-6"
+                onClick={handleSupportUs}
+              >
+                <Heart size={14} className="mr-2 fill-primary" />
+                {t('supportUsButton')}
+              </Button>
+            </div>
           )}
         </CardFooter>
       <audio ref={audioRef} src={audioSrc || null} preload="metadata" />
