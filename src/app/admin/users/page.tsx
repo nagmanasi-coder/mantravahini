@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart, Star, Trophy } from 'lucide-react';
+import { User as UserIcon, Search, ShieldCheck, ShieldAlert, Trash2, AlertCircle, Heart, Star, Trophy, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
