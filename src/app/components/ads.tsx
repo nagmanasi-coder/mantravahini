@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -42,7 +43,7 @@ export function BannerAd() {
     };
     checkPass();
 
-    // Ad Refresh Logic: 30 seconds interval (updated from 15s)
+    // Ad Refresh Logic: 30 seconds interval
     const interval = setInterval(() => {
       setRefreshKey((prev) => prev + 1);
     }, 30000);
@@ -65,7 +66,6 @@ export function BannerAd() {
           <RefreshCw size={8} className="animate-spin-slow" />
         </p>
       </div>
-      {/* The key prop forces a re-render/refresh of the ad unit every 30s */}
       <div 
         key={refreshKey}
         className={cn(
@@ -102,7 +102,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     setIsNative(isNativePlatform());
   }, []);
 
-  // Timer logic: purely handles the number decrement
+  // Timer logic
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (open) {
@@ -116,17 +116,6 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     };
   }, [open]);
 
-  // Completion logic: separated to avoid "update while rendering" errors
-  useEffect(() => {
-    if (open && !isNative && countdown === 0) {
-      // Small delay to ensure UI shows "0" before closing
-      const closeTimer = setTimeout(() => {
-        onOpenChange(false);
-      }, 100);
-      return () => clearTimeout(closeTimer);
-    }
-  }, [open, isNative, countdown, onOpenChange]);
-
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
 
   return (
@@ -136,7 +125,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           <div className="flex justify-between items-start">
             <div>
               <DialogTitle className="font-headline text-2xl text-primary">
-                {type === 'rewarded' ? readyText : t('adTitle')}
+                {type === 'rewarded' ? readyText : (language === 'kn' ? 'ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹಕ್ಕೆ ಧನ್ಯವಾದಗಳು' : 'Express Appreciation')}
               </DialogTitle>
               <DialogDescription className="font-bold flex items-center gap-2">
                 {type === 'rewarded' ? (
@@ -203,7 +192,9 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
             disabled={countdown > 0}
           >
             <ThumbsUp className="mr-2 h-5 w-5" />
-            {countdown > 0 ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) : (type === 'rewarded' ? "Collect Reward" : t('adAwesomeButton'))}
+            {countdown > 0 
+              ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
+              : (type === 'rewarded' ? "Collect Reward" : t('thanksForSupport'))}
           </Button>
           <p className="text-[10px] text-center text-muted-foreground italic font-bold">
             {isNative 

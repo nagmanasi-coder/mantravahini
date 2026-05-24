@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck, Film, ExternalLink, Heart } from "lucide-react";
+import { Play, Pause, AlertCircle, Music2, Loader2, PlayCircle, RefreshCw, VolumeX, Image as ImageIcon, Lock, ShieldCheck, Film, ExternalLink, Heart, ThumbsUp } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +63,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [showEndAd, setShowEndAd] = useState(false);
   const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
   const [adRefreshKey, setAdRefreshKey] = useState(0);
+  const [hasShownAppreciation, setHasShownAppreciation] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -224,6 +225,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     logImpression("optional_support_interstitial", ADMOB_CONFIG.units.interstitial.android);
   };
 
+  const handleEndAdComplete = () => {
+    setShowEndAd(false);
+    setHasShownAppreciation(true);
+  };
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -239,7 +245,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
         />
         <InterstitialAd 
           open={showEndAd} 
-          onOpenChange={(open) => !open && setShowEndAd(false)} 
+          onOpenChange={(open) => !open && handleEndAdComplete()} 
           type="interstitial"
         />
 
@@ -339,16 +345,25 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
           {isPlaybackFinished && !isAdFree && !isAdFreePassActive && (
             <div className="flex flex-col items-center gap-2 animate-fade-in">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('supportUsDescription')}</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="border-primary/40 text-primary hover:bg-primary/5 font-black uppercase tracking-tighter h-10 px-6"
-                onClick={handleSupportUs}
-              >
-                <Heart size={14} className="mr-2 fill-primary" />
-                {t('supportUsButton')}
-              </Button>
+              {hasShownAppreciation ? (
+                <div className="flex flex-col items-center gap-2 text-primary animate-pulse">
+                  <ThumbsUp size={20} />
+                  <p className="text-xs font-bold uppercase tracking-tight">{t('thanksForSupport')}</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('supportUsDescription')}</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-primary/40 text-primary hover:bg-primary/5 font-black uppercase tracking-tighter h-10 px-6"
+                    onClick={handleSupportUs}
+                  >
+                    <Heart size={14} className="mr-2 fill-primary" />
+                    {t('supportUsButton')}
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </CardFooter>

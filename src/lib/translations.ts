@@ -223,8 +223,9 @@ export const translations = {
     karmicProgress: "Karmic Progress: {count}/3",
     karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
     inviteMore: "Invite {count} more friends to reach the goal.",
-    supportUsButton: "ನಮ್ಮನ್ನು ಬೆಂಬಲಿಸಿ (Support Us)",
-    supportUsDescription: "ಜಾಹೀರಾತನ್ನು ನೋಡುವ ಮೂಲಕ ನಮ್ಮ ಸೇವೆಯನ್ನು ಮುಂದುವರಿಸಲು ಸಹಾಯ ಮಾಡಿ."
+    supportUsButton: "ನಿಮ್ಮ ಮೆಚ್ಚುಗೆ ಸೂಚಿಸಿ (Show appreciation)",
+    supportUsDescription: "ಒಂದು ಸಣ್ಣ ಜಾಹೀರಾತು ನೋಡುವ ಮೂಲಕ ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹ ನೀಡಿ.",
+    thanksForSupport: "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು! (Thanks for your support!)"
   },
   en: {
     appTitle: "Mantravaahini",
@@ -368,7 +369,7 @@ export const translations = {
     adCloseButton: "Close",
     playButton: "Play",
     pauseButton: "Pause",
-    beejaMantras: "Hreem Kleem Aim Shreem...",
+    beejaMantras: "ಹ್ರೀಂ ಕ್ಲೀಂ ಐಂ ಶ್ರೀಂ ಹ್ರೌಂ ಗ್ಲೌಂ ಗಂ ನಮಃ",
     closeButton: "Close",
     shareText: "Help build a disease-free society.",
     language: "ಕನ್ನಡ",
@@ -446,7 +447,8 @@ export const translations = {
     karmicProgress: "Karmic Progress: {count}/3",
     karmicRewardUnlocked: "Mission Complete! Your Premium access is active.",
     inviteMore: "Invite {count} more friends to reach the goal.",
-    supportUsButton: "Support Us",
-    supportUsDescription: "Help us keep this service free by watching a quick ad."
+    supportUsButton: "Show your appreciation",
+    supportUsDescription: "Express your gratitude by watching a short ad.",
+    thanksForSupport: "Thanks for your support!"
   }
 };
