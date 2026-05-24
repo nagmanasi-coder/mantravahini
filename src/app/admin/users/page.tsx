@@ -60,6 +60,7 @@ interface UserProfile {
   premiumCycleStartDate?: string | null;
   referredBy?: string;
   referralCode?: string;
+  deleted?: boolean;
 }
 
 interface AdminUser {
@@ -82,7 +83,6 @@ export default function AdminUsersPage() {
   const { toast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
 
   const adminMarkerRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -114,12 +114,14 @@ export default function AdminUsersPage() {
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
-    if (!searchQuery.trim()) return users;
+    if (!searchQuery.trim()) return users.filter(u => !u.deleted);
     const query = searchQuery.toLowerCase();
     return users.filter(u => 
+      !u.deleted && (
       u.displayName.toLowerCase().includes(query) || 
       u.email.toLowerCase().includes(query) ||
       u.uid.toLowerCase().includes(query)
+      )
     );
   }, [users, searchQuery]);
 
@@ -162,7 +164,7 @@ export default function AdminUsersPage() {
     return diff < 0 ? 0 : Math.ceil(diff / (1000 * 3600 * 24));
   };
 
-  if (userLoading || adminCheckLoading || !hasAdminAccess) return <div className="p-8 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
+  if (userLoading || adminCheckLoading || !hasAdminAccess) return <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]"><Loader2 className="animate-spin h-8 w-8 text-primary mb-4" /><p className="text-sm font-medium">Verifying access...</p></div>;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 pb-32">
@@ -190,7 +192,9 @@ export default function AdminUsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((u) => {
+              {usersLoading ? (
+                 <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="animate-spin mx-auto h-6 w-6 text-primary" /></TableCell></TableRow>
+              ) : filteredUsers.map((u) => {
                 const isAdmin = adminMarkers?.some(a => (a.id === u.uid || a.uid === u.uid)) || u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
                 const daysLeft = u.subscriptionTier === 'premium' ? calculateRemainingDays(u.premiumCycleStartDate) : null;
                 return (
@@ -200,7 +204,7 @@ export default function AdminUsersPage() {
                         <Avatar className="h-8 w-8"><AvatarImage src={u.photoURL} /><AvatarFallback><UserIcon size={16} /></AvatarFallback></Avatar>
                         <div className="flex flex-col truncate max-w-[120px]">
                           <span className="font-bold text-sm truncate">{u.displayName}</span>
-                          <span className="text-[9px] text-muted-foreground truncate">{u.referralCode}</span>
+                          <span className="text-[9px] text-muted-foreground truncate">{u.referralCode || u.uid.slice(0, 8)}</span>
                         </div>
                       </div>
                     </TableCell>
@@ -228,7 +232,7 @@ export default function AdminUsersPage() {
                        </div>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => { if(confirm('Delete?')) updateDocumentNonBlocking(doc(firestore, 'users', u.uid), { deleted: true }) }} disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'}>
+                      <Button variant="ghost" size="icon" onClick={() => { if(confirm('Delete user profile?')) updateDocumentNonBlocking(doc(firestore, 'users', u.uid), { deleted: true }) }} disabled={u.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53'}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

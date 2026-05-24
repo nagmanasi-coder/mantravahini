@@ -64,7 +64,7 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
-  // Testimonials Logic: Approval process removed, showing all newest submissions
+  // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'testimonials'), orderBy('createdAt', 'desc'));
@@ -107,7 +107,6 @@ export default function Home() {
   const whatsAppGroupUrl = `https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE`;
 
   const painMantra = mantras.find(m => m.id === 1);
-  const eyeMantra = mantras.find(m => m.id === 2);
   
   const handleUpgradeRequest = (title: string, description: string) => {
     setUpgradeDialogContent({ title, description });
@@ -207,7 +206,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="max-w-md mx-auto w-full">
                 {painMantra && (
                   <div className={cn(cardAnimation)}>
                      <StandaloneAudioPlayer mantra={painMantra} onUpgradeRequest={handleUpgradeRequest} imageId="kali-mantra-infographic" />
@@ -215,15 +214,6 @@ export default function Home() {
                         <p>{t('painReliefStep1')}</p><p>{t('painReliefStep2')}</p><p>{t('painReliefStep3')}</p><p>{t('painReliefStep4')}</p>
                         <p className="font-semibold text-foreground">{t('painReliefNote')}</p>
                       </CardContent></Card>
-                  </div>
-                )}
-                {eyeMantra && (
-                  <div className={cn(cardAnimation)}>
-                    <StandaloneAudioPlayer mantra={eyeMantra} onUpgradeRequest={handleUpgradeRequest} imageId="chakshu-mantra-infographic" />
-                    <Card className="mt-4"><CardContent className="p-4 space-y-4 text-center text-xs">
-                      <p className="text-muted-foreground">{t('eyeProblemsInstruction')}</p>
-                      <p className="font-semibold text-primary">{t('eyeProblemsNote')}</p>
-                    </CardContent></Card>
                   </div>
                 )}
             </div>
