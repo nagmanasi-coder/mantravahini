@@ -42,10 +42,10 @@ export function BannerAd() {
     };
     checkPass();
 
-    // Ad Refresh Logic: 15 seconds interval
+    // Ad Refresh Logic: 30 seconds interval (updated from 15s)
     const interval = setInterval(() => {
       setRefreshKey((prev) => prev + 1);
-    }, 15000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -65,7 +65,7 @@ export function BannerAd() {
           <RefreshCw size={8} className="animate-spin-slow" />
         </p>
       </div>
-      {/* The key prop forces a re-render/refresh of the ad unit every 15s */}
+      {/* The key prop forces a re-render/refresh of the ad unit every 30s */}
       <div 
         key={refreshKey}
         className={cn(
