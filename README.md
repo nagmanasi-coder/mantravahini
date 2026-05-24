@@ -15,7 +15,7 @@ To make your app live and update your APKs automatically:
 3.  **Environment Variables (CRITICAL)**: 
     *   In the Vercel dashboard for your project, go to **Settings > Environment Variables**.
     *   Add the following keys exactly as shown (do NOT use `NEXT_PUBLIC_` for these):
-        *   `GOOGLE_GENAI_API_KEY`: Your Gemini API Key (Found in Firebase Studio settings).
+        *   `GOOGLE_GENAI_API_KEY`: Get this from [Google AI Studio](https://aistudio.google.com/). It is **NOT** the same as the Firebase API Key.
         *   `SARVAM_AI_API_KEY`: Your Sarvam AI key (Used for Kannada AI features).
     *   Copy all fields from `src/firebase/config.ts` if needed for browser-side Firebase access.
 4.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
