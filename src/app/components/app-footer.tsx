@@ -1,7 +1,8 @@
+
 "use client"
 
 import Link from "next/link";
-import { Info, BookText, MessageSquareQuote, GraduationCap, Video, Music } from "lucide-react";
+import { Info, BookText, MessageSquareQuote, GraduationCap, Video, Music, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { usePathname } from "next/navigation";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
@@ -51,6 +52,10 @@ export function AppFooter() {
                     <Link href="/mantras" className="flex items-center space-x-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">
                         <Music className="h-4 w-4" />
                         <span>{t('mantraHubTitle')}</span>
+                    </Link>
+                    <Link href="/mantra-deeksha" className="flex items-center space-x-2 text-sm font-bold text-amber-600 transition-colors hover:text-amber-500">
+                        <Sparkles className="h-4 w-4" />
+                        <span>{t('mantraDeeksha')}</span>
                     </Link>
                     <Link href="/about-us" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                         <Info className="h-4 w-4" />

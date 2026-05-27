@@ -225,7 +225,14 @@ export const translations = {
     inviteMore: "Invite {count} more friends to reach the goal.",
     supportUsButton: "ನಿಮ್ಮ ಮೆಚ್ಚುಗೆ ಸೂಚಿಸಿ (Show appreciation)",
     supportUsDescription: "ಒಂದು ಸಣ್ಣ ಜಾಹೀರಾತು ನೋಡುವ ಮೂಲಕ ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹ ನೀಡಿ.",
-    thanksForSupport: "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು! (Thanks for your support!)"
+    thanksForSupport: "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು! (Thanks for your support!)",
+    mantraDeeksha: "ಮಂತ್ರ ದೀಕ್ಷೆ (Mantra Initiation)",
+    heritageTitle: "ಭಾರತೀಯ ಪರಂಪರೆಯಲ್ಲಿ ಮಂತ್ರ ದೀಕ್ಷೆ",
+    heritageContent: "ಸನಾತನ ಧರ್ಮದಲ್ಲಿ ಮಂತ್ರ ದೀಕ್ಷೆಯು ಆಧ್ಯಾತ್ಮಿಕ ಜೀವನದ ಅಡಿಪಾಯವಾಗಿದೆ. ಇದು ಕೇವಲ ಮಂತ್ರದ ಪದಗಳನ್ನು ನೀಡುವುದಲ್ಲ, ಬದಲಾಗಿ ಗುರುವಿನಿಂದ ಶಿಷ್ಯನಿಗೆ ದೈವಿಕ ಶಕ್ತಿಯ ಪ್ರಸರಣ (ಶಕ್ತಿಪಾತ). ಇದು ಮಂತ್ರದ 'ಬೀಜ'ವನ್ನು ಶಿಷ್ಯನ ಪ್ರಜ್ಞೆಯಲ್ಲಿ ಜಾಗೃತಗೊಳಿಸುತ್ತದೆ.",
+    impactTitle: "ಜೀವನದ ಮೇಲೆ ಪ್ರಭಾವ",
+    impactContent: "ಸರಿಯಾದ ದೀಕ್ಷೆಯು ಮಂತ್ರದ ಕಂಪನಗಳನ್ನು ಸಾವಿರ ಪಟ್ಟು ಹೆಚ್ಚು ಶಕ್ತಿಯುತವಾಗಿಸುತ್ತದೆ. ಇದು ಮಾನಸಿಕ ಅಡೆತಡೆಗಳನ್ನು ನಿವಾರಿಸಿ, ಆಂತರಿಕ ಶಾಂತಿ ಮತ್ತು ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ತರುತ್ತದೆ. ದೀಕ್ಷೆ ಪಡೆದ ಮಂತ್ರವು ದೈವಿಕ ರಕ್ಷಣಾ ಕವಚದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.",
+    freeForAllTitle: "ಎಲ್ಲರಿಗೂ ಉಚಿತ ಮಂತ್ರ ದೀಕ್ಷೆ",
+    freeForAllContent: "ಈ ದೈವಿಕ ವಿದ್ಯೆಯು ಎಲ್ಲರಿಗೂ ತಲುಪಬೇಕೆಂಬುದು ನಮ್ಮ ಉದ್ದೇಶ. ಜಾತಿ, ಮತ ಅಥವಾ ಆರ್ಥಿಕ ಸ್ಥಿತಿಯ ಭೇದವಿಲ್ಲದೆ, ನಂಬಿಕೆ ಮತ್ತು ಭಕ್ತಿಯಿರುವ ಯಾರು ಬೇಕಾದರೂ ಈ ದೀಕ್ಷೆಯನ್ನು ಸ್ವೀಕರಿಸಬಹುದು."
   },
   en: {
     appTitle: "Mantravaahini",
@@ -449,6 +456,13 @@ export const translations = {
     inviteMore: "Invite {count} more friends to reach the goal.",
     supportUsButton: "Show your appreciation",
     supportUsDescription: "Express your gratitude by watching a short ad.",
-    thanksForSupport: "Thanks for your support!"
+    thanksForSupport: "Thanks for your support!",
+    mantraDeeksha: "Mantra Deeksha (Initiation)",
+    heritageTitle: "Mantra Deeksha in Indian Heritage",
+    heritageContent: "In Sanatana Dharma, Mantra Deeksha is the foundation of spiritual life. It is not just the transmission of words, but a transfer of divine energy (Shaktipat) from Guru to disciple. It activates the 'seed' of the mantra within the practitioner's consciousness.",
+    impactTitle: "Life Impact",
+    impactContent: "Proper initiation makes the mantra's vibrations thousands of times more potent. It removes mental blockages, brings inner peace, and enhances physical health. An initiated mantra acts as a divine shield around the seeker.",
+    freeForAllTitle: "Free Mantra Deeksha for All",
+    freeForAllContent: "Our mission is to make this divine knowledge accessible to everyone. Regardless of caste, creed, or economic status, anyone with faith and devotion can receive this initiation."
   }
 };

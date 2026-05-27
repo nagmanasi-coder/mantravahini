@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, PlayCircle, Flame, Compass, Lock } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, PlayCircle, Flame, Compass, Lock, Flower2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -170,32 +170,56 @@ export default function Home() {
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
           </header>
 
-          <Link href="/kalajnana" className={cn("block mb-8", cardAnimation)}>
-             <Card className="border-2 border-primary bg-primary/5 hover:shadow-xl transition-all group overflow-hidden relative">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <Compass size={120} />
-                </div>
-                {!isAuthorized && (
-                  <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-                    <Lock size={10} /> Maintenance
-                  </Badge>
-                )}
-                <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
-                   <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                         <Compass className="h-8 w-8 animate-spin-slow" />
-                      </div>
-                      <div>
-                         <h3 className="text-2xl font-headline font-bold text-primary">{t('kalajnanaTitle')}</h3>
-                         <p className="text-sm font-bold text-muted-foreground">{t('dinaBhavishya')}</p>
-                      </div>
-                   </div>
-                   <div className="bg-primary text-white p-2 rounded-full group-hover:translate-x-1 transition-transform">
-                      <ArrowRight size={20} />
-                   </div>
-                </CardContent>
-             </Card>
-          </Link>
+          <div className="grid grid-cols-1 gap-4 mb-8">
+            <Link href="/kalajnana" className={cn("block", cardAnimation)}>
+                <Card className="border-2 border-primary bg-primary/5 hover:shadow-xl transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Compass size={120} />
+                    </div>
+                    {!isAuthorized && (
+                    <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
+                        <Lock size={10} /> Maintenance
+                    </Badge>
+                    )}
+                    <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
+                    <div className="flex items-center gap-4">
+                        <div className="h-14 w-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                            <Compass className="h-8 w-8 animate-spin-slow" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-headline font-bold text-primary">{t('kalajnanaTitle')}</h3>
+                            <p className="text-sm font-bold text-muted-foreground">{t('dinaBhavishya')}</p>
+                        </div>
+                    </div>
+                    <div className="bg-primary text-white p-2 rounded-full group-hover:translate-x-1 transition-transform">
+                        <ArrowRight size={20} />
+                    </div>
+                    </CardContent>
+                </Card>
+            </Link>
+
+            <Link href="/mantra-deeksha" className={cn("block", cardAnimation)} style={{ animationDelay: "0.1s" }}>
+                <Card className="border-2 border-amber-500 bg-amber-50/50 hover:shadow-xl transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <Flower2 size={120} />
+                    </div>
+                    <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
+                        <div className="flex items-center gap-4">
+                            <div className="h-14 w-14 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                                <Sparkles className="h-8 w-8 animate-pulse" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-headline font-bold text-amber-700">{t('mantraDeeksha')}</h3>
+                                <p className="text-xs font-black uppercase text-amber-600/70 tracking-widest">Free Initiation for All</p>
+                            </div>
+                        </div>
+                        <div className="bg-amber-500 text-white p-2 rounded-full group-hover:translate-x-1 transition-transform">
+                            <ArrowRight size={20} />
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
              {user && (
