@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, UserCheck } from 'lucide-react';
+import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, UserCheck, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 import { InterstitialAd } from '@/app/components/ads';
 import { cn } from '@/lib/utils';
@@ -29,9 +29,16 @@ export default function KalajnanaPage() {
   const [selectedSignIndex, setSelectedSignIndex] = useState<number | null>(null);
   const [showAd, setShowAd] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [isDevMode, setIsDevMode] = useState(false);
 
-  // Horoscope data is now generated automatically on the home page.
-  // This page simply consumes the cached result.
+  useEffect(() => {
+    const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
+    setIsDevMode(devMode);
+  }, []);
+
+  const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+  const isAuthorized = isDeveloper && isDevMode;
+
   const horoscopeRef = useMemoFirebase(() => {
     if (!firestore) return null;
     return doc(firestore, 'daily_horoscope', todayStr);
@@ -39,7 +46,6 @@ export default function KalajnanaPage() {
 
   const { data: horoscope, isLoading: horoscopeLoading } = useDoc<HoroscopeData>(horoscopeRef);
 
-  // Signs List
   const signs = [
     t('mesha'), t('vrishabha'), t('mithuna'), t('kataka'), 
     t('simha'), t('kanya'), t('tula'), t('vrishchika'), 
@@ -55,7 +61,6 @@ export default function KalajnanaPage() {
   const handleAdComplete = () => {
     setShowAd(false);
     setIsRevealed(true);
-    // Scroll to the prediction area
     setTimeout(() => {
       document.getElementById('prediction-display')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -67,14 +72,40 @@ export default function KalajnanaPage() {
     return data[String(selectedSignIndex)];
   }, [horoscope, selectedSignIndex, selectedType]);
 
-  // If user is guest, show a prompt to sign in instead of the sign cards
-  const needsAuthToView = !userLoading && !user;
-
-  if (userLoading || horoscopeLoading) {
+  if (userLoading || (horoscopeLoading && isAuthorized)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
         <p className="font-bold text-lg">{t('bhavishyaLoading')}</p>
+      </div>
+    );
+  }
+
+  // --- ASTROLOGY LOCK UI ---
+  if (!isAuthorized && !userLoading) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-16 text-center">
+        <header className="mb-12">
+            <Button asChild variant="ghost" size="sm" className="mb-4 self-start">
+               <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> {t('backButton')}</Link>
+            </Button>
+            <div className="flex justify-center mb-6">
+               <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-pulse">
+                  <Lock size={40} />
+               </div>
+            </div>
+            <h1 className="font-headline text-3xl font-bold text-primary mb-4">Divine Maintenance</h1>
+            <p className="text-muted-foreground font-medium leading-relaxed">
+              The Kalajnana portal is currently undergoing spiritual alignment. We are performing critical updates to ensure the purity of the divine predictions.
+            </p>
+            <div className="mt-8 p-4 bg-muted rounded-lg border border-primary/10 max-w-sm mx-auto">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary flex items-center justify-center gap-2">
+                  <ShieldAlert size={14} />
+                  Astrology Section Locked
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1 italic">Expected resolution: Soon</p>
+            </div>
+        </header>
       </div>
     );
   }
@@ -96,20 +127,7 @@ export default function KalajnanaPage() {
         <p className="mt-4 text-lg text-muted-foreground">{t('dinaBhavishya')} - {new Date().toLocaleDateString(language === 'kn' ? 'kn-IN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 
-      {needsAuthToView ? (
-        <Card className="border-2 border-dashed border-primary/40 bg-primary/5">
-           <CardContent className="p-12 text-center space-y-6">
-              <UserCheck className="h-16 w-16 text-primary mx-auto opacity-50" />
-              <div className="space-y-2">
-                <h2 className="text-2xl font-headline font-bold text-primary">Sign In to Reveal the Divine Path</h2>
-                <p className="text-muted-foreground">Daily predictions are exclusively available for our registered community members. Join us to start your day with divine guidance.</p>
-              </div>
-              <Button asChild size="lg" className="font-bold w-full sm:w-auto px-12">
-                 <Link href="/login">{t('loginRegister')}</Link>
-              </Button>
-           </CardContent>
-        </Card>
-      ) : !horoscope ? (
+      {!horoscope ? (
         <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">
           <Compass className="mx-auto h-12 w-12 text-primary/30 mb-4 animate-spin-slow" />
           <p className="text-muted-foreground italic">Predictions for today are being manifested. Please check back in a moment.</p>

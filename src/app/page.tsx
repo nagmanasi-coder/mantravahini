@@ -7,7 +7,7 @@ import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player"
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame, Compass } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame, Compass, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,7 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { Progress } from "@/components/ui/progress";
 import { generateDailyKalajnana } from '@/ai/flows/kalajnana-flow';
 import { format } from 'date-fns';
+import { Badge } from "@/components/ui/badge";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -51,6 +52,7 @@ export default function Home() {
   const [showBoostAd, setShowBoostAd] = useState(false);
   const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
   const [boostProgress, setBoostProgress] = useState(0);
+  const [isDevMode, setIsDevMode] = useState(false);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userDocRef = useMemoFirebase(() => {
@@ -66,6 +68,14 @@ export default function Home() {
   }>(userDocRef);
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
+  
+  useEffect(() => {
+    const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
+    setIsDevMode(devMode);
+  }, []);
+
+  const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+  const isAuthorized = isDeveloper && isDevMode;
 
   // DAILY HOROSCOPE AUTO-CHECK
   const horoscopeRef = useMemoFirebase(() => {
@@ -76,8 +86,8 @@ export default function Home() {
   const { data: horoscope, isLoading: horoscopeLoading } = useDoc(horoscopeRef);
 
   useEffect(() => {
-    // Only trigger generation if missing and user is signed in
-    if (!horoscopeLoading && !horoscope && firestore && user) {
+    // Only trigger generation if missing AND authorized developer is visiting
+    if (!horoscopeLoading && !horoscope && firestore && isAuthorized) {
       const autoGenerate = async () => {
         try {
           const result = await generateDailyKalajnana(todayStr);
@@ -87,13 +97,14 @@ export default function Home() {
             lagnaData: result.lagnaPredictions,
             generatedAt: new Date().toISOString()
           });
+          toast({ title: "Astrology Manifested", description: "Today's predictions have been generated successfully." });
         } catch (e) {
           console.error("Auto Kalajnana failed", e);
         }
       };
       autoGenerate();
     }
-  }, [horoscope, horoscopeLoading, firestore, todayStr, user]);
+  }, [horoscope, horoscopeLoading, firestore, todayStr, isAuthorized, toast]);
 
   // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
@@ -163,6 +174,11 @@ export default function Home() {
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                    <Compass size={120} />
                 </div>
+                {!isAuthorized && (
+                  <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
+                    <Lock size={10} /> Maintenance
+                  </Badge>
+                )}
                 <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
                    <div className="flex items-center gap-4">
                       <div className="h-14 w-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">

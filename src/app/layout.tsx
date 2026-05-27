@@ -10,7 +10,6 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
 import { BannerAd } from './components/ads';
-import { MaintenanceGuard } from '@/components/MaintenanceGuard';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -49,18 +48,16 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background text-foreground">
         <LanguageProvider>
           <FirebaseClientProvider>
-            <MaintenanceGuard>
-              <HandleReferral />
-              <SplashScreen />
-              <AppHeader />
-              <div className="pb-32 min-h-screen">
-                {children}
-              </div>
-              <AppFooter />
-              <BannerAd />
-              <Toaster />
-              <FirebaseErrorListener />
-            </MaintenanceGuard>
+            <HandleReferral />
+            <SplashScreen />
+            <AppHeader />
+            <div className="pb-32 min-h-screen">
+              {children}
+            </div>
+            <AppFooter />
+            <BannerAd />
+            <Toaster />
+            <FirebaseErrorListener />
           </FirebaseClientProvider>
         </LanguageProvider>
       </body>
