@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Music2, Loader2, PlayCircle, RefreshCw, Lock, ShieldCheck, Film, Heart, ThumbsUp } from "lucide-react";
+import { Play, Pause, Music2, Loader2, PlayCircle, RefreshCw, Lock, ShieldCheck, Film, Heart, ThumbsUp, AlertCircle } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,6 +122,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     const audio = audioRef.current;
     if (!audio) return;
     
+    // Reset state for new mantra
+    setHasMediaError(false);
+    setIsPlaybackFinished(false);
+    setProgress(0);
+    setCurrentTime(0);
+
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
       setIsBuffering(false);
@@ -140,6 +146,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
     };
     const handleError = () => {
+      console.warn("Audio Media Error encountered for:", mantra.name);
       setHasMediaError(true);
       setIsPlaying(false);
       setIsBuffering(false);
@@ -156,7 +163,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isAdFree, isAdFreePassActive, sendLocalNotification, userProfile]);
+  }, [isAdFree, isAdFreePassActive, sendLocalNotification, userProfile, mantra.id]);
 
   const logImpression = (type: string, unitId: string) => {
     if (firestore && user) {
@@ -194,10 +201,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       return;
     }
 
-    if (!audioSrc) return;
+    if (!audioSrc) {
+      toast({ variant: "destructive", title: "Audio Not Found", description: "This mantra audio is being prepared." });
+      return;
+    }
 
     if (hasMediaError) {
-      toast({ variant: "destructive", title: "Audio Unavailable" });
+      toast({ variant: "destructive", title: "Playback Error", description: "Could not load the divine sound. Please check connection." });
       return;
     }
 
@@ -333,8 +343,18 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
           <div className="flex items-center justify-center gap-4">
             {isBuffering ? (
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            ) : !audioSrc ? (
+               <div className="flex flex-col items-center gap-2 text-muted-foreground animate-in fade-in">
+                 <AlertCircle className="h-8 w-8 opacity-20" />
+                 <p className="text-[10px] uppercase font-black tracking-widest">Audio source not available</p>
+               </div>
+            ) : hasMediaError ? (
+               <div className="flex flex-col items-center gap-2 text-destructive animate-in slide-in-from-bottom-2">
+                 <AlertCircle className="h-8 w-8" />
+                 <p className="text-[10px] uppercase font-black tracking-widest">Media Load Error</p>
+               </div>
             ) : (
-              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full" disabled={hasMediaError}>
+              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full shadow-lg" disabled={hasMediaError || !audioSrc}>
                 {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
               </Button>
             )}
@@ -364,7 +384,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
             </div>
           )}
         </CardFooter>
-      <audio ref={audioRef} src={audioSrc || null} preload="metadata" />
+      <audio 
+        key={mantra.id} 
+        ref={audioRef} 
+        src={audioSrc || ''} 
+        preload="metadata" 
+      />
     </Card>
   );
 }

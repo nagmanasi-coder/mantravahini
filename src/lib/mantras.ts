@@ -48,7 +48,6 @@ export const mantras: Mantra[] = [
     id: 3,
     name: 'ರೋಗ ಮುಕ್ತಿ ಮಂಗಳ ಸ್ತೋತ್ರ',
     name_en: 'Rog Mukti Mangala Stotra',
-    // Using direct public storage URL for immediate availability
     url: 'https://firebasestorage.googleapis.com/v0/b/studio-9442084622-48e5f.firebasestorage.app/o/assets%2Fmangala-stotra-mp3?alt=media&token=54700d3d-9fbe-4682-965d-db9675276536',
     assetId: 'mangala-stotra-mp3',
     method: 'ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಶ್ರದ್ಧೆಯಿಂದ ಕೇಳಿ. ಮನೆಯಲ್ಲಿ ಪ್ಲೇ ಮಾಡುವುದರಿಂದ ಸಕಾರಾತ್ಮಕ ಶಕ್ತಿ ಹೆಚ್ಚುತ್ತದೆ.',
@@ -122,10 +121,13 @@ export const mantras: Mantra[] = [
     name: 'ಸಾಲ, ಋಣ ನಿವಾರಣೆಯ ಶುಕ್ರಾಚಾರ್ಯ ಮಂತ್ರ',
     name_en: 'Shukracharya Mantra for Debt Removal',
     url: '/shukracharya-mantra.mp3', 
+    assetId: 'shukracharya-mantra-mp3',
     method: 'ಹೆಡ್‌ಫೋನ್ ಬಳಸಿ ಶ್ರದ್ಧೆಯಿಂದ ಪ್ರತಿದಿನ ಕೇಳಿ.',
     method_en: 'Listen daily with devotion using headphones.',
     benefits: 'ಸಾಲದ ಬಾಧೆಗಳಿಂದ ಮುಕ್ತಿ ಮತ್ತು ಆರ್ಥಿಕ ಸ್ಥಿರತೆ.',
     benefits_en: 'Freedom from debt burdens and financial stability.',
+    description: 'ಶುಕ್ರಾಚಾರ್ಯ ಮಂತ್ರವು ಸಾಲದ ಸಮಸ್ಯೆಗಳಿಂದ ಮುಕ್ತಿ ಪಡೆಯಲು ಅತ್ಯಂತ ಫಲಪ್ರದವಾಗಿದೆ.',
+    description_en: 'Shukracharya mantra is highly effective for overcoming debt-related issues.',
     tier: "paid",
     category: "life"
   },
