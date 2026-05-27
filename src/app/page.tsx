@@ -34,7 +34,7 @@ const WhatsAppIcon = () => (
 );
 
 export default function Home() {
-  const { t, language } = useLanguage();
+  const { t, language = 'kn' } = useLanguage();
   const { toast } = useToast();
   const router = useRouter();
   const { user } = useUser();
