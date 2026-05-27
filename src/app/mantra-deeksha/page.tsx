@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useLanguage } from "@/context/language-context";
 import { Sparkles, Flower2, Heart, ShieldCheck, ArrowLeft, History, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
