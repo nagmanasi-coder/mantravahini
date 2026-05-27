@@ -2,12 +2,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { InterstitialAd } from "@/app/components/ads";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Clock, PlayCircle, MessageCircle, Video, Flame, Compass, Lock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, PlayCircle, Flame, Compass, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +24,7 @@ import {
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, addDoc, collection, serverTimestamp, query, where, orderBy, setDoc } from "firebase/firestore";
+import { doc, addDoc, collection, serverTimestamp, query, orderBy, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Progress } from "@/components/ui/progress";
@@ -54,7 +54,17 @@ export default function Home() {
   const [boostProgress, setBoostProgress] = useState(0);
   const [isDevMode, setIsDevMode] = useState(false);
 
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const currentLanguage = language || 'kn';
+  const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+
+  useEffect(() => {
+    const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
+    setIsDevMode(devMode);
+  }, []);
+
+  const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+  const isAuthorized = isDeveloper && isDevMode;
+
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, "users", user.uid);
@@ -69,14 +79,6 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   
-  useEffect(() => {
-    const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
-    setIsDevMode(devMode);
-  }, []);
-
-  const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-  const isAuthorized = isDeveloper && isDevMode;
-
   // DAILY HOROSCOPE AUTO-CHECK
   const horoscopeRef = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -155,7 +157,6 @@ export default function Home() {
     setShowUpgradeDialog(true);
   };
 
-  const currentLanguage = language || 'kn';
   const cardAnimation = "animate-fade-in-up";
 
   return (
