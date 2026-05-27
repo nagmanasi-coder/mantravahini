@@ -3,6 +3,7 @@
 import './flows/spiritual-guide-flow';
 import './flows/workshop-generator-flow';
 import './flows/tts-flow';
+import './flows/tts-generator-flow';
 import './flows/lesson-clarification-flow';
 import './flows/image-generation-flow';
 import './flows/kalajnana-flow';
