@@ -24,11 +24,10 @@ import {
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, addDoc, collection, serverTimestamp, query, orderBy, setDoc } from "firebase/firestore";
+import { doc, addDoc, collection, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Progress } from "@/components/ui/progress";
-import { generateDailyKalajnana } from '@/ai/flows/kalajnana-flow';
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 
@@ -79,34 +78,13 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   
-  // DAILY HOROSCOPE AUTO-CHECK
+  // Astrology Check (Read only, generation moved to Kalajnana page for admin)
   const horoscopeRef = useMemoFirebase(() => {
     if (!firestore) return null;
     return doc(firestore, 'daily_horoscope', todayStr);
   }, [firestore, todayStr]);
 
-  const { data: horoscope, isLoading: horoscopeLoading } = useDoc(horoscopeRef);
-
-  useEffect(() => {
-    // Only trigger generation if missing AND authorized developer is visiting
-    if (!horoscopeLoading && !horoscope && firestore && isAuthorized) {
-      const autoGenerate = async () => {
-        try {
-          const result = await generateDailyKalajnana(todayStr);
-          await setDoc(doc(firestore, 'daily_horoscope', todayStr), {
-            date: todayStr,
-            rashiData: result.rashiPredictions,
-            lagnaData: result.lagnaPredictions,
-            generatedAt: new Date().toISOString()
-          });
-          toast({ title: "Astrology Manifested", description: "Today's predictions have been generated successfully." });
-        } catch (e) {
-          console.error("Auto Kalajnana failed", e);
-        }
-      };
-      autoGenerate();
-    }
-  }, [horoscope, horoscopeLoading, firestore, todayStr, isAuthorized, toast]);
+  const { data: horoscope } = useDoc(horoscopeRef);
 
   // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
