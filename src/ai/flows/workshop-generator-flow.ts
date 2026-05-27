@@ -56,7 +56,7 @@ const workshopGeneratorFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleAI/gemini-1.5-flash',
       prompt: `You are an expert curriculum designer.
         CONVERT the following textbook content into interactive workshop-style modules for school students.
         

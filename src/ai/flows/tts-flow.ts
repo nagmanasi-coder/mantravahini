@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Text-to-Speech (TTS) Flow for Educational Content.
@@ -32,7 +33,7 @@ const ttsFlow = ai.defineFlow(
     const voiceName = input.language === 'kn' ? 'Achernar' : 'Algenib';
 
     const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
+      model: 'googleAI/gemini-2.5-flash-preview-tts',
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {

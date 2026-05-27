@@ -31,7 +31,7 @@ const imageGenFlow = ai.defineFlow(
     const fullPrompt = `A clean, professional educational diagram or high-quality illustration for a school lesson titled "${input.lessonTitle}". Subject: ${input.prompt}. Style: Minimalist, clear colors, educational, digital art, white background, no text labels.`;
 
     const { media } = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
+      model: 'googleAI/imagen-4.0-fast-generate-001',
       prompt: fullPrompt,
     });
 
