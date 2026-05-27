@@ -144,6 +144,7 @@ export default function Home() {
     setShowUpgradeDialog(true);
   };
 
+  const currentLanguage = language || 'kn';
   const cardAnimation = "animate-fade-in-up";
 
   return (
@@ -208,7 +209,7 @@ export default function Home() {
                       <div className="bg-amber-500 p-3 rounded-full text-white shrink-0"><Zap className="h-6 w-6" /></div>
                       <div className="flex-1 space-y-1">
                         <h3 className="font-bold text-amber-900 text-sm leading-tight">{t('dailyBoostTitle')}</h3>
-                        <p className="text-[10px] text-amber-700 font-medium">{language === 'kn' ? '೧ ಗಂಟೆ ಜಾಹೀರಾತು ಮುಕ್ತ ಅನುಭವಕ್ಕಾಗಿ' : 'for 1 hour ad-free experience'}</p>
+                        <p className="text-[10px] text-amber-700 font-medium">{currentLanguage === 'kn' ? '೧ ಗಂಟೆ ಜಾಹೀರಾತು ಮುಕ್ತ ಅನುಭವಕ್ಕಾಗಿ' : 'for 1 hour ad-free experience'}</p>
                         {!boostExpiry || getTimeRemaining() <= 0 ? (
                           <div className="space-y-1 mt-1">
                             <Progress value={(boostProgress / 5) * 100} className="h-1.5 bg-amber-200" />

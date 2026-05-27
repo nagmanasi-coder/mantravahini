@@ -28,13 +28,6 @@ const kalajnanaFlow = ai.defineFlow(
     outputSchema: KalajnanaOutputSchema,
   },
   async (date) => {
-    const signs = [
-      "Mesha (Aries)", "Vrishabha (Taurus)", "Mithuna (Gemini)", 
-      "Kataka (Cancer)", "Simha (Leo)", "Kanya (Virgo)", 
-      "Tula (Libra)", "Vrishchika (Scorpio)", "Dhanu (Sagittarius)", 
-      "Makara (Capricorn)", "Kumbha (Aquarius)", "Meena (Pisces)"
-    ];
-
     const systemPrompt = `You are an expert Vedic Astrologer and Spiritual Guide for the Mantravaahini app.
       DATE: ${date}
       
