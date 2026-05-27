@@ -80,41 +80,41 @@ export default function MantraDeekshaPage() {
                 <CardHeader className="bg-primary/10 text-center pb-2">
                     <CardTitle className="text-3xl font-headline text-primary flex items-center justify-center gap-2">
                         <ShieldCheck className="h-8 w-8" />
-                        Initiation Protocol
+                        {t('deekshaProtocolTitle')}
                     </CardTitle>
                     <CardDescription className="font-bold text-primary/80">
-                        How to receive your Deeksha today
+                        {t('deekshaProtocolSubtitle')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="p-8 space-y-6 text-center relative z-10">
                     <div className="grid gap-6 text-left">
                         <div className="flex gap-4 items-start">
                             <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-black shrink-0">1</div>
-                            <p className="font-bold leading-tight">Prepare your space with clean water and a focused mind.</p>
+                            <p className="font-bold leading-tight">{t('deekshaStep1')}</p>
                         </div>
                         <div className="flex gap-4 items-start">
                             <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-black shrink-0">2</div>
-                            <p className="font-bold leading-tight">Play the specific mantra from our collection with full volume.</p>
+                            <p className="font-bold leading-tight">{t('deekshaStep2')}</p>
                         </div>
                         <div className="flex gap-4 items-start">
                             <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-black shrink-0">3</div>
-                            <p className="font-bold leading-tight">Visualize the sound vibrations entering every cell of your body.</p>
+                            <p className="font-bold leading-tight">{t('deekshaStep3')}</p>
                         </div>
                     </div>
                     
-                    <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 mt-4 italic font-medium">
-                        "There is no fee for the divine light. It belongs to every heart that seeks it."
+                    <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 mt-4 italic font-medium text-foreground">
+                        {t('deekshaQuote')}
                     </div>
                 </CardContent>
                 <CardFooter className="bg-muted/30 p-6 flex flex-col gap-4">
                     <Button asChild className="w-full h-14 text-lg font-black shadow-xl animate-bounce">
                         <Link href="/mantras">
                             <Sparkles className="mr-2 h-5 w-5" />
-                            Receive Deeksha Now
+                            {t('receiveDeekshaButton')}
                         </Link>
                     </Button>
                     <p className="text-[10px] text-center text-muted-foreground uppercase font-black tracking-widest">
-                        Hosted by the Himalayan Siddha Lineage
+                        {t('hostedByLineage')}
                     </p>
                 </CardFooter>
             </Card>

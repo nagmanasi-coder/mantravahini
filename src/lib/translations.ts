@@ -232,7 +232,15 @@ export const translations = {
     impactTitle: "ಜೀವನದ ಮೇಲೆ ಪ್ರಭಾವ",
     impactContent: "ಸರಿಯಾದ ದೀಕ್ಷೆಯು ಮಂತ್ರದ ಕಂಪನಗಳನ್ನು ಸಾವಿರ ಪಟ್ಟು ಹೆಚ್ಚು ಶಕ್ತಿಯುತವಾಗಿಸುತ್ತದೆ. ಇದು ಮಾನಸಿಕ ಅಡೆತಡೆಗಳನ್ನು ನಿವಾರಿಸಿ, ಆಂತರಿಕ ಶಾಂತಿ ಮತ್ತು ಶಾರೀರಿಕ ಆರೋಗ್ಯವನ್ನು ತರುತ್ತದೆ. ದೀಕ್ಷೆ ಪಡೆದ ಮಂತ್ರವು ದೈವಿಕ ರಕ್ಷಣಾ ಕವಚದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.",
     freeForAllTitle: "ಎಲ್ಲರಿಗೂ ಉಚಿತ ಮಂತ್ರ ದೀಕ್ಷೆ",
-    freeForAllContent: "ಈ ದೈವಿಕ ವಿದ್ಯೆಯು ಎಲ್ಲರಿಗೂ ತಲುಪಬೇಕೆಂಬುದು ನಮ್ಮ ಉದ್ದೇಶ. ಜಾತಿ, ಮತ ಅಥವಾ ಆರ್ಥಿಕ ಸ್ಥಿತಿಯ ಭೇದವಿಲ್ಲದೆ, ನಂಬಿಕೆ ಮತ್ತು ಭಕ್ತಿಯಿರುವ ಯಾರು ಬೇಕಾದರೂ ಈ ದೀಕ್ಷೆಯನ್ನು ಸ್ವೀಕರಿಸಬಹುದು."
+    freeForAllContent: "ಈ ದೈವಿಕ ವಿದ್ಯೆಯು ಎಲ್ಲರಿಗೂ ತಲುಪಬೇಕೆಂಬೂದು ನಮ್ಮ ಉದ್ದೇಶ. ಜಾತಿ, ಮತ ಅಥವಾ ಆರ್ಥಿಕ ಸ್ಥಿತಿಯ ಭೇದವಿಲ್ಲದೆ, ನಂಬಿಕೆ ಮತ್ತು ಭಕ್ತಿಯಿರುವ ಯಾರು ಬೇಕಾದರೂ ಈ ದೀಕ್ಷೆಯನ್ನು ಸ್ವೀಕರಿಸಬಹುದು.",
+    deekshaProtocolTitle: "ದೀಕ್ಷಾ ಪ್ರಕ್ರಿಯೆ",
+    deekshaProtocolSubtitle: "ನಿಮ್ಮ ದೀಕ್ಷೆಯನ್ನು ಇಂದು ಹೇಗೆ ಸ್ವೀಕರಿಸುವುದು",
+    deekshaStep1: "ಶುದ್ಧ ನೀರು ಮತ್ತು ಏಕಾಗ್ರತೆಯ ಮನಸ್ಸಿನಿಂದ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಸಿದ್ಧಪಡಿಸಿ.",
+    deekshaStep2: "ನಮ್ಮ ಸಂಗ್ರಹದಿಂದ ನಿರ್ದಿಷ್ಟ ಮಂತ್ರವನ್ನು ಪೂರ್ಣ ಶಬ್ದದಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ.",
+    deekshaStep3: "ಧ್ವನಿ ಕಂಪನಗಳು ನಿಮ್ಮ ದೇಹದ ಪ್ರತಿ ಜೀವಕೋಶವನ್ನು ಪ್ರವೇಶಿಸುತ್ತಿವೆ ಎಂದು ಕಲ್ಪಿಸಿಕೊಳ್ಳಿ.",
+    deekshaQuote: "\"ದೈವಿಕ ಬೆಳಕಿಗೆ ಯಾವುದೇ ಶುಲ್ಕವಿಲ್ಲ. ಅದು ಬಯಸುವ ಪ್ರತಿ ಹೃದಯಕ್ಕೆ ಸೇರಿದೆ.\"",
+    receiveDeekshaButton: "ಈಗಲೇ ದೀಕ್ಷೆ ಪಡೆಯಿರಿ",
+    hostedByLineage: "ಹಿಮಾಲಯನ್ ಸಿದ್ಧ ಪರಂಪರೆಯಿಂದ ಆಯೋಜಿಸಲಾಗಿದೆ"
   },
   en: {
     appTitle: "Mantravaahini",
@@ -463,6 +471,14 @@ export const translations = {
     impactTitle: "Life Impact",
     impactContent: "Proper initiation makes the mantra's vibrations thousands of times more potent. It removes mental blockages, brings inner peace, and enhances physical health. An initiated mantra acts as a divine shield around the seeker.",
     freeForAllTitle: "Free Mantra Deeksha for All",
-    freeForAllContent: "Our mission is to make this divine knowledge accessible to everyone. Regardless of caste, creed, or economic status, anyone with faith and devotion can receive this initiation."
+    freeForAllContent: "Our mission is to make this divine knowledge accessible to everyone. Regardless of caste, creed, or economic status, anyone with faith and devotion can receive this initiation.",
+    deekshaProtocolTitle: "Initiation Protocol",
+    deekshaProtocolSubtitle: "How to receive your Deeksha today",
+    deekshaStep1: "Prepare your space with clean water and a focused mind.",
+    deekshaStep2: "Play the specific mantra from our collection with full volume.",
+    deekshaStep3: "Visualize the sound vibrations entering every cell of your body.",
+    deekshaQuote: "\"There is no fee for the divine light. It belongs to every heart that seeks it.\"",
+    receiveDeekshaButton: "Receive Deeksha Now",
+    hostedByLineage: "Hosted by the Himalayan Siddha Lineage"
   }
 };
