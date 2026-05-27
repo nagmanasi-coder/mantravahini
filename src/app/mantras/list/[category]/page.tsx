@@ -39,8 +39,8 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
   const filteredMantras = mantras.filter(m => m.category === category);
   const categoryTitle = category === 'life' ? t('healthyLifeTitle') : t('healthyBodyTitle');
 
-  // List of IDs that have verified audio assets attached
-  const readyMantraIds = [1, 2, 3, 17];
+  // List of IDs that have verified audio assets attached or hardcoded URLs ready
+  const readyMantraIds = [1, 2, 3, 16, 17];
 
   return (
     <div className="min-h-screen bg-background p-6 flex flex-col items-center">

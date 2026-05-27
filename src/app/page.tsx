@@ -78,14 +78,6 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   
-  // Astrology Check (Read only, generation moved to Kalajnana page for admin)
-  const horoscopeRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return doc(firestore, 'daily_horoscope', todayStr);
-  }, [firestore, todayStr]);
-
-  const { data: horoscope } = useDoc(horoscopeRef);
-
   // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
