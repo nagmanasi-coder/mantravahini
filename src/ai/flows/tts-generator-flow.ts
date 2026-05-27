@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Text-to-Speech (TTS) Flow for Spiritual Content.
@@ -54,7 +55,7 @@ const ttsGeneratorFlow = ai.defineFlow(
       const response = await ai.generate({
         model: 'googleai/gemini-2.5-flash-preview-tts',
         config: {
-          responseModalities: ['AUDIO'],
+          responseModalalities: ['AUDIO'],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: { voiceName },
@@ -75,7 +76,7 @@ const ttsGeneratorFlow = ai.defineFlow(
       const retryResponse = await ai.generate({
         model: 'googleai/gemini-2.5-flash-preview-tts',
         config: {
-          responseModalities: ['AUDIO'],
+          responseModalalities: ['AUDIO'],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: { voiceName },

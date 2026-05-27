@@ -71,8 +71,9 @@ service cloud.firestore {
     }
 
     match /daily_horoscope/{dateId} {
-      // Restricted to registered users for security and community value
-      allow read: if isSignedIn();
+      // Public daily predictions cached to save costs.
+      allow read: if true;
+      // Allow any signed-in user (including anonymous) to trigger the daily generation if missing.
       allow write: if isSignedIn();
     }
   }

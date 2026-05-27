@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -23,10 +24,12 @@ import {
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, addDoc, collection, serverTimestamp, query, where, orderBy } from "firebase/firestore";
+import { doc, addDoc, collection, serverTimestamp, query, where, orderBy, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Progress } from "@/components/ui/progress";
+import { generateDailyKalajnana } from '@/ai/flows/kalajnana-flow';
+import { format } from 'date-fns';
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -49,6 +52,7 @@ export default function Home() {
   const [boostExpiry, setBoostExpiry] = useState<string | null>(null);
   const [boostProgress, setBoostProgress] = useState(0);
 
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, "users", user.uid);
@@ -62,6 +66,34 @@ export default function Home() {
   }>(userDocRef);
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
+
+  // DAILY HOROSCOPE AUTO-CHECK
+  const horoscopeRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'daily_horoscope', todayStr);
+  }, [firestore, todayStr]);
+
+  const { data: horoscope, isLoading: horoscopeLoading } = useDoc(horoscopeRef);
+
+  useEffect(() => {
+    // Only trigger generation if user is signed in (security rules require auth for write)
+    if (!horoscopeLoading && !horoscope && firestore && user) {
+      const autoGenerate = async () => {
+        try {
+          const result = await generateDailyKalajnana(todayStr);
+          await setDoc(doc(firestore, 'daily_horoscope', todayStr), {
+            date: todayStr,
+            rashiData: result.rashiPredictions,
+            lagnaData: result.lagnaPredictions,
+            generatedAt: new Date().toISOString()
+          });
+        } catch (e) {
+          console.error("Auto Kalajnana failed", e);
+        }
+      };
+      autoGenerate();
+    }
+  }, [horoscope, horoscopeLoading, firestore, todayStr, user]);
 
   // Testimonials Logic
   const testimonialsQuery = useMemoFirebase(() => {
