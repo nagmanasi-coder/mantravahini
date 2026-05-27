@@ -29,43 +29,48 @@ const ttsGeneratorFlow = ai.defineFlow(
   },
   async (input) => {
     // Selection of voices that sound most appropriate for Indian spiritual content
-    // Achernar is well-tuned for Kannada rhythm. Algenib provides a clear, professional English.
     const voiceName = input.language === 'kn' ? 'Achernar' : 'Algenib';
 
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName },
+    try {
+      const { media } = await ai.generate({
+        model: googleAI.model('gemini-2.5-flash-preview-tts'),
+        config: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName },
+            },
           },
+          // Comprehensive safety bypass for spiritual chants and repetitive mantras
+          safetySettings: [
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' },
+          ],
         },
-        // Relax safety settings for spiritual content to prevent "No valid candidates" errors
-        safetySettings: [
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        ],
-      },
-      prompt: input.text,
-    });
+        prompt: input.text,
+      });
 
-    if (!media) {
-      throw new Error('No audio generated from divine source.');
+      if (!media || !media.url) {
+        throw new Error('No audio generated. The AI might be filtering the repetitive chant.');
+      }
+
+      const audioBuffer = Buffer.from(
+        media.url.substring(media.url.indexOf(',') + 1),
+        'base64'
+      );
+
+      const wavData = await toWav(audioBuffer);
+
+      return {
+        audioDataUri: 'data:audio/wav;base64,' + wavData,
+      };
+    } catch (error: any) {
+      console.error("TTS Generation Error:", error);
+      throw new Error(error.message || "Failed to generate spiritual audio.");
     }
-
-    const audioBuffer = Buffer.from(
-      media.url.substring(media.url.indexOf(',') + 1),
-      'base64'
-    );
-
-    const wavData = await toWav(audioBuffer);
-
-    return {
-      audioDataUri: 'data:audio/wav;base64,' + wavData,
-    };
   }
 );
 

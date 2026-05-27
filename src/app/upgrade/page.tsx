@@ -80,7 +80,7 @@ export default function UpgradePage() {
                     <CardTitle className="font-headline text-3xl text-primary">{t('premiumPlanTitle')}</CardTitle>
                     <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
                 </div>
-                <CardDescription className="text-2xl font-black text-accent">{t('premiumPlanPrice')}</CardDescription>
+                <CardDescription className="text-2xl font-black text-accent">₹199 / ತಿಂಗಳು</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 flex-grow pt-2">
                  <p className="text-xs font-bold text-center text-muted-foreground uppercase tracking-widest">{t('premiumPlanDescription')}</p>
