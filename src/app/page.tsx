@@ -126,7 +126,6 @@ export default function Home() {
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
           </header>
 
-          {/* Kalajnana Spotlight */}
           <Link href="/kalajnana" className={cn("block mb-8", cardAnimation)}>
              <Card className="border-2 border-primary bg-primary/5 hover:shadow-xl transition-all group overflow-hidden relative">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -149,9 +148,7 @@ export default function Home() {
              </Card>
           </Link>
 
-          {/* Healing Streak & Boost Area */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-             {/* Streak Card */}
              {user && (
                 <Card className="bg-primary border-primary shadow-xl overflow-hidden text-primary-foreground relative group">
                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -172,7 +169,6 @@ export default function Home() {
                 </Card>
              )}
 
-             {/* Energy Boost Card */}
              {!isPaidUser && (
                 <Card className="border-2 border-amber-500 bg-amber-50 shadow-lg relative overflow-hidden h-full">
                   <InterstitialAd open={showBoostAd} onOpenChange={(open) => !open && handleBoostAdComplete()} />
@@ -225,7 +221,6 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Testimonials Display (Authenticated Only) */}
             {user && testimonials && testimonials.length > 0 && (
               <section className={cn("space-y-6 pt-8", cardAnimation)}>
                 <div className="text-center">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -11,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mic2, Save, Play, Trash2, ArrowLeft, Volume2, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Loader2, Mic2, Save, Play, Trash2, ArrowLeft, Volume2, CheckCircle2, Download, User, UserCircle } from 'lucide-react';
 import { generateSpiritualAudio } from '@/ai/flows/tts-generator-flow';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
@@ -26,6 +27,7 @@ export default function AdminTTSPage() {
   const [text, setText] = useState('');
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<'kn' | 'en'>('kn');
+  const [gender, setGender] = useState<'male' | 'female'>('male');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function AdminTTSPage() {
     setPreviewUri(null);
 
     try {
-      const result = await generateSpiritualAudio({ text, language });
+      const result = await generateSpiritualAudio({ text, language, gender });
       setPreviewUri(result.audioDataUri);
       toast({ title: "Preview Ready", description: "Voice generated successfully. Please review before saving." });
     } catch (error: any) {
@@ -62,6 +64,16 @@ export default function AdminTTSPage() {
     }
   };
 
+  const handleDownload = () => {
+    if (!previewUri) return;
+    const link = document.createElement('a');
+    link.href = previewUri;
+    link.download = `${title || 'generated-voice'}.wav`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSave = async () => {
     if (!previewUri || !title.trim() || !firestore || !storage) return;
 
@@ -69,12 +81,10 @@ export default function AdminTTSPage() {
     const assetId = `tts-${Date.now()}`;
 
     try {
-      // 1. Upload to Storage
       const fileRef = ref(storage, `assets/${assetId}.wav`);
       await uploadString(fileRef, previewUri, 'data_url');
       const url = await getDownloadURL(fileRef);
 
-      // 2. Save Metadata to Firestore
       const assetDocRef = doc(firestore, 'assets', assetId);
       const newAsset = {
         id: assetId,
@@ -83,7 +93,7 @@ export default function AdminTTSPage() {
         fileType: 'audio',
         mimeType: 'audio/wav',
         url: url,
-        sizeBytes: (previewUri.length * 0.75), // rough estimate for base64
+        sizeBytes: (previewUri.length * 0.75),
         uploadDate: new Date().toISOString(),
       };
 
@@ -91,7 +101,6 @@ export default function AdminTTSPage() {
 
       toast({ title: "Asset Saved", description: "Audio has been stored in your registry." });
       
-      // Reset
       setText('');
       setTitle('');
       setPreviewUri(null);
@@ -116,14 +125,14 @@ export default function AdminTTSPage() {
           <Mic2 className="h-10 w-10" />
           AI Voice Studio
         </h1>
-        <p className="text-muted-foreground mt-2">Generate sacred speech and save it for your mantras or courses.</p>
+        <p className="text-muted-foreground mt-2">Generate sacred speech with Male/Female Indian accents.</p>
       </header>
 
       <div className="grid gap-8">
         <Card className="shadow-xl border-2 border-primary/10">
           <CardHeader>
             <CardTitle>Configuration</CardTitle>
-            <CardDescription>Enter the text to be spoken by the AI.</CardDescription>
+            <CardDescription>Select language, gender, and enter your text.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -135,17 +144,39 @@ export default function AdminTTSPage() {
               />
             </div>
             
-            <div className="space-y-2">
-              <Label>Target Language</Label>
-              <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kn">Kannada (Devotional Accent)</SelectItem>
-                  <SelectItem value="en">English (Professional Accent)</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Language</Label>
+                <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kn">Kannada</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Voice Gender</Label>
+                <Select value={gender} onValueChange={(val: any) => setGender(val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">
+                      <div className="flex items-center gap-2">
+                        <User className="h-3 w-3" /> Male
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="female">
+                      <div className="flex items-center gap-2">
+                        <UserCircle className="h-3 w-3" /> Female
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -163,7 +194,7 @@ export default function AdminTTSPage() {
               size="lg" 
               onClick={handleGenerate} 
               disabled={isGenerating || !text.trim()}
-              className="px-8"
+              className="px-8 w-full sm:w-auto"
             >
               {isGenerating ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
@@ -176,12 +207,17 @@ export default function AdminTTSPage() {
 
         {previewUri && (
           <Card className="border-2 border-green-500 bg-green-50 animate-fade-in">
-            <CardHeader>
-              <CardTitle className="text-green-800 flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5" />
-                Review & Approve
-              </CardTitle>
-              <CardDescription className="text-green-700">Listen to the output. If satisfied, save it to the Asset Registry.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-green-800 flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5" />
+                  Review & Approve
+                </CardTitle>
+                <CardDescription className="text-green-700">Download locally or save to the Asset Registry.</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDownload} className="border-green-600 text-green-600 hover:bg-green-100">
+                <Download className="mr-2 h-4 w-4" /> Download WAV
+              </Button>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-white p-4 rounded-xl border-2 border-green-200">
