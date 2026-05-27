@@ -22,6 +22,9 @@ export default function MantraDeekshaPage() {
     return null; // Prevent hydration mismatch
   }
   
+  const whatsAppMessage = "Namaste! I would like to receive Mantra Deeksha.\n\nName: \nMother's Name: \nPlace: ";
+  const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
+
   const sections = [
     {
       title: t('heritageTitle'),
@@ -118,7 +121,7 @@ export default function MantraDeekshaPage() {
                 </CardContent>
                 <CardFooter className="bg-muted/30 p-6 flex flex-col gap-4">
                     <Button asChild className="w-full h-14 text-lg font-black shadow-xl animate-bounce">
-                        <Link href="/mantras">
+                        <Link href={whatsAppUrl} target="_blank">
                             <Sparkles className="mr-2 h-5 w-5" />
                             {t('receiveDeekshaButton')}
                         </Link>
