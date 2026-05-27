@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI Lesson Clarification Flow.
@@ -30,7 +29,7 @@ const clarificationFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await ai.generate({
-      model: 'googleAI/gemini-1.5-flash',
+      model: 'googleai/gemini-1.5-flash',
       prompt: `You are a helpful educational assistant for school students.
         The student is studying a lesson titled "${input.lessonTitle}".
         

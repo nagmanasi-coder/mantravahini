@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -34,7 +33,7 @@ const WhatsAppIcon = () => (
 );
 
 export default function Home() {
-  const { t, language = 'kn' } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   const router = useRouter();
   const { user } = useUser();
