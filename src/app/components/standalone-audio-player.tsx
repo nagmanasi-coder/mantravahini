@@ -287,9 +287,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
                           <span>Refreshing...</span>
                        </div>
                     </div>
-                    <Button variant="outline" size="sm" className="w-full h-8 text-[10px] font-bold border-primary/20 hover:bg-primary/5" onClick={() => onUpgradeRequest("Remove In-Player Ads", "Upgrade to Premium to remove these banners and see sacred loops instead.")}>
-                       <VolumeX size={10} className="mr-1" /> {t('headerUpgrade')}
-                    </Button>
                  </div>
               </div>
             ) : videoUrl ? (
