@@ -76,7 +76,7 @@ export default function Home() {
   const { data: horoscope, isLoading: horoscopeLoading } = useDoc(horoscopeRef);
 
   useEffect(() => {
-    // Only trigger generation if user is signed in (security rules require auth for write)
+    // Only trigger generation if missing and user is signed in
     if (!horoscopeLoading && !horoscope && firestore && user) {
       const autoGenerate = async () => {
         try {

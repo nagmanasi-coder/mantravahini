@@ -53,7 +53,7 @@ const kalajnanaFlow = ai.defineFlow(
       6: Tula, 7: Vrishchika, 8: Dhanu, 9: Makara, 10: Kumbha, 11: Meena.`;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: systemPrompt,
       output: { schema: KalajnanaOutputSchema },
     });

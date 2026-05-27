@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Multi-modal Voice Vibration Health, Chakra, and Prana Analysis.
@@ -147,7 +148,7 @@ async function analyzeWithGemini(audioDataUri: string, language: 'kn' | 'en'): P
     Language: ${language === 'kn' ? 'Kannada' : 'English'}.`;
 
   const { output } = await ai.generate({
-    model: 'googleai/gemini-1.5-flash',
+    model: 'googleai/gemini-1.5-flash-latest',
     prompt: [
       { text: systemPrompt },
       { media: { url: audioDataUri, contentType: 'audio/webm' } }
