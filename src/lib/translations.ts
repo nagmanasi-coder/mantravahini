@@ -193,7 +193,7 @@ export const translations = {
     protectiveTitle: "ರಕ್ಷಣೆಗಾಗಿ (Protective Purpose)",
     solvingTitle: "ಸಮಸ್ಯೆಗಳ ಪರಿಹಾರಕ್ಕಾಗಿ (Solving Problems)",
     protectiveDesc: "ಶಕ್ತಿಶಾಲಿ ಮತ್ತು ಸಂಕ್ಷಿಪ್ತ ಮಂತ್ರಗಳು.",
-    solvingDesc: "ದೀರ್ಘಕಾಲದ ಸಮಸ್ಯೆಗಳಿಗೆ ಆಳವಾದ ಪರಿಹಾರ.",
+    solvingDesc: "ದೀರ್ಘಕಾಲದ समस्याಗಳಿಗೆ ಆಳವಾದ ಪರಿಹಾರ.",
     backToMain: "ಮುಖ್ಯ ಪುಟಕ್ಕೆ",
     backToMantras: "ಮಂತ್ರ ಸಂಗ್ರಹಕ್ಕೆ",
     methodTitle: "ಬಳಸುವ ವಿಧಾನ",

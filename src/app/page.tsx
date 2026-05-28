@@ -28,7 +28,6 @@ import { doc, addDoc, collection, serverTimestamp, query, orderBy } from "fireba
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Progress } from "@/components/ui/progress";
-import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 
 const WhatsAppIcon = () => (
@@ -36,7 +35,6 @@ const WhatsAppIcon = () => (
 );
 
 export default function Home() {
-  // Destructure with safe default to prevent ReferenceError
   const { t, language = 'kn' } = useLanguage();
   const { toast } = useToast();
   const router = useRouter();
@@ -146,7 +144,7 @@ export default function Home() {
                     </div>
                     {!isAuthorized && (
                     <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-                        <Lock size={10} /> Maintenance
+                        <Lock size(10) /> Maintenance
                     </Badge>
                     )}
                     <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
@@ -168,7 +166,6 @@ export default function Home() {
 
             <Link href="/mantra-deeksha" className={cn("block", cardAnimation)} style={{ animationDelay: "0.1s" }}>
                 <Card className="border-2 border-amber-500 bg-amber-50/50 hover:shadow-xl transition-all group overflow-hidden relative">
-                    {/* Glowing Free Sticker */}
                     <div className="absolute top-4 left-4 z-20 animate-pulse">
                         <div className="bg-accent text-accent-foreground text-[10px] font-black px-3 py-1 rounded-full shadow-[0_0_15px_rgba(212,175,55,0.8)] border border-white/20 uppercase tracking-tighter">
                           Free
@@ -225,7 +222,7 @@ export default function Home() {
                       <div className="bg-amber-500 p-3 rounded-full text-white shrink-0"><Zap className="h-6 w-6" /></div>
                       <div className="flex-1 space-y-1">
                         <h3 className="font-bold text-amber-900 text-sm leading-tight">{t('dailyBoostTitle')}</h3>
-                        <p className="text-[10px] text-amber-700 font-medium">{language === 'kn' ? '೧ ગಂಟೆ જાહેરાત મુક્ત અનુભવ માટે' : 'for 1 hour ad-free experience'}</p>
+                        <p className="text-[10px] text-amber-700 font-medium">{language === 'kn' ? '೧ ಗಂಟೆ ಜಾહેરાತ ಮುಕ್ತ ಅನುಭವಕ್ಕಾಗಿ' : 'for 1 hour ad-free experience'}</p>
                         {!boostExpiry || getTimeRemaining() <= 0 ? (
                           <div className="space-y-1 mt-1">
                             <Progress value={(boostProgress / 5) * 100} className="h-1.5 bg-amber-200" />

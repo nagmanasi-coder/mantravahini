@@ -4,12 +4,22 @@
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Shield, Sparkles, Brain, Zap, HeartPulse } from 'lucide-react';
+import { ArrowLeft, Shield, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 
 export default function MantraHubPage() {
   const { t } = useLanguage();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // Prevent hydration mismatch
+  }
 
   const categories = [
     {
