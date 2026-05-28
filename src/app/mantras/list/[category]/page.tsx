@@ -6,7 +6,7 @@ import { useLanguage } from '@/context/language-context';
 import { mantras } from '@/lib/mantras';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Music, Lock, ChevronRight, Sparkles, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowLeft, Music, Lock, ChevronRight, Sparkles, CheckCircle2, Clock, Shield, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -37,7 +37,7 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
   }, [userProfile?.createdAt]);
 
   const filteredMantras = mantras.filter(m => m.category === category);
-  const categoryTitle = category === 'life' ? t('healthyLifeTitle') : t('healthyBodyTitle');
+  const categoryTitle = category === 'protective' ? t('protectiveTitle') : t('solvingTitle');
 
   // List of IDs that have verified audio assets attached or hardcoded URLs ready
   const readyMantraIds = [1, 2, 3, 16, 17];
@@ -46,6 +46,9 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
     <div className="min-h-screen bg-background p-6 flex flex-col items-center">
       <div className="w-full max-w-3xl space-y-8 animate-fade-in">
         <header className="text-center space-y-4 pt-12 pb-8 border-b-2 border-primary/10">
+          <div className="flex justify-center mb-4">
+             {category === 'protective' ? <Shield className="h-12 w-12 text-amber-500 animate-pulse" /> : <Zap className="h-12 w-12 text-primary animate-pulse" />}
+          </div>
           <h1 className="text-3xl sm:text-4xl font-headline font-bold text-primary">
             {categoryTitle}
           </h1>

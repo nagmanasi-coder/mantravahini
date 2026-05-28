@@ -12,7 +12,7 @@ export type Mantra = {
   benefits?: string;
   benefits_en?: string;
   tier: "free" | "paid";
-  category: "life" | "disease";
+  category: "protective" | "solving";
 };
 
 export const mantras: Mantra[] = [
@@ -28,7 +28,7 @@ export const mantras: Mantra[] = [
     description: 'ಈ ಕಾಳಿ ಮಂತ್ರವು ದೈಹಿಕ ನೋವುಗಳನ್ನು ಗುಣಪಡಿಸಲು ಮತ್ತು ಶಕ್ತಿಯನ್ನು ತುಂಬಲು ಬಹಳ ಶಕ್ತಿಯುತವಾಗಿದೆ. ಇದನ್ನು ಶ್ರದ್ಧೆಯಿಂದ ಅಭ್ಯಾಸ ಮಾಡಿ.',
     description_en: 'This Kali mantra is very powerful for healing physical pain and infusing energy. Practice with devotion.',
     tier: "free",
-    category: "disease",
+    category: "solving",
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ export const mantras: Mantra[] = [
     description: 'ಪ್ರಾಚೀನ ನೇತ್ರ ಜ್ಯೋತಿ ಮಂತ್ರವು ಕಣ್ಣಿನ ಆರೋಗ್ಯವನ್ನು ಕಾಪಾಡಲು ಮತ್ತು ದೃಷ್ಟಿ ದೋಷಗಳನ್ನು ನಿವಾರಿಸಲು ಪ್ರಸಿದ್ಧವಾಗಿದೆ.',
     description_en: 'An ancient mantra famous for protecting eye health and correcting vision issues.',
     tier: "paid",
-    category: "disease",
+    category: "solving",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ export const mantras: Mantra[] = [
     description: 'ಈ ಸ್ತೋತ್ರವು ರೋಗಗಳನ್ನು ನಿವಾರಿಸಲು ಮತ್ತು ಆರೋಗ್ಯವನ್ನು ಕಾಪಾಡಲು ಅತ್ಯಂತ ಮಂಗಳಕರವಾಗಿದೆ.',
     description_en: 'This stotra is highly auspicious for warding off illnesses and maintaining robust health.',
     tier: "paid",
-    category: "disease",
+    category: "solving",
   },
   { 
     id: 9, 
@@ -71,7 +71,7 @@ export const mantras: Mantra[] = [
     description: 'ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತನ ಈ ಮಂತ್ರವು ದೀರ್ಘಕಾಲ ಕಾಡುವ ಎಲ್ಲಾ ಕಾಯಿಲೆಗಳನ್ನು ಗುಣಮಾಡುವಲ್ಲಿ ಫಲಕಾರಿ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಅಗತ್ಯ.',
     description_en: 'This mantra of Lord Hanuman is effective in curing long-standing diseases. Requires personalized activation.',
     tier: "paid",
-    category: "disease"
+    category: "solving"
   },
   { 
     id: 17, 
@@ -86,7 +86,7 @@ export const mantras: Mantra[] = [
     description: 'ಭೈರವ ಮಂತ್ರವು ರಕ್ಷಣೆ ಮತ್ತು ಧೈರ್ಯವನ್ನು ನೀಡುವ ಅತ್ಯಂತ ಪ್ರಭಾವಶಾಲಿ ಮಂತ್ರವಾಗಿದೆ.',
     description_en: 'Bhairava mantra is a highly influential mantra for protection and courage.',
     tier: "paid",
-    category: "life"
+    category: "protective"
   },
   { 
     id: 11, 
@@ -100,7 +100,7 @@ export const mantras: Mantra[] = [
     description: 'ಬಗಲಾಮುಖಿ ಮಂತ್ರವು ಸ್ತಂಭನ ಶಕ್ತಿಯನ್ನು ಹೊಂದಿದ್ದು, ವಿರೋಧಿಗಳನ್ನು ಶಾಂತಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.',
     description_en: 'Bagalamukhi mantra possesses stalling power and helps in silencing opponents.',
     tier: "paid",
-    category: "life"
+    category: "solving"
   },
   { 
     id: 10, 
@@ -114,7 +114,7 @@ export const mantras: Mantra[] = [
     description: 'ಹಂಸ ಮಂತ್ರವು ಉಸಿರಾಟದ ಜೊತೆಗೂಡಿ ಮನಸ್ಸನ್ನು ಶುದ್ಧೀಕರಿಸುವ ಸಕ್ರಿಯ ಮಂತ್ರವಾಗಿದೆ.',
     description_en: 'The Hamsa mantra is an active mantra that purifies the mind in sync with breathing.',
     tier: "paid",
-    category: "life"
+    category: "solving"
   },
   { 
     id: 16, 
@@ -129,7 +129,7 @@ export const mantras: Mantra[] = [
     description: 'ಶುಕ್ರಾಚಾರ್ಯ ಮಂತ್ರವು ಸಾಲದ ಸಮಸ್ಯೆಗಳಿಂದ ಮುಕ್ತಿ ಪಡೆಯಲು ಅತ್ಯಂತ ಫಲಪ್ರದವಾಗಿದೆ.',
     description_en: 'Shukracharya mantra is highly effective for overcoming debt-related issues.',
     tier: "paid",
-    category: "life"
+    category: "solving"
   },
   { 
     id: 15, 
@@ -141,7 +141,7 @@ export const mantras: Mantra[] = [
     benefits: 'ಸಮಾಜದಲ್ಲಿ ಗೌರವ, ವ್ಯಕ್ತಿತ್ವದ ವಿಕಸನ ಮತ್ತು ಆಕರ್ಷಣ ಶಕ್ತಿ ಹೆಚ್ಚಳ.',
     benefits_en: 'Increased respect in society, personality development, and attraction power.',
     tier: "paid",
-    category: "life"
+    category: "protective"
   },
   { 
     id: 12, 
@@ -153,7 +153,7 @@ export const mantras: Mantra[] = [
     benefits: 'ಐಶ್ವರ್ಯ, ಸಂಪತ್ತಿನ ವೃದ್ಧಿ ಮತ್ತು ಆರ್ಥಿಕ ಅಭಿವೃದ್ಧಿ.',
     benefits_en: 'Increase in wealth, prosperity, and economic growth.',
     tier: "paid",
-    category: "life"
+    category: "protective"
   },
   { 
     id: 13, 
@@ -165,7 +165,7 @@ export const mantras: Mantra[] = [
     benefits: 'ಹಣಕಾಸಿನ ಹರಿವಿನ ಅಡೆತಡೆಗಳ ನಿವಾರಣೆ ಮತ್ತು ಸಕಲ ಭಾಗ್ಯಗಳು.',
     benefits_en: 'Removal of financial flow obstacles and attainment of all fortunes.',
     tier: "paid",
-    category: "life"
+    category: "protective"
   },
   { 
     id: 14, 
@@ -177,6 +177,6 @@ export const mantras: Mantra[] = [
     benefits: 'ಏಕಾಗ್ರತೆ, ನೆನಪಿನ ಶಕ್ತಿ ಮತ್ತು ಬುದ್ಧಿಶಕ್ತಿ ಹೆಚ್ಚಳ.',
     benefits_en: 'Increased concentration, memory power, and intelligence.',
     tier: "paid",
-    category: "life"
+    category: "protective"
   },
 ];

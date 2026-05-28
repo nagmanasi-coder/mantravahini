@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useLanguage } from '@/context/language-context';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, HeartPulse, Sparkles, Brain, Zap } from 'lucide-react';
+import { ArrowLeft, Shield, Sparkles, Brain, Zap, HeartPulse } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -12,18 +13,18 @@ export default function MantraHubPage() {
 
   const categories = [
     {
-      id: 'life',
-      title: t('healthyLifeTitle'),
-      icon: <Zap className="h-12 w-12 text-amber-500" />,
+      id: 'protective',
+      title: t('protectiveTitle'),
+      icon: <Shield className="h-12 w-12 text-amber-500" />,
       color: "bg-amber-50 border-amber-200 hover:bg-amber-100",
-      description: "Mantras for wealth, protection, knowledge, and success."
+      description: t('protectiveDesc')
     },
     {
-      id: 'disease',
-      title: t('healthyBodyTitle'),
-      icon: <HeartPulse className="h-12 w-12 text-primary" />,
+      id: 'solving',
+      title: t('solvingTitle'),
+      icon: <Zap className="h-12 w-12 text-primary" />,
       color: "bg-primary/5 border-primary/20 hover:bg-primary/10",
-      description: "Mantras for pain relief, eye health, and physical healing."
+      description: t('solvingDesc')
     }
   ];
 
