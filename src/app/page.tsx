@@ -144,7 +144,7 @@ export default function Home() {
                     </div>
                     {!isAuthorized && (
                     <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-                        <Lock size(10) /> Maintenance
+                        <Lock size={10} /> Maintenance
                     </Badge>
                     )}
                     <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">

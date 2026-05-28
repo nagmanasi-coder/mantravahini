@@ -240,7 +240,7 @@ export default function KalajnanaPage() {
              
              {!isRevealed && selectedSignIndex !== null && (
                <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">
-                  <Lock className="mx-auto h-12 w-12 text-primary/30 mb-4" />
+                  <Lock size={48} className="mx-auto text-primary/30 mb-4" />
                   <p className="text-muted-foreground italic">{t('revealBhavishya')}</p>
                </div>
              )}
