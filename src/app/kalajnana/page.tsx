@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
-import { InterstitialAd } from '@/app/components/ads';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { generateDailyKalajnana } from '@/ai/flows/kalajnana-flow';
@@ -30,7 +29,6 @@ export default function KalajnanaPage() {
   const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
   const [selectedType, setSelectedType] = useState<'rashi' | 'lagna' | null>(null);
   const [selectedSignIndex, setSelectedSignIndex] = useState<number | null>(null);
-  const [showAd, setShowAd] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,12 +56,6 @@ export default function KalajnanaPage() {
 
   const handleSignClick = (index: number) => {
     setSelectedSignIndex(index);
-    setShowAd(true);
-    setIsRevealed(false);
-  };
-
-  const handleAdComplete = () => {
-    setShowAd(false);
     setIsRevealed(true);
     setTimeout(() => {
       document.getElementById('prediction-display')?.scrollIntoView({ behavior: 'smooth' });
@@ -104,7 +96,6 @@ export default function KalajnanaPage() {
     );
   }
 
-  // --- ASTROLOGY LOCK UI ---
   if (!isAuthorized && !userLoading) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-16 text-center">
@@ -135,8 +126,6 @@ export default function KalajnanaPage() {
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8 pb-32 animate-fade-in">
-      <InterstitialAd open={showAd} onOpenChange={(open) => !open && handleAdComplete()} type="rewarded" />
-
       <header className="mb-12 text-center">
         <Button asChild variant="ghost" size="sm" className="mb-4 self-start">
            <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> {t('backButton')}</Link>
@@ -237,13 +226,6 @@ export default function KalajnanaPage() {
                   <p className="text-destructive font-bold">Prediction data missing for this sign. Please try refreshing.</p>
                 </div>
              ) : null}
-             
-             {!isRevealed && selectedSignIndex !== null && (
-               <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">
-                  <Lock size={48} className="mx-auto text-primary/30 mb-4" />
-                  <p className="text-muted-foreground italic">{t('revealBhavishya')}</p>
-               </div>
-             )}
           </div>
         </div>
       )}

@@ -48,13 +48,8 @@ service cloud.firestore {
     }
 
     match /testimonials/{testimonialId} {
-      // Simplest rule for public wall reading to prevent "Missing Permissions" errors.
       allow read: if true;
-      
-      // Allow practitioners and admins to submit results
       allow create: if isSignedIn() && (isPractitioner() || isAdmin());
-      
-      // Admins have full control for moderation (Delete option)
       allow update, delete: if isAdmin();
     }
 
@@ -65,15 +60,8 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    match /ad_impressions/{id} {
-      allow create: if isSignedIn();
-      allow read: if isAdmin();
-    }
-
     match /daily_horoscope/{dateId} {
-      // Public daily predictions cached to save costs.
       allow read: if true;
-      // Allow any signed-in user (including anonymous) to trigger the daily generation if missing.
       allow write: if isSignedIn();
     }
   }

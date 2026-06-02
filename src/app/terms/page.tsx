@@ -71,14 +71,11 @@ export default function TermsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>4. Subscriptions & Advertisements</CardTitle>
+            <CardTitle>4. Subscriptions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <p>
-              Some parts of the service are billed on a subscription basis ("Basic" and "Pro"). You will be billed in advance on a recurring and periodic basis.
-            </p>
-            <p>
-              Free users acknowledge that the service is supported by advertisements. Interruptive ads will only appear before or after shloka playback to preserve the spiritual experience.
+              Some parts of the service are billed on a subscription basis. You will be billed in advance on a recurring and periodic basis.
             </p>
           </CardContent>
         </Card>

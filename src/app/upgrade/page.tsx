@@ -1,9 +1,10 @@
+
 "use client";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Star, PlayCircle, Zap } from "lucide-react";
+import { ArrowLeft, Check, Star, PlayCircle } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ const WhatsAppIcon = () => (
 
 export default function UpgradePage() {
   const { t } = useLanguage();
-  const whatsAppMessage = "Hello! I'm interested in Mantravaahini Ad-Free. Please help me upgrade.";
+  const whatsAppMessage = "Hello! I'm interested in Mantravaahini Premium. Please help me upgrade.";
   const whatsAppUrl = `https://wa.me/917022070287?text=${encodeURIComponent(whatsAppMessage)}`;
   const [isMounted, setIsMounted] = useState(false);
 
@@ -22,13 +23,12 @@ export default function UpgradePage() {
   }, []);
 
   const freeFeatures = [
-    t('featureAdSupportedAccess'),
+    "Unlimited Basic Mantras",
     t('featurePainMantra'),
-    "Unlimited Ad-Supported Plays",
   ];
 
   const premiumFeatures = [
-    "No Advertisements (Ad-Free Experience)",
+    "Complete Mantra Library Access",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),

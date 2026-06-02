@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useRef, useState, useEffect, type MouseEvent, useMemo } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { Play, Pause, Music2, Loader2, PlayCircle, RefreshCw, Lock, ShieldCheck, Film, Heart, ThumbsUp, AlertCircle } from "lucide-react";
+import { Play, Pause, Music2, Loader2, RefreshCw, Lock, ShieldCheck, Film, Heart, ThumbsUp, AlertCircle } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,17 +14,15 @@ import { useLanguage } from "@/context/language-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { Badge } from "@/components/ui/badge";
-import { doc, collection, addDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
-import { InterstitialAd } from "./ads";
-import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
 import { isToday, isYesterday } from "date-fns";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
   onUpgradeRequest: (title: string, description: string) => void;
   imageId?: string;
-  videoUrl?: string; // Support for "in-run" healing videos
+  videoUrl?: string;
 }
 
 export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, videoUrl }: StandaloneAudioPlayerProps) {
@@ -48,9 +46,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
-  const isAdFree = isPaidUser || isPractitioner;
+  const isPremium = isPaidUser || isPractitioner;
 
-  const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPlaybackFinished, setIsPlaybackFinished] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -59,43 +56,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [hasMediaError, setHasMediaError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   
-  const [showStartAd, setShowStartAd] = useState(false);
-  const [showEndAd, setShowEndAd] = useState(false);
-  const [isUnlockedByAd, setIsUnlockedByAd] = useState(false);
-  const [adRefreshKey, setAdRefreshKey] = useState(0);
-  const [hasShownAppreciation, setHasShownAppreciation] = useState(false);
-
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
-  // Revenue Strategy: Show banner ad in slot during playback for free users
-  const showVisualBannerAd = isPlaying && !isAdFree && !isAdFreePassActive;
-
-  useEffect(() => {
-    const checkPass = () => {
-      const expiry = localStorage.getItem('ad_free_until');
-      setIsAdFreePassActive(expiry ? new Date(expiry) > new Date() : false);
-    };
-    checkPass();
-    const interval = setInterval(checkPass, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Ad Refresh Logic for internal slot
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (showVisualBannerAd) {
-      interval = setInterval(() => {
-        setAdRefreshKey(prev => prev + 1);
-      }, 30000);
-    }
-    return () => clearInterval(interval);
-  }, [showVisualBannerAd]);
-
-  // STREAK LOGIC
   const updateStreak = () => {
     if (!firestore || !user || !userProfile) return;
 
@@ -122,7 +88,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     const audio = audioRef.current;
     if (!audio) return;
     
-    // Reset state for new mantra
     setHasMediaError(false);
     setIsPlaybackFinished(false);
     setProgress(0);
@@ -146,7 +111,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       sendLocalNotification('notificationMantraCompleteTitle', 'notificationMantraCompleteBody');
     };
     const handleError = () => {
-      console.warn("Audio Media Error encountered for:", mantra.name);
       setHasMediaError(true);
       setIsPlaying(false);
       setIsBuffering(false);
@@ -163,20 +127,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isAdFree, isAdFreePassActive, sendLocalNotification, userProfile, mantra.id]);
-
-  const logImpression = (type: string, unitId: string) => {
-    if (firestore && user) {
-      addDoc(collection(firestore, "ad_impressions"), {
-        userId: user.uid,
-        mantraId: mantra.id,
-        timestamp: serverTimestamp(),
-        type: type,
-        unitId: unitId,
-        platform: isNativePlatform() ? "native_apk" : "web_pwa"
-      }).catch(() => {});
-    }
-  };
+  }, [isPremium, sendLocalNotification, userProfile, mantra.id]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -213,31 +164,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    if (isAdFree || isUnlockedByAd || isAdFreePassActive) {
-      setIsPlaying(true);
-      setIsPlaybackFinished(false);
+    if (mantra.tier === 'paid' && !isPremium) {
+      onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
       return;
     }
 
-    setShowStartAd(true);
-  };
-
-  const handleStartAdComplete = () => {
-    setShowStartAd(false);
-    setIsUnlockedByAd(true);
-    logImpression("rewarded_unlock_start", ADMOB_CONFIG.units.rewarded.android);
     setIsPlaying(true);
     setIsPlaybackFinished(false);
-  };
-
-  const handleSupportUs = () => {
-    setShowEndAd(true);
-    logImpression("optional_support_interstitial", ADMOB_CONFIG.units.interstitial.android);
-  };
-
-  const handleEndAdComplete = () => {
-    setShowEndAd(false);
-    setHasShownAppreciation(true);
   };
 
   const formatTime = (time: number) => {
@@ -248,25 +181,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        <InterstitialAd 
-          open={showStartAd} 
-          onOpenChange={(open) => !open && handleStartAdComplete()} 
-          type="rewarded"
-        />
-        <InterstitialAd 
-          open={showEndAd} 
-          onOpenChange={(open) => !open && handleEndAdComplete()} 
-          type="interstitial"
-        />
-
-        {!isAdFree && !isUnlockedByAd && !isAdFreePassActive && (
-           <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500 animate-pulse">
+        {mantra.tier === 'paid' && !isPremium && (
+           <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <Lock className="h-3 w-3 mr-1" />
-            Rewarded Unlock Required
+            Premium Feature
           </Badge>
         )}
 
-        {isAdFree && (
+        {isPremium && (
           <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
             <ShieldCheck className="h-3 w-3 mr-1" />
             Ad-Free Active
@@ -281,25 +203,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
         <CardContent className="space-y-6">
           <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
-            {showVisualBannerAd ? (
-              <div key={adRefreshKey} className="relative h-full w-full bg-muted flex flex-col items-center justify-center p-6 animate-fade-in">
-                 <div className="border-2 border-dashed border-primary/20 rounded-xl p-6 text-center space-y-4 bg-card shadow-inner w-full max-w-[320px]">
-                    <Badge variant="outline" className="border-primary/40 text-primary uppercase text-[9px] font-black tracking-widest bg-primary/5">
-                       Sponsored Ad Slot
-                    </Badge>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
-                       {language === 'kn' ? 'ಜಾಹೀರಾತು' : 'ADVERTISEMENT'}
-                    </p>
-                    <div className="h-16 flex flex-col items-center justify-center border bg-muted/20 rounded font-mono text-[9px] text-muted-foreground/60 space-y-1">
-                       <p>UNIT: {ADMOB_CONFIG.units.banner.android.slice(-8)}</p>
-                       <div className="flex items-center gap-1">
-                          <RefreshCw size={8} className="animate-spin-slow" />
-                          <span>Refreshing...</span>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-            ) : videoUrl ? (
+            {videoUrl ? (
               <video 
                 ref={videoRef}
                 src={videoUrl} 
@@ -323,7 +227,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
               </div>
             )}
             
-            {(videoUrl || showVisualBannerAd) && (
+            {videoUrl && (
                <div className="absolute bottom-2 right-2 bg-black/40 p-1 rounded backdrop-blur-sm">
                   <Film className="h-3 w-3 text-white/50" />
                </div>
@@ -360,27 +264,10 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
             )}
           </div>
 
-          {isPlaybackFinished && !isAdFree && !isAdFreePassActive && (
+          {isPlaybackFinished && (
             <div className="flex flex-col items-center gap-2 animate-fade-in">
-              {hasShownAppreciation ? (
-                <div className="flex flex-col items-center gap-2 text-primary animate-pulse">
-                  <ThumbsUp size={20} />
-                  <p className="text-xs font-bold uppercase tracking-tight">{t('thanksForSupport')}</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('supportUsDescription')}</p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="border-primary/40 text-primary hover:bg-primary/5 font-black uppercase tracking-tighter h-10 px-6"
-                    onClick={handleSupportUs}
-                  >
-                    <Heart size={14} className="mr-2 fill-primary" />
-                    {t('supportUsButton')}
-                  </Button>
-                </>
-              )}
+              <ThumbsUp size={20} className="text-primary" />
+              <p className="text-xs font-bold uppercase tracking-tight text-primary">{t('thanksForSupport')}</p>
             </div>
           )}
         </CardFooter>

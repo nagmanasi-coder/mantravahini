@@ -9,7 +9,6 @@ import { AppFooter } from './components/app-footer';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
-import { BannerAd } from './components/ads';
 
 export const metadata: Metadata = {
   title: 'ಮಂತ್ರವಾಹಿನಿ (Mantravaahini)',
@@ -27,7 +26,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: 'cover', // Critical for notched phones and full-screen APK experience
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -55,7 +54,6 @@ export default function RootLayout({
               {children}
             </div>
             <AppFooter />
-            <BannerAd />
             <Toaster />
             <FirebaseErrorListener />
           </FirebaseClientProvider>

@@ -57,14 +57,13 @@ export default function UserManualPage() {
   };
 
   const freeFeatures = [
-    t('featureAdSupportedAccess'),
+    "Unlimited Basic Mantras",
     t('featurePainMantra'),
-    "Unlimited Ad-Supported Plays",
     "Public Spiritual Guidance"
   ];
 
   const premiumFeatures = [
-    "No Advertisements (Ad-Free Experience)",
+    "Full Mantra Library Access",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),

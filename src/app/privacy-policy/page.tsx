@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <p>
-              Mantravaahini ("we", "our", or "us") is dedicated to your spiritual privacy. This policy explains how we collect, use, and safeguard your data when using the Mantravaahini APK or web services.
+              Mantravaahini ("we", "our", or "us") is dedicated to your spiritual privacy. This policy explains how we collect, use, and safeguard your data when using the Mantravaahini services.
             </p>
             <p>
               By using our services, you consent to the data practices described in this statement.
@@ -53,15 +53,11 @@ export default function PrivacyPolicyPage() {
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <div>
               <h3 className="font-bold text-foreground">A. Authentication</h3>
-              <p>We use Firebase Auth to manage your account via email or anonymous tokens.</p>
+              <p>We use Firebase Auth to manage your account via email or Google sign-in.</p>
             </div>
             <div>
               <h3 className="font-bold text-foreground">B. Spiritual Progress</h3>
               <p>We store your practitioner level and referral lineage to manage the Prana Vidya hierarchy.</p>
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground">C. Advertisements</h3>
-              <p>We use Google AdMob. AdMob may collect and use personal data for its own purposes. You can find more about AdMob's data collection in the Google Privacy Policy.</p>
             </div>
           </CardContent>
         </Card>
@@ -75,7 +71,7 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
             <p>
-              We implement industry-standard Firestore Security Rules to ensure only you can access your private profile data. Testimonials and videos submitted by practitioners are stored in secure Firebase Storage buckets.
+              We implement industry-standard Firestore Security Rules to ensure only you can access your private profile data.
             </p>
           </CardContent>
         </Card>

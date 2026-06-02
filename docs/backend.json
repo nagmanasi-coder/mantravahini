@@ -85,19 +85,6 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["userId", "content", "createdAt"]
-    },
-    "AdImpression": {
-      "title": "AdImpression",
-      "type": "object",
-      "description": "Logs when a user watches an ad to unlock content.",
-      "properties": {
-        "id": { "type": "string" },
-        "userId": { "type": "string" },
-        "mantraId": { "type": "number" },
-        "timestamp": { "type": "string", "format": "date-time" },
-        "type": { "type": "string", "enum": ["rewarded_unlock", "interstitial", "banner"] }
-      },
-      "required": ["userId", "mantraId", "timestamp"]
     }
   },
   "auth": {
@@ -123,10 +110,6 @@
     "/testimonials/{id}": {
       "schema": { "$ref": "#/backend/entities/Testimonial" },
       "description": "Practitioner healing results. No approval required."
-    },
-    "/ad_impressions/{impressionId}": {
-      "schema": { "$ref": "#/backend/entities/AdImpression" },
-      "description": "Logs for revenue analysis."
     }
   }
 }
