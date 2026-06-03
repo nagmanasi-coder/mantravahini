@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Flame, Compass, Lock, Flower2 } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Flame, Compass, Lock, Flower2, Trophy, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -22,11 +22,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UpgradeDialog } from "@/app/components/upgrade-dialog";
 import { useLanguage } from "@/context/language-context";
-import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, collection, query, orderBy } from "firebase/firestore";
+import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { doc, collection, query, where, orderBy } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -67,6 +68,14 @@ export default function Home() {
 
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   
+  const referralsQuery = useMemoFirebase(() => {
+    if (!firestore || !userProfile?.referralCode) return null;
+    return query(collection(firestore, 'users'), where('referredBy', '==', userProfile.referralCode));
+  }, [firestore, userProfile?.referralCode]);
+
+  const { data: referrals } = useCollection(referralsQuery);
+  const referralCount = referrals?.length || 0;
+
   const testimonialsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'testimonials'), orderBy('createdAt', 'desc'));
@@ -100,6 +109,53 @@ export default function Home() {
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
           </header>
+
+          {user && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {/* Streak Card */}
+                <Card className="bg-primary border-primary shadow-xl overflow-hidden text-primary-foreground relative group">
+                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Flame size={80} />
+                   </div>
+                   <CardContent className="p-6 space-y-2 relative z-10">
+                      <p className="text-[10px] uppercase font-black tracking-widest opacity-80">{t('healingStreakTitle')}</p>
+                      <div className="flex items-center gap-3">
+                         <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <Flame className={cn("h-6 w-6", userProfile?.streakCount ? "fill-white animate-pulse" : "opacity-50")} />
+                         </div>
+                         <div>
+                            <h3 className="text-3xl font-black">{t('daysStreak').replace('{count}', String(userProfile?.streakCount || 0))}</h3>
+                            <p className="text-xs font-bold opacity-80">{userProfile?.streakCount ? t('streakMaintained') : t('streakReset')}</p>
+                         </div>
+                      </div>
+                   </CardContent>
+                </Card>
+
+                {/* Referral Mission Card */}
+                <Link href="/referral" className="block">
+                  <Card className="bg-amber-500 border-amber-500 shadow-xl overflow-hidden text-white relative group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Trophy size={80} />
+                    </div>
+                    <CardContent className="p-6 space-y-2 relative z-10">
+                        <p className="text-[10px] uppercase font-black tracking-widest opacity-80">{t('karmicRewardsTitle')}</p>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
+                                    <Users className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black">{referralCount}/3 {t('home')}</h3>
+                                    <p className="text-[10px] font-bold opacity-80">Help 3 people join to unlock Premium</p>
+                                </div>
+                            </div>
+                            <Progress value={(referralCount / 3) * 100} className="h-1.5 bg-white/20" />
+                        </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 gap-4 mb-8">
             <Link href="/kalajnana" className={cn("block", cardAnimation)}>
@@ -157,28 +213,6 @@ export default function Home() {
                 </Card>
             </Link>
           </div>
-
-          {user && (
-            <div className="grid grid-cols-1 gap-4 mb-8">
-                <Card className="bg-primary border-primary shadow-xl overflow-hidden text-primary-foreground relative group">
-                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                      <Flame size={80} />
-                   </div>
-                   <CardContent className="p-6 space-y-2 relative z-10">
-                      <p className="text-[10px] uppercase font-black tracking-widest opacity-80">{t('healingStreakTitle')}</p>
-                      <div className="flex items-center gap-3">
-                         <div className="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center">
-                            <Flame className={cn("h-6 w-6", userProfile?.streakCount ? "fill-white animate-pulse" : "opacity-50")} />
-                         </div>
-                         <div>
-                            <h3 className="text-3xl font-black">{t('daysStreak').replace('{count}', String(userProfile?.streakCount || 0))}</h3>
-                            <p className="text-xs font-bold opacity-80">{userProfile?.streakCount ? t('streakMaintained') : t('streakReset')}</p>
-                         </div>
-                      </div>
-                   </CardContent>
-                </Card>
-            </div>
-          )}
 
           <div className="flex flex-col gap-8">
             <div className="max-w-md mx-auto w-full">

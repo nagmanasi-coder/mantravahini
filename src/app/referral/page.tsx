@@ -53,7 +53,7 @@ export default function ReferralPage() {
     return false;
   }, [user]);
 
-  // Fetch referrals to track "Invite 3" mission
+  // Fetch referrals to track "Invite 3" mission (Actual Installations)
   const referralsQuery = useMemoFirebase(() => {
     if (!firestore || !userProfile?.referralCode) return null;
     return query(collection(firestore, 'users'), where('referredBy', '==', userProfile.referralCode));
@@ -126,7 +126,7 @@ export default function ReferralPage() {
       </header>
 
       <div className="space-y-8">
-        {/* Karmic Rewards Mission */}
+        {/* Karmic Rewards Mission - Tracking Installations */}
         <Card className="border-2 border-amber-500 bg-amber-50 shadow-xl overflow-hidden animate-fade-in-up">
            <CardHeader className="bg-amber-500 text-white flex flex-row items-center justify-between">
               <div>
@@ -152,7 +152,7 @@ export default function ReferralPage() {
            </CardContent>
         </Card>
 
-        {/* Referral Stats */}
+        {/* Installation Tracking Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="bg-primary/5 border-primary/10">
             <CardContent className="p-6 flex flex-col items-center justify-center gap-2">
@@ -171,8 +171,8 @@ export default function ReferralPage() {
           <Card className="bg-primary/5 border-primary/10">
             <CardContent className="p-6 flex flex-col items-center justify-center gap-2">
               <Sparkles className="h-6 w-6 text-primary" />
-              <p className="text-sm font-bold text-muted-foreground uppercase">Current Rate</p>
-              <p className="text-3xl font-black text-primary">{userProfile?.referralCommissionRate || 10}%</p>
+              <p className="text-sm font-bold text-muted-foreground uppercase">Reward Plan</p>
+              <p className="text-3xl font-black text-primary">1mo Free</p>
             </CardContent>
           </Card>
         </div>
@@ -184,7 +184,7 @@ export default function ReferralPage() {
               <Gift className="h-5 w-5 text-primary" />
               {t('yourReferralLink')}
             </CardTitle>
-            <CardDescription>Share this link to grow the Mantravaahini community.</CardDescription>
+            <CardDescription>Share this link to track new installations and earn rewards.</CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="flex gap-2">
@@ -194,7 +194,7 @@ export default function ReferralPage() {
               </Button>
             </div>
             <Button onClick={handleShare} className="w-full h-12 font-bold text-lg" variant="outline">
-              <Share2 className="mr-2 h-5 w-5" /> Share App Now
+              <Share2 className="mr-2 h-5 w-5" /> Share Link Now
             </Button>
           </CardContent>
         </Card>
@@ -218,7 +218,7 @@ export default function ReferralPage() {
             </div>
           </CardContent>
           <CardFooter className="bg-primary/5 text-center justify-center p-4">
-            <p className="text-xs text-muted-foreground italic">* Rewards are applied instantly upon reaching the goal.</p>
+            <p className="text-xs text-muted-foreground italic">* "Installation" is tracked when a new user registers through your link.</p>
           </CardFooter>
         </Card>
       </div>
