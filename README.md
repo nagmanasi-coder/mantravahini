@@ -20,10 +20,23 @@ To make your app live and update your APKs automatically:
 4.  **Firebase Console Configuration (Google Sign-In)**:
     *   Go to **Authentication > Sign-in method** and enable **Google**.
     *   Go to **Authentication > Settings > Authorized domains**.
-    *   Ensure these two domains are added (Format: **domain name only**, no https://):
+    *   Ensure these two domains are added (**Domain name only**, no https://):
         1. `mantravahini.vercel.app`
         2. `studio-9442084622-48e5f.firebaseapp.com`
-5.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
+
+---
+
+## 🔐 Google Sign-In Troubleshooting
+If you see "The requested action is invalid" or "Configuration Not Found":
+
+1.  **Wait 5-10 minutes**: Firebase changes can take time to propagate to Google's servers.
+2.  **Google Cloud Console Check**:
+    *   Go to the [Google Cloud Console Credentials Page](https://console.cloud.google.com/apis/credentials).
+    *   Find the **OAuth 2.0 Client IDs** section.
+    *   Click on the one named **"Web client (auto created by Google Service)"**.
+    *   Under **Authorized JavaScript origins**, add: `https://mantravahini.vercel.app`
+    *   Under **Authorized redirect URIs**, add: `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
+    *   Save and wait a few minutes.
 
 ---
 
@@ -64,12 +77,3 @@ Open `android/app/build.gradle`. Update `versionCode` and `versionName` for ever
 1.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort." (We have already cleaned the code for this).
 2.  **Data Safety**: In the Play Console, declare that you collect "Name" and "Email" for account functionality and "Video/Audio" if users upload testimonials.
 3.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.
-
----
-
-## 🔄 Live Update Workflow
-Because this app is a Hybrid Web App:
-1.  Edit code in Firebase Studio.
-2.  Push to Git.
-3.  Vercel updates the website.
-4.  **Done!** Your installed users will see the new code immediately without them needing to update the app from the Play Store.
