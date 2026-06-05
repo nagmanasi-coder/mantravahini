@@ -1,12 +1,12 @@
 
 'use client';
 
-import { use, useMemo } from 'react';
+import { use, useMemo, useState, useEffect } from 'react';
 import { useLanguage } from '@/context/language-context';
 import { mantras } from '@/lib/mantras';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Music, Lock, ChevronRight, Sparkles, CheckCircle2, Clock, Shield, Zap } from 'lucide-react';
+import { ArrowLeft, Music, Lock, ChevronRight, Sparkles, CheckCircle2, Clock, Shield, Zap, Wrench } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -19,6 +19,15 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
   const { t, language } = useLanguage();
   const { user } = useUser();
   const firestore = useFirestore();
+
+  const [isDevMode, setIsDevMode] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dev = localStorage.getItem('developerMode') === 'true' && user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
+      setIsDevMode(dev);
+    }
+  }, [user]);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -61,27 +70,38 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
               {t('trialAccess')}
             </Badge>
           )}
+          {isDevMode && (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 mt-2">
+              <Wrench className="h-3 w-3 mr-1" />
+              Dev Mode: All Access Enabled
+            </Badge>
+          )}
         </header>
 
         <div className="grid gap-4">
           {filteredMantras.map((mantra) => {
-            const isReady = readyMantraIds.includes(mantra.id);
-            // Specialized mantras like Anjaneya (ID 9) require Prana Vidya activation info
-            const targetHref = (mantra.id === 9 || mantra.id === 10) ? '/prana-vidya' : `/mantras/play/${mantra.id}`;
+            const isActuallyReady = readyMantraIds.includes(mantra.id);
+            const canAccess = isActuallyReady || isDevMode;
+            
+            // In Dev Mode, always go to player to test. In Public Mode, specialized ones go to prana-vidya.
+            const targetHref = (canAccess && !isDevMode && (mantra.id === 9 || mantra.id === 10)) 
+              ? '/prana-vidya' 
+              : `/mantras/play/${mantra.id}`;
+              
             const isPremium = mantra.tier === 'paid';
             const isUnlocked = isPaidUser || isWithinTrial || !isPremium;
             
             return (
-              <Link key={mantra.id} href={isReady ? targetHref : '#'} className={cn(!isReady && "pointer-events-none")}>
+              <Link key={mantra.id} href={canAccess ? targetHref : '#'} className={cn(!canAccess && "pointer-events-none")}>
                 <Card className={cn(
                   "hover:border-primary/50 transition-all hover:shadow-md group",
-                  !isReady && "opacity-60 grayscale-[0.5]"
+                  !canAccess && "opacity-60 grayscale-[0.5]"
                 )}>
                   <CardContent className="p-4 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       <div className={cn(
                         "p-3 rounded-full transition-colors",
-                        isReady ? "bg-primary/10 group-hover:bg-primary group-hover:text-white" : "bg-muted"
+                        canAccess ? (isActuallyReady ? "bg-primary/10 group-hover:bg-primary group-hover:text-white" : "bg-blue-100 text-blue-700 group-hover:bg-blue-500 group-hover:text-white") : "bg-muted"
                       )}>
                         <Music className="h-5 w-5" />
                       </div>
@@ -90,7 +110,7 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
                           {language === 'kn' ? mantra.name : mantra.name_en}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          {isReady ? (
+                          {isActuallyReady ? (
                             <>
                               {!isUnlocked ? (
                                 <Badge variant="outline" className="text-[10px] uppercase text-amber-600 border-amber-200">
@@ -105,15 +125,18 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
                               )}
                             </>
                           ) : (
-                            <Badge variant="secondary" className="text-[10px] uppercase text-muted-foreground bg-muted border-none">
-                              <Clock className="h-2 w-2 mr-1" />
-                              {language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon'}
+                            <Badge variant="secondary" className={cn(
+                              "text-[10px] uppercase border-none",
+                              isDevMode ? "bg-blue-100 text-blue-700" : "text-muted-foreground bg-muted"
+                            )}>
+                              {isDevMode ? <Wrench className="h-2 w-2 mr-1 inline" /> : <Clock className="h-2 w-2 mr-1 inline" />}
+                              {isDevMode ? 'Dev Access (Test Link)' : (language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon')}
                             </Badge>
                           )}
                         </div>
                       </div>
                     </div>
-                    {isReady && <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors" />}
+                    {canAccess && <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors" />}
                   </CardContent>
                 </Card>
               </Link>
