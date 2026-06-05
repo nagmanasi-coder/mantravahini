@@ -33,8 +33,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Mail } from 'lucide-react';
+import { Eye, EyeOff, Mail, AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -66,6 +67,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const provider = new GoogleAuthProvider();
+      // Use standard popup for web. Redirect is only recommended for specific restricted environments.
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
@@ -94,7 +96,16 @@ export default function LoginPage() {
       router.push('/');
     } catch (err: any) {
       console.error("Google Auth Error:", err);
-      setError(err.message || 'An error occurred during Google sign-in.');
+      // Specific handling for common setup errors
+      if (err.code === 'auth/operation-not-allowed') {
+        setError('Google Sign-in is not enabled in the Firebase Console. Please contact the administrator.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in window was closed. Please try again.');
+      } else if (err.code === 'auth/cancelled-popup-request') {
+        // Ignore, handled by the previous popup logic
+      } else {
+        setError(err.message || 'An error occurred during Google sign-in. Check your Firebase console configuration.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -292,7 +303,13 @@ export default function LoginPage() {
                 )}
               />
               {error && (
-                <p className="text-sm font-medium text-destructive">{error}</p>
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Sign-in Error</AlertTitle>
+                  <AlertDescription className="text-xs">
+                    {error}
+                  </AlertDescription>
+                </Alert>
               )}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Processing...' : (isSigningUp ? 'Create Account' : 'Sign In')}
