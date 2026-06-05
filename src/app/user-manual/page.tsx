@@ -57,13 +57,13 @@ export default function UserManualPage() {
   };
 
   const freeFeatures = [
+    "Full Mantra Library Access",
     "Unlimited Basic Mantras",
     t('featurePainMantra'),
     "Public Spiritual Guidance"
   ];
 
   const premiumFeatures = [
-    "Full Mantra Library Access",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),

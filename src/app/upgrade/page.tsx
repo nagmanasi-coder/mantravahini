@@ -23,12 +23,12 @@ export default function UpgradePage() {
   }, []);
 
   const freeFeatures = [
+    "Complete Mantra Library Access",
     "Unlimited Basic Mantras",
     t('featurePainMantra'),
   ];
 
   const premiumFeatures = [
-    "Complete Mantra Library Access",
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),
