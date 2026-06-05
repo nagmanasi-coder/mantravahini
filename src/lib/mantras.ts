@@ -41,7 +41,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Supports eye health improvement and removal of vision obstacles.',
     description: 'ಪ್ರಾಚೀನ ನೇತ್ರ ಜ್ಯೋತಿ ಮಂತ್ರವು ಕಣ್ಣಿನ ಆರೋಗ್ಯವನ್ನು ಕಾಪಾಡಲು ಮತ್ತು ದೃಷ್ಟಿ ಸಮತೋಲನಕ್ಕೆ ಪ್ರಸಿದ್ಧವಾಗಿದೆ.',
     description_en: 'An ancient mantra famous for protecting eye health and balancing vision.',
-    tier: "paid",
+    tier: "free",
     category: "solving",
   },
   {
@@ -56,7 +56,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Supports long-term wellness and removal of physical weakness.',
     description: 'ಈ ಸ್ತೋತ್ರವು ಅಡೆತಡೆಗಳನ್ನು ನಿವಾರಿಸಲು ಮತ್ತು ಆರೋಗ್ಯವನ್ನು ಕಾಪಾಡಲು ಅತ್ಯಂತ ಮಂಗಳಕರವಾಗಿದೆ.',
     description_en: 'This stotra is highly auspicious for warding off obstacles and maintaining robust wellness.',
-    tier: "paid",
+    tier: "free",
     category: "solving",
   },
   { 
@@ -70,7 +70,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Freedom from long-standing discomfort and physical balancing.',
     description: 'ಪ್ರಾಣ ದೇವರಾದ ಹನುಮಂತನ ಈ ಮಂತ್ರವು ಜೀವನಶಕ್ತಿಯನ್ನು ಹೆಚ್ಚಿಸಲು ಫಲಕಾರಿ. ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಅಗತ್ಯ.',
     description_en: 'This mantra of Lord Hanuman is effective in increasing life force energy. Requires personalized activation.',
-    tier: "paid",
+    tier: "free",
     category: "solving"
   },
   { 
@@ -85,7 +85,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Removal of all types of fear, anxiety, and life\'s obstacles. Mental strength.',
     description: 'ಭೈರವ ಮಂತ್ರವು ರಕ್ಷಣೆ ಮತ್ತು ಧೈರ್ಯವನ್ನು ನೀಡುವ ಅತ್ಯಂತ ಪ್ರಭಾವಶಾಲಿ ಮಂತ್ರವಾಗಿದೆ.',
     description_en: 'Bhairava mantra is a highly influential mantra for protection and courage.',
-    tier: "paid",
+    tier: "free",
     category: "protective"
   },
   { 
@@ -99,7 +99,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Complete freedom from enemy conspiracies and hidden adversaries.',
     description: 'ಬಗಲಾಮುಖಿ ಮಂತ್ರವು ಸ್ತಂಭನ ಶಕ್ತಿಯನ್ನು ಹೊಂದಿದ್ದು, ವಿರೋಧಿಗಳನ್ನು ಶಾಂತಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.',
     description_en: 'Bagalamukhi mantra possesses stalling power and helps in silencing opponents.',
-    tier: "paid",
+    tier: "free",
     category: "solving"
   },
   { 
@@ -113,7 +113,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Freedom from mental obstacles. Peace and tranquility for the mind.',
     description: 'ಹಂಸ ಮಂತ್ರವು ಉಸಿರಾಟದ ಜೊತೆಗೂಡಿ ಮನಸ್ಸನ್ನು ಶುದ್ಧೀಕರಿಸುವ ಸಕ್ರಿಯ ಮಂತ್ರವಾಗಿದೆ.',
     description_en: 'The Hamsa mantra is an active mantra that purifies the mind in sync with breathing.',
-    tier: "paid",
+    tier: "free",
     category: "solving"
   },
   { 
@@ -128,7 +128,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Freedom from debt burdens and financial stability.',
     description: 'ಶುಕ್ರಾಚಾರ್ಯ ಮಂತ್ರವು ಸಾಲದ ಸಮಸ್ಯೆಗಳಿಂದ ಮುಕ್ತಿ ಪಡೆಯಲು ಅತ್ಯಂತ ಫಲಪ್ರದವಾಗಿದೆ.',
     description_en: 'Shukracharya mantra is highly effective for overcoming debt-related issues.',
-    tier: "paid",
+    tier: "free",
     category: "solving"
   },
   { 
@@ -140,7 +140,7 @@ export const mantras: Mantra[] = [
     method_en: 'Listen with devotion at the beginning of the day.',
     benefits: 'ಸಮಾಜದಲ್ಲಿ ಗೌರವ, ವ್ಯಕ್ತಿತ್ವದ ವಿಕಸನ ಮತ್ತು ಆಕರ್ಷಣ ಶಕ್ತಿ ಹೆಚ್ಚಳ.',
     benefits_en: 'Increased respect in society, personality development, and attraction power.',
-    tier: "paid",
+    tier: "free",
     category: "protective"
   },
   { 
@@ -152,7 +152,7 @@ export const mantras: Mantra[] = [
     method_en: 'Play in your home altar or place of business.',
     benefits: 'ಐಶ್ವರ್ಯ, ಸಂಪತ್ತಿನ ವೃದ್ಧಿ ಮತ್ತು ಆರ್ಥಿಕ ಅಭಿವೃದ್ಧಿ.',
     benefits_en: 'Increase in wealth, prosperity, and economic growth.',
-    tier: "paid",
+    tier: "free",
     category: "protective"
   },
   { 
@@ -164,7 +164,7 @@ export const mantras: Mantra[] = [
     method_en: 'Listen using headphones or on a sound system.',
     benefits: 'ಹಣಕಾಸಿನ ಹರಿವಿನ ಅಡೆತಡೆಗಳ ನಿವಾರಣೆ ಮತ್ತು ಸಕಲ ಭಾಗ್ಯಗಳು.',
     benefits_en: 'Removal of financial flow obstacles and attainment of all fortunes.',
-    tier: "paid",
+    tier: "free",
     category: "protective"
   },
   { 
@@ -176,7 +176,7 @@ export const mantras: Mantra[] = [
     method_en: 'Listen at low volume before or during study sessions.',
     benefits: 'ಏಕಾಗ್ರತೆ, ನೆನಪಿನ ಶಕ್ತಿ ಮತ್ತು ಬುದ್ಧಿಶಕ್ತಿ ಹೆಚ್ಚಳ.',
     benefits_en: 'Increased concentration, memory power, and intelligence.',
-    tier: "paid",
+    tier: "free",
     category: "protective"
   },
 ];
