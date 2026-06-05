@@ -19,7 +19,6 @@ import { useLanguage } from '@/context/language-context';
 import { useState, useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { differenceInDays } from 'date-fns';
 
 type UserProfileType = {
   subscriptionTier?: 'free' | 'premium';
@@ -99,23 +98,10 @@ export function UserProfile() {
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
   
-  // Stabilize time-dependent calculations
   const remainingDays = useMemo(() => {
     if (!isMounted || !isPaidUser) return null;
     return calculateRemainingDays(userProfile?.premiumCycleStartDate);
   }, [isMounted, isPaidUser, userProfile?.premiumCycleStartDate]);
-
-  const trialInfo = useMemo(() => {
-    if (!isMounted || !userProfile?.createdAt || isPaidUser || isPractitioner) return null;
-    const createdDate = new Date(userProfile.createdAt);
-    const daysSinceCreation = differenceInDays(new Date(), createdDate);
-    const daysLeft = 7 - daysSinceCreation;
-    
-    if (daysLeft > 0) {
-      return { active: true, daysLeft };
-    }
-    return { active: false, daysLeft: 0 };
-  }, [isMounted, userProfile?.createdAt, isPaidUser, isPractitioner]);
 
   if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
@@ -171,22 +157,6 @@ export function UserProfile() {
                   <CheckCircle2 size={10} className="text-green-500" />
                   {remainingDays} days left
                 </p>
-            )}
-
-            {!isPaidUser && !isPractitioner && trialInfo && (
-              <div className="mt-2 p-2 rounded bg-primary/5 border border-primary/10">
-                {trialInfo.active ? (
-                  <p className="text-[10px] font-bold text-primary flex items-center gap-1 uppercase tracking-tight">
-                    <Sparkles size={10} />
-                    {t('trialDaysLeft').replace('{days}', String(trialInfo.daysLeft))}
-                  </p>
-                ) : (
-                  <p className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-tight">
-                    <Clock size={10} />
-                    {t('trialExpired')}
-                  </p>
-                )}
-              </div>
             )}
 
             {!isActualDeveloper && (

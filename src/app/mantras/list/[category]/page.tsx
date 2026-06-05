@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export default function MantraListPage({ params }: { params: Promise<{ category: string }> }) {
@@ -37,18 +36,9 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
   const { data: userProfile } = useDoc<{ subscriptionTier?: string, createdAt?: string }>(userDocRef);
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
 
-  // 7-Day Trial Logic
-  const isWithinTrial = useMemo(() => {
-    if (!userProfile?.createdAt) return false;
-    const createdDate = new Date(userProfile.createdAt);
-    const daysSinceCreation = differenceInDays(new Date(), createdDate);
-    return daysSinceCreation >= 0 && daysSinceCreation < 7;
-  }, [userProfile?.createdAt]);
-
   const filteredMantras = mantras.filter(m => m.category === category);
   const categoryTitle = category === 'protective' ? t('protectiveTitle') : t('solvingTitle');
 
-  // List of IDs that have verified audio assets attached or hardcoded URLs ready
   const readyMantraIds = [1, 2, 3, 16, 17];
 
   return (
@@ -64,12 +54,6 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
           <p className="text-muted-foreground">
             {filteredMantras.length} {language === 'kn' ? 'ಮಂತ್ರಗಳು ಪಟ್ಟಿಯಲ್ಲಿವೆ' : 'Mantras in collection'}
           </p>
-          {isWithinTrial && !isPaidUser && (
-            <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-              <Sparkles className="h-3 w-3 mr-1" />
-              {t('trialAccess')}
-            </Badge>
-          )}
           {isDevMode && (
             <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 mt-2">
               <Wrench className="h-3 w-3 mr-1" />
@@ -83,14 +67,10 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
             const isActuallyReady = readyMantraIds.includes(mantra.id);
             const canAccess = isActuallyReady || isDevMode;
             
-            // In Dev Mode, always go to player to test. In Public Mode, specialized ones go to prana-vidya.
             const targetHref = (canAccess && !isDevMode && (mantra.id === 9 || mantra.id === 10)) 
               ? '/prana-vidya' 
               : `/mantras/play/${mantra.id}`;
               
-            const isPremium = mantra.tier === 'paid';
-            const isUnlocked = isPaidUser || isWithinTrial || !isPremium;
-            
             return (
               <Link key={mantra.id} href={canAccess ? targetHref : '#'} className={cn(!canAccess && "pointer-events-none")}>
                 <Card className={cn(
@@ -111,19 +91,10 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           {isActuallyReady ? (
-                            <>
-                              {!isUnlocked ? (
-                                <Badge variant="outline" className="text-[10px] uppercase text-amber-600 border-amber-200">
-                                  <Lock className="h-2 w-2 mr-1" />
-                                  Premium
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
-                                  <CheckCircle2 className="h-2 w-2 mr-1" />
-                                  {isWithinTrial && isPremium && !isPaidUser ? 'Trial Access' : 'Ready'}
-                                </Badge>
-                              )}
-                            </>
+                            <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
+                              <CheckCircle2 className="h-2 w-2 mr-1" />
+                              Ready
+                            </Badge>
                           ) : (
                             <Badge variant="secondary" className={cn(
                               "text-[10px] uppercase border-none",
