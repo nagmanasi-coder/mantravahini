@@ -74,6 +74,9 @@ Open `android/app/build.gradle`. Update `versionCode` and `versionName` for ever
 ---
 
 ## 🛡️ Play Store Approval Tips
-1.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort." (We have already cleaned the code for this).
-2.  **Data Safety**: In the Play Console, declare that you collect "Name" and "Email" for account functionality and "Video/Audio" if users upload testimonials.
-3.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.
+1.  **App Access (Credentials)**: When submitting, provide these in the "App Access" section:
+    - **Email:** review@yourdomain.com
+    - **Password:** YourTestPassword
+2.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort." (We have already cleaned the code for this).
+3.  **Data Safety**: In the Play Console, declare that you collect "Name" and "Email" for account functionality and "Video/Audio" if users upload testimonials.
+4.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.
