@@ -4,7 +4,7 @@
 import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShieldCheck, Lock, Eye, Database, Info } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Lock, Eye, Database, Info, UserX } from "lucide-react";
 import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
@@ -76,11 +76,25 @@ export default function PrivacyPolicyPage() {
           </CardContent>
         </Card>
 
+        <Card className="border-destructive/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <UserX className="h-5 w-5" />
+              4. Data Deletion
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm leading-relaxed">
+            <p>
+              You have the right to request the deletion of your account and all associated personal data. To initiate this process, please visit our <Link href="/delete-account" className="text-primary font-bold underline">Account Deletion Request</Link> page for specific instructions.
+            </p>
+          </CardContent>
+        </Card>
+
         <Card className="bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Info className="h-5 w-5 text-primary" />
-              4. Contact
+              5. Contact
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm">

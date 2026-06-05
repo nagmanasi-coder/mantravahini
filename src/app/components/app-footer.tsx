@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { Info, Sparkles, Music } from "lucide-react";
+import { Info, Sparkles, Music, UserX } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,10 @@ export function AppFooter() {
                     <Link href="/privacy-policy" className="hover:text-primary transition-colors">{t('privacyPolicy')}</Link>
                     <Link href="/terms" className="hover:text-primary transition-colors">{t('termsOfService')}</Link>
                     <Link href="/refund" className="hover:text-primary transition-colors">{t('refundPolicy')}</Link>
+                    <Link href="/delete-account" className="hover:text-destructive transition-colors flex items-center gap-1">
+                       <UserX size={10} />
+                       {t('deleteAccountTitle')}
+                    </Link>
                 </div>
             </div>
         </footer>
