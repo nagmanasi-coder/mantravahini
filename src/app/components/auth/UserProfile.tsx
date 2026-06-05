@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -97,10 +98,15 @@ export function UserProfile() {
   const isPaidUser = userProfile?.subscriptionTier === 'premium';
   const isPremiumUser = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
-  const remainingDays = isPaidUser ? calculateRemainingDays(userProfile?.premiumCycleStartDate) : null;
+  
+  // Stabilize time-dependent calculations
+  const remainingDays = useMemo(() => {
+    if (!isMounted || !isPaidUser) return null;
+    return calculateRemainingDays(userProfile?.premiumCycleStartDate);
+  }, [isMounted, isPaidUser, userProfile?.premiumCycleStartDate]);
 
   const trialInfo = useMemo(() => {
-    if (!userProfile?.createdAt || isPaidUser || isPractitioner) return null;
+    if (!isMounted || !userProfile?.createdAt || isPaidUser || isPractitioner) return null;
     const createdDate = new Date(userProfile.createdAt);
     const daysSinceCreation = differenceInDays(new Date(), createdDate);
     const daysLeft = 7 - daysSinceCreation;
@@ -109,7 +115,7 @@ export function UserProfile() {
       return { active: true, daysLeft };
     }
     return { active: false, daysLeft: 0 };
-  }, [userProfile?.createdAt, isPaidUser, isPractitioner]);
+  }, [isMounted, userProfile?.createdAt, isPaidUser, isPractitioner]);
 
   if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;

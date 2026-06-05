@@ -45,8 +45,10 @@ export default function Home() {
   const [upgradeDialogContent, setUpgradeDialogContent] = useState({ title: "", description: "" });
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
     setIsDevMode(devMode);
   }, []);
@@ -98,6 +100,11 @@ export default function Home() {
   };
 
   const cardAnimation = "animate-fade-in-up";
+
+  // Prevent Hydration Errors
+  if (!hasMounted) {
+    return <div className="min-h-screen bg-background" />;
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col">

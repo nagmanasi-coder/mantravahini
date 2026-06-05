@@ -32,8 +32,10 @@ export default function KalajnanaPage() {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
     setIsDevMode(devMode);
   }, []);
@@ -87,7 +89,7 @@ export default function KalajnanaPage() {
     return data[String(selectedSignIndex)];
   }, [horoscope, selectedSignIndex, selectedType]);
 
-  if (userLoading || (horoscopeLoading && isAuthorized)) {
+  if (!hasMounted || userLoading || (horoscopeLoading && isAuthorized)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
