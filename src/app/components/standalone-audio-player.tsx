@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef, useState, useEffect, useMemo } from "react";
@@ -213,13 +212,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
             <Lock className="h-3 w-3 mr-1" />
             Premium Feature
-          </Badge>
-        )}
-
-        {isPremium && (
-          <Badge variant="secondary" className="absolute top-4 right-4 z-10 bg-green-500 text-white">
-            <ShieldCheck className="h-3 w-3 mr-1" />
-            Ad-Free Active
           </Badge>
         )}
         
