@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef } from 'react';
@@ -67,8 +66,7 @@ export default function UserManualPage() {
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),
-    "Priority Spiritual Support",
-    "Offline Mode Support"
+    "Priority Spiritual Support"
   ];
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (

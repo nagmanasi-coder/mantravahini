@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -32,8 +31,7 @@ export default function UpgradePage() {
     t('featureDivineGroup'),
     t('featureGuruDiksha'),
     t('featurePranaVidya'),
-    "Priority Spiritual Support",
-    "Offline Mode Support"
+    "Priority Spiritual Support"
   ];
 
   if (!isMounted) return null;
