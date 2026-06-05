@@ -227,8 +227,8 @@ export default function UserManualPage() {
                       <p className="text-sm text-muted-foreground leading-relaxed">{t('manualReferralDescription')}</p>
                       <ul className="mt-4 space-y-2 text-xs font-bold text-foreground">
                         <li>1. Share unique link from profile.</li>
-                        <li>2. New members join your spiritual group.</li>
-                        <li>3. Earn commissions on Premium upgrades.</li>
+                        <li>2. New members install and register through your link.</li>
+                        <li>3. Unlock 1 month of Premium after 3 installations.</li>
                       </ul>
                   </CardContent>
               </Card>

@@ -34,9 +34,6 @@ export default function ReferralPage() {
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ 
     subscriptionTier?: 'free' | 'basic' | 'premium',
     referralCode?: string,
-    referralCommissionRate?: number,
-    totalReferrals?: number,
-    totalEarnings?: number,
     referralRewardClaimed?: boolean
   }>(userDocRef);
 
@@ -53,7 +50,6 @@ export default function ReferralPage() {
     return false;
   }, [user]);
 
-  // Fetch referrals to track "Invite 3" mission (Actual Installations)
   const referralsQuery = useMemoFirebase(() => {
     if (!firestore || !userProfile?.referralCode) return null;
     return query(collection(firestore, 'users'), where('referredBy', '==', userProfile.referralCode));
@@ -62,7 +58,6 @@ export default function ReferralPage() {
   const { data: referrals } = useCollection(referralsQuery);
   const referralCount = referrals?.length || 0;
 
-  // AUTO-UNLOCK REWARD LOGIC
   useEffect(() => {
     if (!isPremium && referralCount >= 3 && !userProfile?.referralRewardClaimed && firestore && user) {
         const ref = doc(firestore, 'users', user.uid);
@@ -79,7 +74,6 @@ export default function ReferralPage() {
     }
   }, [referralCount, userProfile, firestore, user, isPremium, toast]);
 
-  // Generate a referral code if missing for registered users
   useEffect(() => {
     if (user && !userProfile?.referralCode && firestore) {
       const generatedCode = user.uid.substring(0, 6).toUpperCase();
@@ -126,7 +120,6 @@ export default function ReferralPage() {
       </header>
 
       <div className="space-y-8">
-        {/* Karmic Rewards Mission - Tracking Installations */}
         <Card className="border-2 border-amber-500 bg-amber-50 shadow-xl overflow-hidden animate-fade-in-up">
            <CardHeader className="bg-amber-500 text-white flex flex-row items-center justify-between">
               <div>
@@ -152,20 +145,12 @@ export default function ReferralPage() {
            </CardContent>
         </Card>
 
-        {/* Installation Tracking Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="bg-primary/5 border-primary/10">
             <CardContent className="p-6 flex flex-col items-center justify-center gap-2">
               <Users className="h-6 w-6 text-primary" />
               <p className="text-sm font-bold text-muted-foreground uppercase">{t('totalReferrals')}</p>
               <p className="text-3xl font-black text-primary">{referralCount}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-primary/5 border-primary/10">
-            <CardContent className="p-6 flex flex-col items-center justify-center gap-2">
-              <TrendingUp className="h-6 w-6 text-primary" />
-              <p className="text-sm font-bold text-muted-foreground uppercase">{t('commissionEarned')}</p>
-              <p className="text-3xl font-black text-primary">₹{userProfile?.totalEarnings || 0}</p>
             </CardContent>
           </Card>
           <Card className="bg-primary/5 border-primary/10">
@@ -177,7 +162,6 @@ export default function ReferralPage() {
           </Card>
         </div>
 
-        {/* Link Card */}
         <Card className="border-2 border-primary/20 shadow-xl overflow-hidden">
           <CardHeader className="bg-muted/30">
             <CardTitle className="text-xl font-headline flex items-center gap-2">
