@@ -33,7 +33,6 @@ export default function UpgradePage() {
     t('featureGuruDiksha'),
     t('featurePranaVidya'),
     "Priority Spiritual Support",
-    "Referral Program Access",
     "Offline Mode Support"
   ];
 
