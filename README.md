@@ -20,7 +20,9 @@ To make your app live and update your APKs automatically:
 4.  **Firebase Console Configuration (Google Sign-In)**:
     *   Go to **Authentication > Sign-in method** and enable **Google**.
     *   Go to **Authentication > Settings > Authorized domains**.
-    *   Add `mantravahini.vercel.app` (Format: **domain only**, no https:// or trailing slash).
+    *   Ensure these two domains are added (Format: **domain name only**, no https://):
+        1. `mantravahini.vercel.app`
+        2. `studio-9442084622-48e5f.firebaseapp.com`
 5.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
 
 ---
