@@ -14,10 +14,14 @@ To make your app live and update your APKs automatically:
     *   Select your GitHub repository.
 3.  **Environment Variables (CRITICAL)**: 
     *   In the Vercel dashboard for your project, go to **Settings > Environment Variables**.
-    *   Add the following keys exactly as shown (do NOT use `NEXT_PUBLIC_` for these):
+    *   Add the following keys exactly as shown:
         *   `GOOGLE_GENAI_API_KEY`: Get this from [Google AI Studio](https://aistudio.google.com/).
         *   `SARVAM_AI_API_KEY`: Your Sarvam AI key (Used for Kannada AI features).
-4.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
+4.  **Firebase Console Configuration (Google Sign-In)**:
+    *   Go to **Authentication > Sign-in method** and enable **Google**.
+    *   Go to **Authentication > Settings > Authorized domains**.
+    *   Add `mantravahini.vercel.app` (Format: **domain only**, no https:// or trailing slash).
+5.  **Deploy**: Click Deploy. Your site is now live at `https://mantravahini.vercel.app`.
 
 ---
 
@@ -55,7 +59,7 @@ Open `android/app/build.gradle`. Update `versionCode` and `versionName` for ever
 ---
 
 ## 🛡️ Play Store Approval Tips
-1.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort."
+1.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort." (We have already cleaned the code for this).
 2.  **Data Safety**: In the Play Console, declare that you collect "Name" and "Email" for account functionality and "Video/Audio" if users upload testimonials.
 3.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.
 
@@ -66,4 +70,4 @@ Because this app is a Hybrid Web App:
 1.  Edit code in Firebase Studio.
 2.  Push to Git.
 3.  Vercel updates the website.
-4.  **Done!** Your installed users will see the new code immediately without them needing to update the app from the Play Store (unless you change native permissions).
+4.  **Done!** Your installed users will see the new code immediately without them needing to update the app from the Play Store.
