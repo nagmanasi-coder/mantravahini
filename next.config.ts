@@ -9,7 +9,7 @@ const withPWA = pwa({
   skipWaiting: true,
   runtimeCaching: [
     {
-      // Explicitly cache audio files for offline playback in APK
+      // Aggressively cache audio files for offline playback (Mantras)
       urlPattern: /.*\.(?:mp3|wav|ogg)$/,
       handler: 'CacheFirst',
       options: {
@@ -22,6 +22,18 @@ const withPWA = pwa({
           statuses: [0, 200],
         },
       },
+    },
+    {
+      // Cache Static Assets (Images, Fonts)
+      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|woff2?)$/,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-assets-cache',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+        }
+      }
     },
     {
       urlPattern: new RegExp('^https://(?:www\\.)?(?:googleapis|google|firebase|firebaseapp|accounts)\\.com/.*$'),
