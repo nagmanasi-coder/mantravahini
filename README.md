@@ -27,17 +27,18 @@ To make your app live and update your APKs automatically:
 ---
 
 ## 🔐 Google Sign-In Troubleshooting (Fix for "Missing Initial State")
-If you see the error **"Unable to process request due to missing initial state"** (as shown in your screenshot), follow these exact steps:
+If you see the error **"Unable to process request due to missing initial state"**, follow these exact steps:
 
 1.  **Open Google Cloud Console**: Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
-2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**. (In your screenshot, try the top one first).
+2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**. 
 3.  **Add Authorized JavaScript origins**:
     *   `https://mantravahini.vercel.app`
     *   `https://studio-9442084622-48e5f.firebaseapp.com`
 4.  **Add Authorized redirect URIs (THIS IS THE CRITICAL FIX)**:
-    *   `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
+    *   **ADD ONLY THIS:** `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
+    *   *Note: Do NOT add the vercel.app link to the Redirect URIs section.*
 5.  **Save and Wait**: Click "Save". **It can take up to 10 minutes** for Google to update their global servers.
-6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode, as some browsers block the sign-in state in those modes. Also ensure "Third-party cookies" are not blocked in browser settings.
+6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode and "Third-party cookies" are not blocked.
 
 ---
 
@@ -60,7 +61,7 @@ Open the `android` folder in **Android Studio**.
 3.  Choose your icon file and follow the wizard to generate all resolutions.
 
 ### B. Versioning
-Open `android/app/build.gradle`. Update `versionCode` and `versionName` for every new release you submit to the Play Store.
+Open `android/app/build.gradle`. Update `versionCode` and `versionName` for every new release.
 
 ---
 
@@ -82,4 +83,3 @@ Open `android/app/build.gradle`. Update `versionCode` and `versionName` for ever
 3.  **Data Safety**:
     - **URL for account deletion**: `https://mantravahini.vercel.app/delete-account`
     - Declare that you collect Name and Email for account functionality.
-4.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.

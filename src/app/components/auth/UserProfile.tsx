@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Clock, Heart, MessageSquareQuote, Mic2 } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Heart, MessageSquareQuote, Mic2 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { useState, useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';

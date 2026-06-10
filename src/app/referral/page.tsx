@@ -9,10 +9,8 @@ import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, Users, Gift, TrendingUp, Sparkles, ArrowLeft, Share2, Crown, CheckCircle2 } from 'lucide-react';
+import { Copy, Check, Users, Gift, Sparkles, ArrowLeft, Share2, Crown, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { UpgradeDialog } from '@/app/components/upgrade-dialog';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 
@@ -20,11 +18,9 @@ export default function ReferralPage() {
   const { t } = useLanguage();
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
 
   const [copied, setCopied] = useState(false);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -39,16 +35,6 @@ export default function ReferralPage() {
 
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isUserLoading = isAuthLoading || (user && isProfileLoading);
-
-  const isDeveloper = useMemo(() => {
-    if (!user) return false;
-    const isActualDeveloper = user.uid === "LPBTRz3AMafKtZVgzJWm5Aisxc53";
-    if (typeof window !== 'undefined') {
-      const devModeEnabled = localStorage.getItem('developerMode') === 'true';
-      return isActualDeveloper && devModeEnabled;
-    }
-    return false;
-  }, [user]);
 
   const referralsQuery = useMemoFirebase(() => {
     if (!firestore || !userProfile?.referralCode) return null;
