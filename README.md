@@ -30,11 +30,11 @@ To make your app live and update your APKs automatically:
 If you see the error **"Unable to process request due to missing initial state"** (as shown in your screenshot), follow these exact steps:
 
 1.  **Open Google Cloud Console**: Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
-2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**.
+2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**. (In your screenshot, try the top one first).
 3.  **Add Authorized JavaScript origins**:
     *   `https://mantravahini.vercel.app`
     *   `https://studio-9442084622-48e5f.firebaseapp.com`
-4.  **Add Authorized redirect URIs (THIS IS THE FIX)**:
+4.  **Add Authorized redirect URIs (THIS IS THE CRITICAL FIX)**:
     *   `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
 5.  **Save and Wait**: Click "Save". It can take up to 10 minutes for Google to update their global servers.
 6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode, as some browsers block the sign-in state in those modes.
