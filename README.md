@@ -26,17 +26,18 @@ To make your app live and update your APKs automatically:
 
 ---
 
-## 🔐 Google Sign-In Troubleshooting
-If you see "The requested action is invalid" or "Configuration Not Found":
+## 🔐 Google Sign-In Troubleshooting (Fix for "Missing Initial State")
+If you see the error **"Unable to process request due to missing initial state"** (as shown in your screenshot), follow these exact steps:
 
-1.  **Wait 5-10 minutes**: Firebase changes can take time to propagate to Google's servers.
-2.  **Google Cloud Console Check**:
-    *   Go to the [Google Cloud Console Credentials Page](https://console.cloud.google.com/apis/credentials).
-    *   Find the **OAuth 2.0 Client IDs** section.
-    *   Click on the one named **"Web client (auto created by Google Service)"**.
-    *   Under **Authorized JavaScript origins**, add: `https://mantravahini.vercel.app`
-    *   Under **Authorized redirect URIs**, add: `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
-    *   Save and wait a few minutes.
+1.  **Open Google Cloud Console**: Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
+2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**.
+3.  **Add Authorized JavaScript origins**:
+    *   `https://mantravahini.vercel.app`
+    *   `https://studio-9442084622-48e5f.firebaseapp.com`
+4.  **Add Authorized redirect URIs (THIS IS THE FIX)**:
+    *   `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
+5.  **Save and Wait**: Click "Save". It can take up to 10 minutes for Google to update their global servers.
+6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode, as some browsers block the sign-in state in those modes.
 
 ---
 
@@ -74,9 +75,11 @@ Open `android/app/build.gradle`. Update `versionCode` and `versionName` for ever
 ---
 
 ## 🛡️ Play Store Approval Tips
-1.  **App Access (Credentials)**: When submitting, provide these in the "App Access" section:
+1.  **App Access (Credentials)**: Use these for the "App Access" section in Play Console:
     - **Email:** review@yourdomain.com
     - **Password:** YourTestPassword
-2.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort." (We have already cleaned the code for this).
-3.  **Data Safety**: In the Play Console, declare that you collect "Name" and "Email" for account functionality and "Video/Audio" if users upload testimonials.
+2.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort."
+3.  **Data Safety**:
+    - **URL for account deletion**: `https://mantravahini.vercel.app/delete-account`
+    - Declare that you collect Name and Email for account functionality.
 4.  **Testing**: Always run your AAB on a real device before uploading to ensure the splash screen and audio player work as expected.
