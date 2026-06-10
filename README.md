@@ -36,8 +36,8 @@ If you see the error **"Unable to process request due to missing initial state"*
     *   `https://studio-9442084622-48e5f.firebaseapp.com`
 4.  **Add Authorized redirect URIs (THIS IS THE CRITICAL FIX)**:
     *   `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
-5.  **Save and Wait**: Click "Save". It can take up to 10 minutes for Google to update their global servers.
-6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode, as some browsers block the sign-in state in those modes.
+5.  **Save and Wait**: Click "Save". **It can take up to 10 minutes** for Google to update their global servers.
+6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode, as some browsers block the sign-in state in those modes. Also ensure "Third-party cookies" are not blocked in browser settings.
 
 ---
 
