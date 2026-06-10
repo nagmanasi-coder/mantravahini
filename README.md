@@ -26,19 +26,25 @@ To make your app live and update your APKs automatically:
 
 ---
 
-## 🔐 Google Sign-In Troubleshooting (Fix for "Missing Initial State")
-If you see the error **"Unable to process request due to missing initial state"**, follow these exact steps:
+## 🔐 Google Sign-In: Cross-Device Troubleshooting
+If users on other devices see **"Missing Initial State"** or **"Unable to process request"**:
 
-1.  **Open Google Cloud Console**: Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
-2.  **Find your OAuth Client**: Look for the section **"OAuth 2.0 Client IDs"**. Click the edit (pencil) icon next to the one named **"Web client (auto created by Google Service)"**. 
-3.  **Add Authorized JavaScript origins**:
-    *   `https://mantravahini.vercel.app`
-    *   `https://studio-9442084622-48e5f.firebaseapp.com`
-4.  **Add Authorized redirect URIs (THIS IS THE CRITICAL FIX)**:
-    *   **ADD ONLY THIS:** `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`
-    *   *Note: Do NOT add the vercel.app link to the Redirect URIs section.*
-5.  **Save and Wait**: Click "Save". **It can take up to 10 minutes** for Google to update their global servers.
-6.  **Browser Tip**: Ensure the user is not in "Incognito/Private" mode and "Third-party cookies" are not blocked.
+### A. Google Cloud Console (The Master Fix)
+1.  Open [Google Cloud Credentials](https://console.cloud.google.com/apis/credentials).
+2.  Find **OAuth 2.0 Client IDs**. There are usually two "Web client" entries. 
+3.  **Edit the TOP one** (The one created by Google Service).
+4.  **Authorized JavaScript origins**: Add `https://mantravahini.vercel.app` AND `https://studio-9442084622-48e5f.firebaseapp.com`.
+5.  **Authorized redirect URIs**: Add ONLY `https://studio-9442084622-48e5f.firebaseapp.com/__/auth/handler`.
+    *   *Do NOT add the Vercel link to the Redirect URIs section.*
+6.  **Save and Wait**: It takes **10 minutes** for Google's servers to sync.
+
+### B. Device Settings (For Mobile Users)
+The error is often caused by the browser blocking the login "handshake" cookie.
+1.  **Avoid Incognito**: Google Login will likely fail in Private/Incognito mode on mobile.
+2.  **Enable Cookies**: Ensure "Block third-party cookies" is **OFF** in Chrome/Safari settings.
+3.  **App Access**: Use these credentials for Play Store reviewers:
+    *   **Email:** review@yourdomain.com
+    *   **Password:** YourTestPassword
 
 ---
 
@@ -58,28 +64,16 @@ Open the `android` folder in **Android Studio**.
 ### A. App Icon
 1.  In the Project view, right-click the `app` folder.
 2.  Select **New > Image Asset**.
-3.  Choose your icon file and follow the wizard to generate all resolutions.
+3.  Choose your icon file to generate all resolutions.
 
 ### B. Versioning
 Open `android/app/build.gradle`. Update `versionCode` and `versionName` for every new release.
 
 ---
 
-## 🔐 Step 3: Generate Signed AAB (The Final Product)
-1.  In Android Studio, go to **Build > Generate Signed Bundle / APK...**.
-2.  Select **Android App Bundle** and click Next.
-3.  **Key store path**: Create a new `.jks` file. **CRITICAL: Save this file and your password safely. You need this for every future update.**
-4.  Select **release** variant and click Finish.
-
-**File Location**: `android/app/release/app-release.aab`
-
----
-
 ## 🛡️ Play Store Approval Tips
-1.  **App Access (Credentials)**: Use these for the "App Access" section in Play Console:
-    - **Email:** review@yourdomain.com
-    - **Password:** YourTestPassword
-2.  **Medical Claims**: Never say the app "cures" a disease. Use words like "supports wellness" or "spiritual comfort."
+1.  **App Access**: Provide the test credentials listed above in the Play Console.
+2.  **Medical Claims**: Never say the app "cures." Use "spiritual wellness" or "comfort."
 3.  **Data Safety**:
-    - **URL for account deletion**: `https://mantravahini.vercel.app/delete-account`
+    - **Account Deletion URL**: `https://mantravahini.vercel.app/delete-account`
     - Declare that you collect Name and Email for account functionality.
