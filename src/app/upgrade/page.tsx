@@ -23,8 +23,8 @@ export default function UpgradePage() {
   }, []);
 
   const freeFeatures = [
-    "Complete Mantra Library Access",
-    "Unlimited Basic Mantras",
+    t('featureAllAudio'),
+    "Unlimited Audio Plays",
     t('featurePainMantra'),
   ];
 

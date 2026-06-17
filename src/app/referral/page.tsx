@@ -79,7 +79,7 @@ export default function ReferralPage() {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast({ title: "Link Copied", description: "Share this link with your friends to earn rewards!" });
+    toast({ title: "Link Copied", description: "Share this link with your friends to track installations!" });
     setTimeout(() => setCopied(false), 2000);
   };
 

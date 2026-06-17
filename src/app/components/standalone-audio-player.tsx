@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Play, Pause, Music2, Loader2, RefreshCw, Lock, ShieldCheck, Film, Heart, ThumbsUp, AlertCircle, WifiOff } from "lucide-react";
+import { Play, Pause, Music2, Loader2, ThumbsUp, AlertCircle, WifiOff, Film, Lock } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +63,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
-  // Track Online Status
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
@@ -96,7 +95,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     }
 
     const ref = doc(firestore, 'users', user.uid);
-    // Note: streak updates are queued when offline thanks to enabled persistence
     updateDoc(ref, {
         streakCount: newStreak,
         lastStreakUpdate: today.toISOString()
@@ -146,7 +144,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isPremium, sendLocalNotification, userProfile, mantra.id]);
+  }, [sendLocalNotification, userProfile, mantra.id]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -247,12 +245,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
                 <Music2 className="h-12 w-12 text-muted-foreground/30" />
               </div>
             )}
-            
-            {videoUrl && !isOffline && (
-               <div className="absolute bottom-2 right-2 bg-black/40 p-1 rounded backdrop-blur-sm">
-                  <Film className="h-3 w-3 text-white/50" />
-               </div>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -277,7 +269,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
                <div className="flex flex-col items-center gap-2 text-destructive animate-in slide-in-from-bottom-2">
                  <AlertCircle className="h-8 w-8" />
                  <p className="text-[10px] uppercase font-black tracking-widest">Media Load Error</p>
-                 {isOffline && <p className="text-[8px] italic">Not cached for offline use</p>}
                </div>
             ) : (
               <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full shadow-lg" disabled={hasMediaError || !audioSrc}>

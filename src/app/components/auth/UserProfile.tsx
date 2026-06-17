@@ -14,9 +14,9 @@ import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Sparkles, Heart, MessageSquareQuote, Mic2 } from 'lucide-react';
+import { LogIn, User as UserIcon, LogOut, Code, Shield, Copy, CheckCircle2, FileJson, Share2, Heart, MessageSquareQuote, Mic2 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -83,26 +83,6 @@ export function UserProfile() {
     }
   };
 
-  const calculateRemainingDays = (startDateString?: string | null): number | null => {
-    if (!startDateString) return null;
-    const startDate = new Date(startDateString);
-    const expiryDate = new Date(startDate);
-    expiryDate.setDate(expiryDate.getDate() + 30);
-    const today = new Date();
-    const timeDiff = expiryDate.getTime() - today.getTime();
-    if (timeDiff < 0) return 0;
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
-  };
-
-  const isPaidUser = userProfile?.subscriptionTier === 'premium';
-  const isPremiumUser = userProfile?.subscriptionTier === 'premium';
-  const isPractitioner = !!userProfile?.isPranaPractitioner;
-  
-  const remainingDays = useMemo(() => {
-    if (!isMounted || !isPaidUser) return null;
-    return calculateRemainingDays(userProfile?.premiumCycleStartDate);
-  }, [isMounted, isPaidUser, userProfile?.premiumCycleStartDate]);
-
   if (!isMounted || loading) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
@@ -118,8 +98,8 @@ export function UserProfile() {
     );
   }
 
+  const isPractitioner = !!userProfile?.isPranaPractitioner;
   const isActualDeveloper = user.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
-  const showReferralInMenu = isPremiumUser || isPractitioner || (isActualDeveloper && isDevMode);
 
   return (
     <DropdownMenu>
@@ -152,13 +132,6 @@ export function UserProfile() {
               </div>
             )}
 
-            {isPaidUser && remainingDays !== null && !isPractitioner && (
-                <p className="text-xs font-semibold leading-none text-primary/80 mt-1 flex items-center gap-1">
-                  <CheckCircle2 size={10} className="text-green-500" />
-                  {remainingDays} days left
-                </p>
-            )}
-
             {!isActualDeveloper && (
               <div className="flex items-center gap-2 mt-2 pt-2 border-t">
                 <p className="text-[10px] text-muted-foreground font-mono truncate flex-1">
@@ -172,17 +145,13 @@ export function UserProfile() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {showReferralInMenu && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/referral">
-                <Share2 className="mr-2 h-4 w-4" />
-                <span>{t('referAndEarn')}</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
-        )}
+        <DropdownMenuItem asChild>
+          <Link href="/referral">
+            <Share2 className="mr-2 h-4 w-4" />
+            <span>{t('referAndEarn')}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         {isActualDeveloper && (
           <>
             <DropdownMenuItem asChild>

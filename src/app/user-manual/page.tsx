@@ -57,8 +57,8 @@ export default function UserManualPage() {
   };
 
   const freeFeatures = [
-    "Full Mantra Library Access",
-    "Unlimited Basic Mantras",
+    t('featureAllAudio'),
+    "Unlimited Audio Plays",
     t('featurePainMantra'),
     "Public Spiritual Guidance"
   ];
