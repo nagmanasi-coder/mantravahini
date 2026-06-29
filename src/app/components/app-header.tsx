@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 import { Home, ShoppingBag, Star, Download } from "lucide-react";
-import { ShareButton } from "./share-button";
 import { useLanguage } from "@/context/language-context";
 import { Button } from "@/components/ui/button";
 import { UserProfile } from "./auth/UserProfile";
@@ -59,7 +58,6 @@ export function AppHeader() {
                 )}
                 <Button variant="ghost" size="sm" onClick={toggleLanguage}>{t('language')}</Button>
                 <UserProfile />
-                <ShareButton />
             </div>
           </div>
         </header>
