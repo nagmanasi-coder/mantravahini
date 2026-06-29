@@ -99,6 +99,15 @@ export default function Home() {
     setShowUpgradeDialog(true);
   };
 
+  const handleShareApp = () => {
+    const shareUrl = "https://play.google.com/store/apps/details?id=com.mantravahini.app";
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        toast({ title: t('shareAppButton'), description: "Play Store link copied to clipboard!" });
+      });
+    }
+  };
+
   const cardAnimation = "animate-fade-in-up";
 
   // Prevent Hydration Errors
@@ -291,7 +300,7 @@ export default function Home() {
                          </AlertDialogContent>
                        </AlertDialog>
                      )}
-                    <Button onClick={() => navigator.clipboard.writeText("https://play.google.com/store/apps/details?id=com.mantravahini.app").then(() => toast({ title: "Link Copied" }))}><Share2 className="mr-2 h-4 w-4" />{t('shareAppButton')}</Button>
+                    <Button onClick={handleShareApp}><Share2 className="mr-2 h-4 w-4" />{t('shareAppButton')}</Button>
                   </div>
                 </CardContent>
               </Card>

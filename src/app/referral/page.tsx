@@ -78,7 +78,7 @@ export default function ReferralPage() {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast({ title: "Link Copied", description: "Share the Play Store link with your friends!" });
+    toast({ title: t('shareAppButton'), description: "Play Store link copied!" });
     setTimeout(() => setCopied(false), 2000);
   };
 
