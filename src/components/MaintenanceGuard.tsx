@@ -5,6 +5,8 @@ import { useUser } from '@/firebase';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Lock, ShieldAlert } from 'lucide-react';
+import { Button } from './ui/button';
+import Link from 'next/link';
 
 /**
  * MaintenanceGuard component that locks the app for all users
@@ -14,27 +16,29 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const pathname = usePathname();
   const [isDevMode, setIsDevMode] = useState(false);
-  const [mounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    setMounted(true);
     const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
     setIsDevMode(devMode);
   }, []);
 
-  if (!mounted || isUserLoading) {
+  if (!mounted) {
     return null;
   }
 
   const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
   const isAuthorized = isDeveloper && isDevMode;
 
-  // Allow access to login page so developer can sign in
-  if (pathname === '/login') {
+  // Always allow access to the login page so the developer can sign in
+  // Also allow access to the privacy and delete-account pages for Play Store review
+  const publicPages = ['/login', '/privacy-policy', '/delete-account', '/terms', '/refund'];
+  if (publicPages.includes(pathname || '')) {
     return <>{children}</>;
   }
 
-  if (!isAuthorized) {
+  if (!isAuthorized && !isUserLoading) {
     return (
       <div className="fixed inset-0 z-[5000] bg-background flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-6 animate-fade-in">
@@ -54,6 +58,10 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
             </p>
             <p className="text-[10px] text-muted-foreground mt-1 italic">Expected resolution: Soon</p>
           </div>
+          
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/login">Developer Sign In</Link>
+          </Button>
         </div>
       </div>
     );
