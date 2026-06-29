@@ -70,16 +70,15 @@ export default function ReferralPage() {
   }, [user, userProfile?.referralCode, firestore]);
 
   const referralLink = useMemo(() => {
-    if (!userProfile?.referralCode) return '';
-    const baseUrl = "https://mantravahini.vercel.app";
-    return `${baseUrl}?ref=${userProfile.referralCode}`;
-  }, [userProfile?.referralCode]);
+    // UPDATED: Use the Play Store link for sharing the app
+    return "https://play.google.com/store/apps/details?id=com.mantravahini.app";
+  }, []);
 
   const handleCopy = () => {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast({ title: "Link Copied", description: "Share this link with your friends to track installations!" });
+    toast({ title: "Link Copied", description: "Share the Play Store link with your friends!" });
     setTimeout(() => setCopied(false), 2000);
   };
 

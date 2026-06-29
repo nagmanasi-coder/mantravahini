@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Share2 } from "lucide-react";
@@ -21,11 +22,8 @@ export function ShareButton() {
   const { data: userProfile } = useDoc<{ referralCode?: string; subscriptionTier?: string }>(userDocRef);
 
   const handleShare = async () => {
-    // Always use the published production domain for sharing
-    const baseUrl = "https://mantravahini.vercel.app";
-    const referralCode = userProfile?.referralCode;
-    const isPremium = userProfile?.subscriptionTier === 'premium';
-    const shareUrl = isPremium && referralCode ? `${baseUrl}?ref=${referralCode}` : baseUrl;
+    // UPDATED: Use the official Play Store link for the app
+    const shareUrl = "https://play.google.com/store/apps/details?id=com.mantravahini.app";
     
     const shareData = {
       title: t('appTitle'),
@@ -56,7 +54,7 @@ export function ShareButton() {
       await navigator.clipboard.writeText(url);
       toast({
         title: t('shareAppButton'),
-        description: "App link has been copied to your clipboard.",
+        description: "App Store link has been copied to your clipboard.",
       });
     } catch (error) {
        toast({
