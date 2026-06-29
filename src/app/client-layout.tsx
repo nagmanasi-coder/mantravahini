@@ -10,7 +10,6 @@ import { AppHeader } from './components/app-header';
 import { AppFooter } from './components/app-footer';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
-import { MaintenanceGuard } from '@/components/MaintenanceGuard';
 
 /**
  * ClientLayout handles all client-side state and providers.
@@ -40,7 +39,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           /* Full application shell once mounted on the client */
-          <MaintenanceGuard>
+          <>
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
@@ -50,7 +49,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <AppFooter />
             <Toaster />
             <FirebaseErrorListener />
-          </MaintenanceGuard>
+          </>
         )}
       </FirebaseClientProvider>
     </LanguageProvider>

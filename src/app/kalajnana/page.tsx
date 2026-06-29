@@ -98,34 +98,6 @@ export default function KalajnanaPage() {
     );
   }
 
-  if (!isAuthorized && !userLoading) {
-    return (
-      <div className="container mx-auto max-w-2xl px-4 py-16 text-center">
-        <header className="mb-12">
-            <Button asChild variant="ghost" size="sm" className="mb-4 self-start">
-               <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> {t('backButton')}</Link>
-            </Button>
-            <div className="flex justify-center mb-6">
-               <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-pulse">
-                  <Lock size={40} />
-               </div>
-            </div>
-            <h1 className="font-headline text-3xl font-bold text-primary mb-4">Divine Maintenance</h1>
-            <p className="text-muted-foreground font-medium leading-relaxed">
-              The Kalajnana portal is currently undergoing spiritual alignment. We are performing critical updates to ensure the purity of the divine predictions.
-            </p>
-            <div className="mt-8 p-4 bg-muted rounded-lg border border-primary/10 max-w-sm mx-auto">
-                <p className="text-xs font-bold uppercase tracking-widest text-primary flex items-center justify-center gap-2">
-                  <ShieldAlert size={14} />
-                  Astrology Section Locked
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1 italic">Expected resolution: Soon</p>
-            </div>
-        </header>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8 pb-32 animate-fade-in">
       <header className="mb-12 text-center">
