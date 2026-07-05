@@ -36,6 +36,18 @@ const withPWA = pwa({
       }
     },
     {
+      // Cache Google Fonts
+      urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts',
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 60 * 24 * 365, // 1 Year
+        },
+      },
+    },
+    {
       urlPattern: new RegExp('^https://(?:www\\.)?(?:googleapis|google|firebase|firebaseapp|accounts)\\.com/.*$'),
       handler: 'NetworkOnly',
     },

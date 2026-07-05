@@ -3,7 +3,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Play, Pause, Music2, Loader2, ThumbsUp, AlertCircle, WifiOff, Film, Lock } from "lucide-react";
+import { Play, Pause, Music2, Loader2, ThumbsUp, AlertCircle, WifiOff, Lock, CloudDownload } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,6 +56,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [hasMediaError, setHasMediaError] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
+  const [isCached, setIsCached] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -63,6 +64,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
+  // Check for network and cache status
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
@@ -71,13 +73,20 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       setIsOffline(!navigator.onLine);
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
+
+      // Check if audio is already in PWA cache
+      if ('caches' in window && audioSrc) {
+        caches.match(audioSrc).then(response => {
+          setIsCached(!!response);
+        });
+      }
     }
     
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [audioSrc]);
 
   const updateStreak = () => {
     if (!firestore || !user || !userProfile) return;
@@ -174,11 +183,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       return;
     }
 
-    if (hasMediaError) {
-      const errorMsg = isOffline 
-        ? "Mantra not cached for offline. Please play once while online." 
-        : "Could not load the divine sound. Please check connection.";
-      toast({ variant: "destructive", title: "Playback Error", description: errorMsg });
+    if (isOffline && !isCached) {
+      toast({ 
+        variant: "destructive", 
+        title: "Offline Mode", 
+        description: "This mantra hasn't been cached yet. Please play once while online to save it for offline use." 
+      });
       return;
     }
 
@@ -201,11 +211,18 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
   return (
     <Card className={cn("overflow-hidden shadow-xl relative")}>
-        {isOffline && (
-          <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-            <WifiOff size={10} /> Offline Mode
-          </Badge>
-        )}
+        <div className="absolute top-4 left-4 z-20 flex gap-2">
+          {isOffline && (
+            <Badge variant="outline" className="border-destructive/40 text-destructive bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
+              <WifiOff size={10} /> Offline
+            </Badge>
+          )}
+          {isCached && (
+            <Badge variant="outline" className="border-green-500/40 text-green-600 bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
+              <CloudDownload size={10} /> Offline Ready
+            </Badge>
+          )}
+        </div>
 
         {mantra.tier === 'paid' && !isPremium && (
            <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
@@ -288,7 +305,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
         key={mantra.id} 
         ref={audioRef} 
         src={audioSrc || ''} 
-        preload="metadata" 
+        preload="auto" 
       />
     </Card>
   );
