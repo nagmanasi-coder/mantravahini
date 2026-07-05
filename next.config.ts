@@ -7,6 +7,9 @@ const withPWA = pwa({
   disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
   runtimeCaching: [
     {
       // Aggressively cache audio files for offline playback (Mantras)
@@ -16,7 +19,7 @@ const withPWA = pwa({
         cacheName: 'mantra-audio-cache',
         expiration: {
           maxEntries: 100,
-          maxAgeSeconds: 60 * 60 * 24 * 60, // 60 Days
+          maxAgeSeconds: 60 * 60 * 24 * 90, // 90 Days
         },
         cacheableResponse: {
           statuses: [0, 200],
@@ -48,8 +51,15 @@ const withPWA = pwa({
       },
     },
     {
-      urlPattern: new RegExp('^https://(?:www\\.)?(?:googleapis|google|firebase|firebaseapp|accounts)\\.com/.*$'),
-      handler: 'NetworkOnly',
+      // Cache the App Shell and navigation routes
+      urlPattern: /\/.*/,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'app-shell-cache',
+        expiration: {
+          maxEntries: 50,
+        },
+      },
     },
   ],
 });

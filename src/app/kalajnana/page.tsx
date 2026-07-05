@@ -7,7 +7,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { Compass, Moon, Sun, ArrowRight, Loader2, Sparkles, Lock, ArrowLeft, ShieldAlert, WifiOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -33,11 +33,22 @@ export default function KalajnanaPage() {
   const [isDevMode, setIsDevMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
     const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
     setIsDevMode(devMode);
+    
+    const handleConnectivity = () => setIsOffline(!navigator.onLine);
+    window.addEventListener('online', handleConnectivity);
+    window.addEventListener('offline', handleConnectivity);
+    handleConnectivity();
+
+    return () => {
+      window.removeEventListener('online', handleConnectivity);
+      window.removeEventListener('offline', handleConnectivity);
+    };
   }, []);
 
   const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
@@ -66,6 +77,11 @@ export default function KalajnanaPage() {
 
   const handleGenerateManual = async () => {
     if (!isAuthorized || !firestore) return;
+    if (isOffline) {
+      toast({ variant: "destructive", title: "Offline", description: "Internet connection is required to generate new predictions." });
+      return;
+    }
+    
     setIsGenerating(true);
     try {
       const result = await generateDailyKalajnana(todayStr);
@@ -89,7 +105,7 @@ export default function KalajnanaPage() {
     return data[String(selectedSignIndex)];
   }, [horoscope, selectedSignIndex, selectedType]);
 
-  if (!hasMounted || userLoading || (horoscopeLoading && isAuthorized)) {
+  if (!hasMounted || userLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -105,24 +121,35 @@ export default function KalajnanaPage() {
            <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> {t('backButton')}</Link>
         </Button>
         <div className="flex justify-center mb-4">
-           <Compass className="h-16 w-16 text-primary animate-pulse" />
+           <Compass className={cn("h-16 w-16 text-primary", !isOffline && "animate-pulse")} />
         </div>
         <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl border-b-2 border-primary/20 pb-4">
           {t('kalajnanaTitle')}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">{t('dinaBhavishya')} - {new Date().toLocaleDateString(language === 'kn' ? 'kn-IN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        
+        {isOffline && (
+           <div className="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-destructive uppercase tracking-widest bg-destructive/5 py-2 rounded-lg border border-destructive/10">
+             <WifiOff size={14} /> Offline Mode: Displaying saved results
+           </div>
+        )}
       </header>
 
-      {!horoscope ? (
+      {!horoscope && !horoscopeLoading ? (
         <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">
           <Compass className="mx-auto h-12 w-12 text-primary/30 mb-4 animate-spin-slow" />
           <p className="text-muted-foreground italic mb-6">Predictions for today are being manifested. Please check back in a moment.</p>
           {isAuthorized && (
-            <Button onClick={handleGenerateManual} disabled={isGenerating} size="lg" className="font-bold shadow-lg">
+            <Button onClick={handleGenerateManual} disabled={isGenerating || isOffline} size="lg" className="font-bold shadow-lg">
                 {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                 Manifest Predictions Now
             </Button>
           )}
+        </div>
+      ) : horoscopeLoading && !horoscope ? (
+        <div className="text-center py-20">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+          <p className="mt-4 text-sm text-muted-foreground">Checking local cache...</p>
         </div>
       ) : !selectedType ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -191,13 +218,13 @@ export default function KalajnanaPage() {
                  </CardContent>
                  <CardFooter className="bg-muted/30 p-4 justify-center">
                     <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
-                      Divine Timing: {new Date().toLocaleTimeString()}
+                      {isOffline ? "Cached Prediction" : `Divine Timing: ${new Date().toLocaleTimeString()}`}
                     </p>
                  </CardFooter>
                </Card>
              ) : isRevealed && !currentPrediction ? (
                 <div className="text-center p-12 bg-destructive/5 rounded-xl border-2 border-dashed border-destructive/20">
-                  <p className="text-destructive font-bold">Prediction data missing for this sign. Please try refreshing.</p>
+                  <p className="text-destructive font-bold">Prediction data missing for this sign. Please try refreshing once online.</p>
                 </div>
              ) : null}
           </div>

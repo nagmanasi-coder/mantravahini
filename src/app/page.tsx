@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import { StandaloneAudioPlayer } from "@/app/components/standalone-audio-player";
 import { mantras } from "@/lib/mantras";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Flame, Compass, Lock, Flower2, Trophy, Gift } from "lucide-react";
+import { Sparkles, Heart, Share2, Users, ArrowRight, Zap, Flame, Compass, Lock, Flower2, Trophy, Gift, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -46,11 +46,22 @@ export default function Home() {
   const [showJoinGroupDialog, setShowJoinGroupDialog] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
     const devMode = typeof window !== 'undefined' ? localStorage.getItem('developerMode') === 'true' : false;
     setIsDevMode(devMode);
+
+    const handleConn = () => setIsOffline(!navigator.onLine);
+    window.addEventListener('online', handleConn);
+    window.addEventListener('offline', handleConn);
+    handleConn();
+
+    return () => {
+      window.removeEventListener('online', handleConn);
+      window.removeEventListener('offline', handleConn);
+    };
   }, []);
 
   const isDeveloper = user?.uid === 'LPBTRz3AMafKtZVgzJWm5Aisxc53';
@@ -124,6 +135,13 @@ export default function Home() {
               {t('appTitle')}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
+            
+            {isOffline && (
+              <div className="mt-4 inline-flex items-center gap-2 bg-destructive/10 text-destructive border border-destructive/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter animate-pulse">
+                <WifiOff size={10} />
+                Offline: Functioning via device storage
+              </div>
+            )}
           </header>
 
           {user && (
@@ -179,7 +197,7 @@ export default function Home() {
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <Compass size={120} />
                     </div>
-                    {!isAuthorized && (
+                    {!isAuthorized && !isOffline && (
                     <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
                         <Lock size={10} /> Maintenance
                     </Badge>
@@ -265,7 +283,7 @@ export default function Home() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        {test.videoUrl && (
+                        {test.videoUrl && !isOffline && (
                           <div className="relative aspect-video w-full rounded-lg overflow-hidden border shadow-sm">
                             <video src={test.videoUrl} controls className="w-full h-full object-cover" />
                           </div>
@@ -293,7 +311,7 @@ export default function Home() {
                        <Button asChild variant="outline"><Link href={whatsAppGroupUrl} target="_blank"><Users className="mr-2 h-4 w-4" />{t('joinGroupButton')}</Link></Button>
                      ) : (
                        <AlertDialog open={showJoinGroupDialog} onOpenChange={setShowJoinGroupDialog}>
-                         <AlertDialogTrigger asChild><Button variant="outline"><Users className="mr-2 h-4 w-4" />{t('joinGroupButton')}</Button></AlertDialogTrigger>
+                         <AlertDialogTrigger asChild><Button variant="outline" disabled={isOffline}><Users className="mr-2 h-4 w-4" />{t('joinGroupButton')}</Button></AlertDialogTrigger>
                          <AlertDialogContent>
                            <AlertDialogHeader><AlertDialogTitle>{t('joinGroupTitle')}</AlertDialogTitle><AlertDialogDescription>{t('joinGroupDescription')}</AlertDialogDescription></AlertDialogHeader>
                            <AlertDialogFooter><Button onClick={() => router.push('/upgrade')}>{t('upgradeButton')}</Button><AlertDialogAction>{t('closeButton')}</AlertDialogAction></AlertDialogFooter>
@@ -312,7 +330,7 @@ export default function Home() {
                 <p className="text-sm">{t('contactForServices')}</p>
                 <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
                </div>
-              <Button asChild><Link href={whatsAppUrl} target="_blank"><WhatsAppIcon />{t('contactOnWhatsApp')}</Link></Button>
+              <Button asChild disabled={isOffline}><Link href={whatsAppUrl} target="_blank"><WhatsAppIcon />{t('contactOnWhatsApp')}</Link></Button>
             </CardFooter>
           </Card>
         </div>
