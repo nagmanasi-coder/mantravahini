@@ -14,8 +14,6 @@ import { WifiOff } from 'lucide-react';
 
 /**
  * ClientLayout handles all client-side state and providers.
- * Moving this out of layout.tsx prevents hydration errors by ensuring
- * browser-specific logic only runs after the initial mount.
  */
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -43,18 +41,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     <LanguageProvider>
       <FirebaseClientProvider>
         {!mounted ? (
-          /* 
-             During SSR and initial hydration, we render the children 
-             wrapped in providers but without the interactive components 
-             to avoid hydration mismatches.
-          */
           <div className="bg-background min-h-screen">
-            <div className="pb-32 min-h-screen">
+            <div className="pb-40 min-h-screen">
               {children}
             </div>
           </div>
         ) : (
-          /* Full application shell once mounted on the client */
           <>
             {isOffline && (
               <div className="fixed top-0 left-0 right-0 z-[6000] bg-destructive text-destructive-foreground py-1 px-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top duration-500">
@@ -65,11 +57,22 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <HandleReferral />
             <SplashScreen />
             <AppHeader />
-            <div className="pb-32 min-h-screen">
+            
+            {/* Increase padding-bottom to account for stacked Footer + Banner */}
+            <div className="pb-48 min-h-screen">
               {children}
             </div>
-            <BannerAd />
-            <AppFooter />
+
+            {/* STACKED DOCK: Footer above Banner */}
+            <div className="fixed bottom-0 left-0 right-0 z-[5000] flex flex-col pointer-events-none">
+                <div className="pointer-events-auto bg-background">
+                    <AppFooter />
+                </div>
+                <div className="pointer-events-auto">
+                    <BannerAd />
+                </div>
+            </div>
+
             <Toaster />
             <FirebaseErrorListener />
           </>

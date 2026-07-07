@@ -1,4 +1,3 @@
-
 "use client"
 
 import Link from "next/link";
@@ -16,7 +15,7 @@ export function AppFooter() {
     }
 
     return (
-         <footer className="fixed bottom-0 z-40 w-full border-t bg-background transition-all duration-300">
+         <footer className="relative w-full border-t bg-background transition-all duration-300">
             <div className="container mx-auto flex flex-col items-center justify-center p-2">
                  <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:gap-x-6 mb-2">
                     <Link href="/mantras" className="flex items-center space-x-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">

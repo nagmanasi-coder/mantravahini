@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock, RefreshCw, Sparkles, ExternalLink } from "lucide-react";
+import { ThumbsUp, Smartphone, Globe, Clock, RefreshCw, Sparkles, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 /**
  * UTILITY: Shared Logic to hide ads for Premium users
  */
-function useShouldShowAds() {
+export function useShouldShowAds() {
   const { user } = useUser();
   const firestore = useFirestore();
   
@@ -40,7 +40,7 @@ function useShouldShowAds() {
 }
 
 /**
- * 1. BANNER AD (Bottom Docked)
+ * 1. BANNER AD (Docked at the very bottom)
  */
 export function BannerAd() {
   const { t } = useLanguage();
@@ -57,7 +57,7 @@ export function BannerAd() {
   if (!showAds) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10">
+    <div className="relative flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10 select-none">
       <div className="flex items-center gap-1 mb-1">
         <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-black flex items-center gap-1">
           {isNative ? "Mobile Ad Unit" : "Web Promo Slot"}
