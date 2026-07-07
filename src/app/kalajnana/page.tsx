@@ -102,7 +102,7 @@ export default function KalajnanaPage() {
       {!horoscope && !horoscopeLoading ? (
         <div className="text-center p-12 bg-muted/20 rounded-xl border-2 border-dashed border-primary/20">
           <Compass className="mx-auto h-12 w-12 text-primary/30 mb-4 animate-spin-slow" />
-          <p className="text-muted-foreground italic mb-6">Predictions for today are being prepared. Please check back later.</p>
+          <p className="text-muted-foreground italic mb-6">Predictions for today are being prepared. Please check back later. This feature is coming soon..</p>
         </div>
       ) : horoscopeLoading && !horoscope ? (
         <div className="text-center py-20">
