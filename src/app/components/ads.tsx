@@ -96,7 +96,7 @@ interface InterstitialAdProps {
 export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'interstitial' }: InterstitialAdProps) {
   const { language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(5); // Testing duration
   const [isProcessing, setIsProcessing] = useState(false);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
 
@@ -107,7 +107,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (open) {
-      setCountdown(5);
+      setCountdown(5); // Reset countdown on open
       setIsProcessing(false);
       timer = setInterval(() => {
         setCountdown((prev) => {
