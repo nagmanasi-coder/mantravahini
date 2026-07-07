@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, Smartphone, Globe, Clock, RefreshCw, Sparkles, ExternalLink } from "lucide-react";
+import { Smartphone, Globe, Clock, RefreshCw, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -85,7 +85,6 @@ export function BannerAd() {
 
 /**
  * 2. REWARDED AD (Fullscreen Dialog to unlock content)
- * UPDATED: Now handles a sequence of 2 ads without stop.
  */
 interface InterstitialAdProps {
   open: boolean;
@@ -95,7 +94,7 @@ interface InterstitialAdProps {
 }
 
 export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'interstitial' }: InterstitialAdProps) {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [adSequence, setAdSequence] = useState(1);
@@ -125,7 +124,10 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     } else {
       // Sequence complete
       onOpenChange(false);
-      if (onAdComplete) onAdComplete();
+      if (onAdComplete) {
+        // Ensure standard state reset before playing
+        setTimeout(() => onAdComplete(), 100);
+      }
     }
   };
 
@@ -133,7 +135,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 overflow-hidden">
+      <DialogContent className="max-w-sm p-0 overflow-hidden" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader className="p-6 pb-4">
           <div className="flex justify-between items-start">
             <div>
@@ -184,7 +186,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
           >
             {countdown > 0 
               ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : (adSequence < 2 ? "Next Ad" : "Collect Reward & Play")}
+              : (adSequence < 2 ? "Show Next Ad" : "Collect Reward & Play")}
           </Button>
         </div>
       </DialogContent>

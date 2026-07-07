@@ -66,7 +66,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const mantraImage = imageId ? PlaceHolderImages.find(img => img.id === imageId) : null;
   const audioSrc = mantra.url || null;
 
-  // Check for network and cache status
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
@@ -76,7 +75,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
-      // Check if audio is already in PWA cache
       if ('caches' in window && audioSrc) {
         caches.match(audioSrc).then(response => {
           setIsCached(!!response);
@@ -207,10 +205,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    // AD REVENUE LOGIC: Show Rewarded Ad Sequence (2 ads) for Free users playing restricted mantras
+    // STRICT REVENUE ENFORCEMENT: 
+    // Always check for Ad requirement before allowing startPlayback()
     if (!isPremium && mantra.tier === 'paid') {
       setShowAd(true);
-      return;
+      return; // Stop here, InterstitialAd will trigger startPlayback on completion
     }
 
     startPlayback();
@@ -245,7 +244,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
           </div>
 
           {mantra.tier === 'paid' && !isPremium && (
-             <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
+             <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500 animate-pulse">
               <Lock className="h-3 w-3 mr-1" />
               Watch Ads to Play
             </Badge>

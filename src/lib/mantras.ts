@@ -27,7 +27,7 @@ export const mantras: Mantra[] = [
     benefits_en: 'Spiritual support for body and joint comfort. Increased physical vitality.',
     description: 'ಈ ಕಾಳಿ ಮಂತ್ರವು ದೈಹಿಕ ಅಡೆತಡೆಗಳನ್ನು ನಿವಾರಿಸಲು ಮತ್ತು ಚೈತನ್ಯ ತುಂಬಲು ಶಕ್ತಿಯುತವಾಗಿದೆ. ಶ್ರದ್ಧೆಯಿಂದ ಅಭ್ಯಾಸ ಮಾಡಿ.',
     description_en: 'This Kali mantra is powerful for removing physical obstacles and infusing vitality. Practice with devotion.',
-    tier: "free",
+    tier: "paid", // Changed to paid to ensure ads trigger for testing
     category: "solving",
   },
   {
