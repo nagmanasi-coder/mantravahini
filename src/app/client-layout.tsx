@@ -11,6 +11,7 @@ import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
 import { BannerAd } from './components/ads';
 import { WifiOff } from 'lucide-react';
+import { LocalChatbot } from './components/local-chatbot';
 
 /**
  * ClientLayout handles all client-side state and providers.
@@ -62,6 +63,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <div className="pb-48 min-h-screen">
               {children}
             </div>
+
+            {/* Local Assistant Bot */}
+            <LocalChatbot />
 
             {/* STACKED DOCK: Footer above Banner */}
             <div className="fixed bottom-0 left-0 right-0 z-[5000] flex flex-col pointer-events-none">

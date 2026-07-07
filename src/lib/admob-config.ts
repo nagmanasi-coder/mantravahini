@@ -1,27 +1,26 @@
 /**
  * ADMOB CONFIGURATION
  * 
- * Replace the "android" and "ios" values below with your real 
- * Ad Unit IDs from the Google AdMob console.
+ * Updated with Google Test App ID for the testing period.
  */
 export const ADMOB_CONFIG = {
-  // Your AdMob App ID from Google Console
-  appId: "ca-app-pub-3940256099942544~3347511713", // REPLACE WITH REAL APP ID
+  // Official Google Test App ID for Android
+  appId: "ca-app-pub-3940256099942544~3347511713", 
 
   // Ad Unit IDs (Mapping to real console IDs)
   units: {
     banner: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs
+      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
       android: "ca-app-pub-3940256099942544/6300978111", 
       ios: "ca-app-pub-3940256099942544/2934735716",
     },
     rewarded: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs
+      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
       android: "ca-app-pub-3940256099942544/5224354917", 
       ios: "ca-app-pub-3940256099942544/1712485313",
     },
     native: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs
+      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
       android: "ca-app-pub-3940256099942544/2247696110", 
       ios: "ca-app-pub-3940256099942544/3986624511",
     }
