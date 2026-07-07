@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { MessageSquare, X, Send, Sparkles, User, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/language-context";
 import { LOCAL_KNOWLEDGE, DEFAULT_RESPONSE } from "@/lib/local-knowledge-base";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 type Message = {
   id: string;
@@ -19,17 +19,42 @@ type Message = {
 
 export function LocalChatbot() {
   const { language } = useLanguage();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "bot",
-      text: language === 'kn' ? "ನಮಸ್ತೆ! ಮಂತ್ರವಾಹಿನಿ ಸಹಾಯಕನಿಗೆ ಸುಸ್ವಾಗತ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?" : "Namaste! Welcome to Mantravaahini Assistant. How can I help you today?"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-greeting based on page context
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      let greeting = "";
+      if (pathname === '/prana-vidya') {
+        greeting = language === 'kn' 
+          ? "ನಮಸ್ತೆ! ಪ್ರಾಣ ವಿದ್ಯಾದ ಬಗ್ಗೆ ನೀವು ತಿಳಿಯಲು ಬಯಸುತ್ತಿರುವುದು ಸಂತೋಷ. ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?" 
+          : "Namaste! Glad you're exploring Prana Vidya. How can I guide you today?";
+      } else if (pathname === '/kalajnana') {
+        greeting = language === 'kn' 
+          ? "ನಮಸ್ತೆ! ಇಂದಿನ ಕಾಲಜ್ಞಾನದ ಬಗ್ಗೆ ಏನಾದರೂ ಪ್ರಶ್ನೆಗಳಿವೆಯೇ?" 
+          : "Namaste! Any questions about today's Kalajnana?";
+      } else if (pathname?.startsWith('/mantras')) {
+        greeting = language === 'kn' 
+          ? "ನಮಸ್ತೆ! ಮಂತ್ರಗಳ ಬಳಕೆ ಅಥವಾ ವಿಧಾನದ ಬಗ್ಗೆ ಏನಾದರೂ ಸಹಾಯ ಬೇಕೇ?" 
+          : "Namaste! Need help with mantra methods or procedures?";
+      } else if (pathname === '/mantra-deeksha') {
+        greeting = language === 'kn' 
+          ? "ನಮಸ್ತೆ! ಮಂತ್ರ ದೀಕ್ಷೆಯ ಪ್ರಕ್ರಿಯೆಯ ಬಗ್ಗೆ ನಾನು ವಿವರಿಸಬಲ್ಲೆ." 
+          : "Namaste! I can explain the Mantra Deeksha process to you.";
+      } else {
+        greeting = language === 'kn' 
+          ? "ನಮಸ್ತೆ! ಮಂತ್ರವಾಹಿನಿ ಸಹಾಯಕನಿಗೆ ಸುಸ್ವಾಗತ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?" 
+          : "Namaste! Welcome to Mantravaahini Assistant. How can I help you today?";
+      }
+      
+      setMessages([{ id: "1", role: "bot", text: greeting }]);
+    }
+  }, [isOpen, pathname, language, messages.length]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -64,14 +89,23 @@ export function LocalChatbot() {
     }, 400);
   };
 
-  const suggestionKeywords = language === 'kn' 
-    ? ["ಕಾಳಿ", "ಕಣ್ಣು", "ದೀಕ್ಷೆ", "ಪ್ರಾಣ", "ರಾಶಿ", "ಪ್ರೀಮಿಯಂ", "ಕಾರ್ಯಾಗಾರ", "ಕೈಪಿಡಿ", "ಅಳಿಸು", "ಸತತ"]
-    : ["Kali", "Eye", "Deeksha", "Prana", "Rashi", "Premium", "Workshop", "Manual", "Delete", "Streak"];
+  const suggestionKeywords = useMemo(() => {
+    const base = language === 'kn' 
+      ? ["ಮಂತ್ರ", "ಕಾಳಿ", "ಕಣ್ಣು", "ದೀಕ್ಷೆ", "ಪ್ರಾಣ", "ರಾಶಿ", "ಪ್ರೀಮಿಯಂ", "ಕಾರ್ಯಾಗಾರ", "ಕೈಪಿಡಿ"]
+      : ["Mantra", "Kali", "Eye", "Deeksha", "Prana", "Rashi", "Premium", "Workshop", "Manual"];
+    
+    // Priority based on page
+    if (pathname === '/prana-vidya') return [base[4], ...base.filter((_, i) => i !== 4)];
+    if (pathname === '/kalajnana') return [base[5], ...base.filter((_, i) => i !== 5)];
+    if (pathname?.startsWith('/mantras')) return [base[0], base[1], base[2], ...base.slice(3)];
+    
+    return base;
+  }, [language, pathname]);
 
   return (
     <div className="fixed bottom-40 right-4 z-[4500] flex flex-col items-end pointer-events-none">
       {isOpen && (
-        <Card className="mb-4 w-[90vw] max-w-[350px] max-h-[70vh] flex flex-col shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto overflow-hidden">
+        <Card className="mb-4 w-[90vw] max-w-[350px] h-[70vh] flex flex-col shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto overflow-hidden">
           <CardHeader className="bg-primary p-4 text-white flex flex-row items-center justify-between space-y-0 shrink-0">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -79,7 +113,7 @@ export function LocalChatbot() {
               </div>
               <div>
                 <CardTitle className="text-sm font-bold">{language === 'kn' ? 'ದೈವಿಕ ಸಹಾಯಕ' : 'Divine Assistant'}</CardTitle>
-                <p className="text-[10px] opacity-80 uppercase font-black tracking-widest">Local Mode (No Cloud)</p>
+                <p className="text-[10px] opacity-80 uppercase font-black tracking-widest">Page Aware • Local Mode</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20" onClick={() => setIsOpen(false)}>

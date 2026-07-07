@@ -10,6 +10,11 @@ export type KnowledgeEntry = {
  */
 export const LOCAL_KNOWLEDGE: KnowledgeEntry[] = [
   {
+    keywords: ["mantra", "ಮಂತ್ರ", "collection", "ಸಂಗ್ರಹ"],
+    kn: "ನಮ್ಮಲ್ಲಿ ಎರಡು ರೀತಿಯ ಮಂತ್ರ ಸಂಗ್ರಹಗಳಿವೆ: ೧. ರಕ್ಷಣೆಗಾಗಿ (Protective) ಮತ್ತು ೨. ಸಮಸ್ಯೆಗಳ ಪರಿಹಾರಕ್ಕಾಗಿ (Solving). ನೀವು ಮಂತ್ರ ಹಬ್ ಪುಟದಲ್ಲಿ ಇವುಗಳನ್ನು ಅನ್ವೇಷಿಸಬಹುದು.",
+    en: "We have two types of mantra collections: 1. Protective and 2. Solving Problems. You can explore them in the Mantra Hub page."
+  },
+  {
     keywords: ["kali", "ಕಾಳಿ", "water", "ನೀರು", "pain", "ನೋವು"],
     kn: "ಕಾಳಿ ಮಂತ್ರ ವಿಧಾನ: ಒಂದು ಲೋಟ ನೀರು ತೆಗೆದುಕೊಳ್ಳಿ, ಲೌಡ್ ಸ್ಪೀಕರ್‌ನಲ್ಲಿ ಮಂತ್ರ ಪ್ಲೇ ಮಾಡಿ. ಆ ನೀರನ್ನು ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ಕುಡಿಯಿರಿ. ಇದು ಶಾರೀರಿಕ ನೋವು ನಿವಾರಣೆಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಬೆಂಬಲ ನೀಡುತ್ತದೆ.",
     en: "Kali Mantra Method: Take a glass of water, play the mantra on loudspeaker. Drink it twice a day. It provides spiritual support for physical pain relief."
@@ -63,20 +68,10 @@ export const LOCAL_KNOWLEDGE: KnowledgeEntry[] = [
     keywords: ["manual", "ಕೈಪಿಡಿ", "guide", "ಹೇಗೆ"],
     kn: "ಬಳಕೆದಾರರ ಕೈಪಿಡಿಯು ಅಪ್ಲಿಕೇಶನ್‌ನ ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳ ವಿವರವಾದ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ಹೊಂದಿದೆ. ಇದನ್ನು ನೀವು ಹೋಮ್ ಪೇಜ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿ ಕಾಣಬಹುದು.",
     en: "The User Manual provides a detailed guide for all app features. You can find it at the bottom of the home page."
-  },
-  {
-    keywords: ["delete", "ಅಳಿಸು", "account", "ಖಾತೆ"],
-    kn: "ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಡೇಟಾವನ್ನು ಅಳಿಸಲು ವಿನಂತಿಸಲು 'Delete Account' ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಿ ಅಥವಾ ನಮ್ಮ ಬೆಂಬಲ ತಂಡವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
-    en: "To request account and data deletion, visit the 'Delete Account' page or contact our support team."
-  },
-  {
-    keywords: ["streak", "ಸತತ", "daily", "ಪ್ರತಿದಿನ"],
-    kn: "ಪ್ರತಿದಿನ ಮಂತ್ರಗಳನ್ನು ಕೇಳುವ ಮೂಲಕ ನಿಮ್ಮ 'Spiritual Streak' ಅನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ. ಇದು ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಶಕ್ತಿಯನ್ನು ಸ್ಥಿರವಾಗಿರಿಸುತ್ತದೆ.",
-    en: "Maintain your 'Spiritual Streak' by listening to mantras daily. This keeps your energy flow consistent."
   }
 ];
 
 export const DEFAULT_RESPONSE = {
-  kn: "ಕ್ಷಮಿಸಿ, ಆ ಬಗ್ಗೆ ಮಾಹಿತಿ ಇಲ್ಲ. ದಯವಿಟ್ಟು ಕೀವರ್ಡ್ ಬಳಸಿ (ಉದಾಹರಣೆಗೆ: ಕಾಳಿ, ದೀಕ್ಷೆ, ತೈಲ, ಪ್ರೀಮಿಯಂ). ಅಥವಾ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ: 7022070287.",
-  en: "Sorry, I don't have information on that. Try keywords like: Kali, Deeksha, Oil, Premium. Or contact us: 7022070287."
+  kn: "ಕ್ಷಮಿಸಿ, ಆ ಬಗ್ಗೆ ಮಾಹಿತಿ ಇಲ್ಲ. ದಯವಿಟ್ಟು ಕೀವರ್ಡ್ ಬಳಸಿ (ಉದಾಹರಣೆಗೆ: ಮಂತ್ರ, ದೀಕ್ಷೆ, ತೈಲ, ಪ್ರೀಮಿಯಂ). ಅಥವಾ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ: 7022070287.",
+  en: "Sorry, I don't have information on that. Try keywords like: Mantra, Deeksha, Oil, Premium. Or contact us: 7022070287."
 };
