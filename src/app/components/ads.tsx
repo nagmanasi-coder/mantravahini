@@ -127,10 +127,10 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     
     setIsProcessing(true);
     
-    // 1. First close the dialog
+    // 1. Close the dialog
     onOpenChange(false);
     
-    // 2. Then trigger completion callback
+    // 2. Trigger completion callback (this unlocks the audio)
     if (onAdComplete) {
       onAdComplete();
     }
@@ -146,19 +146,25 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   return (
     <Dialog open={open} onOpenChange={(val) => {
       // Prevent closing manually if ad is not complete
-      if (countdown === 0) onOpenChange(val);
+      // If complete and user tries to close, trigger the reward logic automatically
+      if (countdown === 0 && !val) {
+         handleRewardCollection();
+      } else if (countdown === 0) {
+         onOpenChange(val);
+      }
     }}>
       <DialogContent 
         className="max-w-sm p-0 overflow-hidden max-h-[95vh] rounded-2xl border-none" 
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         {/* Explicit Close Button on Top Right - ENABLED ONLY WHEN COMPLETED */}
+        {/* UPDATED: Clicking X now correctly triggers handleRewardCollection */}
         {countdown === 0 && (
           <Button 
             variant="ghost" 
             size="icon" 
             className="absolute right-2 top-2 z-[60] h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40 backdrop-blur-md border border-white/20 animate-in fade-in zoom-in duration-300"
-            onClick={() => onOpenChange(false)}
+            onClick={handleRewardCollection}
           >
             <X size={18} strokeWidth={3} />
           </Button>

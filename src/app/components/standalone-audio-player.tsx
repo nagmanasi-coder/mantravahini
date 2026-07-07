@@ -184,12 +184,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     setIsPlaybackFinished(false);
   }, []);
 
+  /**
+   * Called when the rewarded ad flow is finished.
+   * This handles both the Unlock button and the Close (X) button.
+   */
   const handleAdComplete = useCallback(() => {
     setIsUnlockedForSession(true);
     // Mandatory delay to ensure UI transition finishes before audio starts
+    // This also helps satisfy Android WebView's focus requirements for playback
     setTimeout(() => {
       startPlayback();
-    }, 500);
+    }, 600);
   }, [startPlayback]);
 
   const handlePlayPause = async () => {
