@@ -1,4 +1,3 @@
-
 "use client"
 import Image from "next/image";
 import Link from "next/link";
@@ -69,6 +68,7 @@ export default function AboutUsPage() {
                       src={founderImage.imageUrl}
                       alt={founderImage.description}
                       fill
+                      sizes="192px"
                       className="object-cover"
                       data-ai-hint={founderImage.imageHint}
                     />}

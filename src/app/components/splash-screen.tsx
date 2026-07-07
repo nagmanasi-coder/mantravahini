@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -48,6 +47,7 @@ export function SplashScreen() {
             src={splashImage.imageUrl}
             alt={splashImage.description}
             fill
+            sizes="256px"
             className="object-cover"
             priority
             data-ai-hint={splashImage.imageHint}
