@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -36,14 +37,17 @@ export function LocalChatbot() {
     }
   }, [messages, isOpen]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = (textOverride?: string) => {
+    const textToSend = textOverride || input;
+    if (!textToSend.trim()) return;
 
-    const userMsg: Message = { id: Date.now().toString(), role: "user", text: input };
+    const userMsg: Message = { id: Date.now().toString(), role: "user", text: textToSend };
     setMessages(prev => [...prev, userMsg]);
     
-    const query = input.toLowerCase();
-    setInput("");
+    const query = textToSend.toLowerCase();
+    if (!textOverride) {
+      setInput("");
+    }
 
     // Simulate "thinking" delay
     setTimeout(() => {
@@ -63,6 +67,10 @@ export function LocalChatbot() {
   const entryToText = (entry: any, lang: string) => {
     return lang === 'kn' ? entry.kn : entry.en;
   }
+
+  const suggestionKeywords = language === 'kn' 
+    ? ["ಕಾಳಿ", "ಕಣ್ಣು", "ದೀಕ್ಷೆ", "ಪ್ರಾಣ", "ರಾಶಿ", "ತೈಲ", "ಪ್ರೀಮಿಯಂ"]
+    : ["Kali", "Eye", "Deeksha", "Prana", "Rashi", "Oil", "Premium"];
 
   return (
     <div className="fixed bottom-32 right-4 z-[4500] flex flex-col items-end pointer-events-none">
@@ -84,7 +92,7 @@ export function LocalChatbot() {
           </CardHeader>
           
           <CardContent className="p-0">
-            <ScrollArea className="h-[300px] p-4">
+            <ScrollArea className="h-[280px] p-4">
               <div className="space-y-4">
                 {messages.map((m) => (
                   <div key={m.id} className={cn("flex", m.role === 'user' ? "justify-end" : "justify-start")}>
@@ -101,6 +109,22 @@ export function LocalChatbot() {
                 <div ref={scrollRef} />
               </div>
             </ScrollArea>
+
+            {/* Suggestion Chips */}
+            <div className="p-3 border-t bg-muted/20">
+               <p className="text-[9px] font-black uppercase text-muted-foreground/60 mb-2 px-1 tracking-[0.2em]">{language === 'kn' ? 'ಸಲಹೆಗಳು' : 'Quick Topics'}</p>
+               <div className="flex flex-wrap gap-1.5">
+                  {suggestionKeywords.map((kw) => (
+                    <button 
+                      key={kw} 
+                      onClick={() => handleSend(kw)}
+                      className="text-[10px] font-bold bg-background border border-primary/20 hover:border-primary px-2.5 py-1 rounded-full text-primary transition-all active:scale-95 shadow-sm"
+                    >
+                      {kw}
+                    </button>
+                  ))}
+               </div>
+            </div>
           </CardContent>
 
           <CardFooter className="p-3 border-t bg-muted/30">
@@ -112,7 +136,7 @@ export function LocalChatbot() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 className="h-10 text-sm bg-background"
               />
-              <Button size="icon" className="h-10 w-10 shrink-0" onClick={handleSend}>
+              <Button size="icon" className="h-10 w-10 shrink-0" onClick={() => handleSend()}>
                 <Send size={16} />
               </Button>
             </div>
