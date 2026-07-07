@@ -4,7 +4,7 @@
 import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShieldCheck, Lock, Eye, Database, Info, UserX } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Lock, Eye, Database, Info, UserX, Newspaper } from "lucide-react";
 import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
@@ -62,11 +62,34 @@ export default function PrivacyPolicyPage() {
           </CardContent>
         </Card>
 
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Newspaper className="h-5 w-5 text-primary" />
+              3. Third-Party Advertising (AdMob)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm leading-relaxed">
+            <p>
+              We use Google AdMob to serve advertisements in this application. Google, as a third-party vendor, uses cookies or unique device identifiers to serve ads based on your visits to our app and other apps on the internet.
+            </p>
+            <p className="font-bold">Information Collected by AdMob:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Device identifiers (Android Advertising ID).</li>
+              <li>General location data (IP address).</li>
+              <li>User interaction data (Ad clicks and impressions).</li>
+            </ul>
+            <p>
+              You can opt-out of personalized advertising by visiting your Android Device Settings (Google > Ads > Opt out of Ads Personalization).
+            </p>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary" />
-              3. Security
+              4. Security
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
@@ -80,7 +103,7 @@ export default function PrivacyPolicyPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <UserX className="h-5 w-5" />
-              4. Data Deletion
+              5. Data Deletion
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-relaxed">
@@ -94,7 +117,7 @@ export default function PrivacyPolicyPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Info className="h-5 w-5 text-primary" />
-              5. Contact
+              6. Contact
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm">

@@ -1,3 +1,4 @@
+
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -42,7 +43,7 @@ export const translations = {
     donateButton: "ದೇಣಿಗೆ ನೀಡಿ",
     joinGroupButton: "ದೈವಿಕ ಗುಂಪಿಗೆ ಸೇರಿ",
     shareAppButton: "ಸೇವೆ ಮಾಡಲು ಅಪ್ಲಿಕೇಶನ್ ಹಂಚಿಕೊಳ್ಳಿ",
-    finalMessage: "ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಆಧ್ಯಾತ್ಮಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!",
+    finalMessage: "ಮಂತ್ರದ ಶಕ್ತಿಯನ್ನು ತಿಳಿದ ನಂತರ, ಶಿವನ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಮತ್ತು ವಿಶ್ವಾಸದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಆಧ್ಯಾತ್ಮಿಕ समस्याಗಳನ್ನು ಪರಿಹರಿಸಲು ಸರಿಯಾದ ಮಂತ್ರಗಳನ್ನು ಬಳಸಿ!!!",
     contactForServices: "ಯಾವುದೇ ಸೇವೆಗಳಿಗೆ ನಮ್ಮ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ. 1.ಪ್ರೀಮಿಯಂ ಅಪ್‌ಗ್ರೇಡ್ 2.ಇತರೆ ಸೇವೆಗಳು",
     contactOnWhatsApp: "WhatsApp ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ",
     hosadurga: "ಹೊಸದುರ್ಗ",
@@ -160,7 +161,7 @@ export const translations = {
     currentPlan: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ",
     free: "Free",
     manageUsers: "ಬಳಕೆದಾರರನ್ನು ನಿರ್ವಹಿಸಿ",
-    referAndEarn: "ಮಿಷನ್‌ಗೆ ಸೇರಿ ಮತ್ತು ಪ್ರತಿಫಲ ಪಡೆಯಿರಿ",
+    referAndEarn: "ಮಿಷನ್‌ಗೆ ಸೇರಿ and ಪ್ರತಿಫಲ ಪಡೆಯಿರಿ",
     referralTitle: "ಮಿಷನ್ ಪ್ರತಿಫಲಗಳು",
     referralSubtitle: "ಮಂತ್ರವಾಹಿನಿಯನ್ನು ನಿಮ್ಮ ಸ್ನೇಹಿತರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ.",
     yourReferralLink: "ನಿಮ್ಮ ಶಿಫಾರಸು ಲಿಂಕ್",
@@ -302,7 +303,7 @@ export const translations = {
     aboutSection4Content: "Every spiritual method is self-tested before publishing.",
     aboutSection5Title: "Mission",
     aboutSection5Content: "Human welfare is our ultimate goal.",
-    aboutSection6Title: "Publishing",
+    aboutSection6Title: "Sharing",
     aboutSection6Content: "Shared through various digital media platforms.",
     aboutSection7Title: "Closing",
     aboutSection7Content: "Mantra is a spiritual science.",

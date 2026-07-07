@@ -4,7 +4,7 @@
 import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Scale, BookOpen, UserCheck, AlertCircle, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Scale, BookOpen, UserCheck, AlertCircle, ShieldAlert, Newspaper } from "lucide-react";
 import Link from "next/link";
 
 export default function TermsPage() {
@@ -72,11 +72,28 @@ export default function TermsPage() {
           </CardContent>
         </Card>
 
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Newspaper className="h-5 w-5" />
+              3. Advertisements
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm leading-relaxed">
+            <p>
+              The free version of Mantravaahini is supported by advertisements. By using the free service, you agree to the display of advertisements. These advertisements are provided by third-party partners like Google AdMob.
+            </p>
+            <p>
+              Premium users (subscribers or those who have earned rewards) are exempt from viewing these advertisements.
+            </p>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
               <AlertCircle className="h-5 w-5" />
-              3. Service Limitations
+              4. Service Limitations
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm leading-relaxed">

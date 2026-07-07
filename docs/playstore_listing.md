@@ -1,3 +1,4 @@
+
 # 📱 Mantravaahini - Play Store Listing Assets
 
 Use the following refined descriptions and technical details when submitting your app to the Google Play Console. These have been optimized to avoid common rejections related to medical claims.
@@ -51,11 +52,17 @@ Mantravaahini is a spiritual and educational tool. The mantras and traditional m
 
 ## 🔒 Permissions & Data Safety
 
-1. **Internet Access:** Required to stream high-quality audio and sync spiritual progress.
+### Data Collection Declarations (Mandatory for Play Store)
+1. **Name & Email:** Collected for account functionality and authentication.
+2. **Device or Other IDs:** Collected for advertising and analytics (AdMob).
+3. **Usage Data:** Collected for crash reporting and service improvement.
+
+### Key Permissions
+1. **Internet Access:** Required to stream high-quality audio, serve ads, and sync spiritual progress.
 2. **Notifications:** Used for daily spiritual reminders and completion alerts.
 3. **Storage/Media:** (Practitioners only) Used to share success stories and results with the community.
 
-**Privacy Guarantee:** Your personal journey is sacred. We do not sell your data to third-party advertisers.
+**Privacy Guarantee:** Your personal journey is sacred. We do not sell your data to third-party advertisers. Ads are served via Google's secure AdMob network.
 
 ## 🏷️ Categorization
 - **Category:** Health & Fitness or Lifestyle
