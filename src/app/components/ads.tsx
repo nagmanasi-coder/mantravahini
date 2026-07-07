@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Smartphone, Globe, Clock, RefreshCw, ExternalLink } from "lucide-react";
+import { Smartphone, Globe, Clock, RefreshCw, ExternalLink, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -97,6 +97,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   const { language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [isProcessing, setIsProcessing] = useState(false);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
 
   useEffect(() => {
@@ -107,75 +108,122 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     let timer: NodeJS.Timeout;
     if (open) {
       setCountdown(5);
-      timer = setInterval(() => setCountdown((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
+      setIsProcessing(false);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     }
     return () => { if (timer) clearInterval(timer); };
   }, [open]);
 
   const handleRewardCollection = () => {
-    onOpenChange(false);
-    if (onAdComplete) {
-      // Ensure standard state reset before playing
-      setTimeout(() => onAdComplete(), 100);
-    }
+    if (countdown > 0 || isProcessing) return;
+    
+    setIsProcessing(true);
+    // Visual confirmation before closing
+    setTimeout(() => {
+      onOpenChange(false);
+      if (onAdComplete) {
+        // Delay completion slightly to ensure dialog closing doesn't block audio initiation
+        setTimeout(() => {
+          onAdComplete();
+          setIsProcessing(false);
+        }, 300);
+      }
+    }, 200);
   };
 
-  const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
+  const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ..." : "Mantra is getting ready...";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 overflow-hidden" onPointerDownOutside={(e) => e.preventDefault()}>
-        <DialogHeader className="p-6 pb-4">
+    <Dialog open={open} onOpenChange={(val) => {
+      // Prevent accidental dismissal by clicking outside
+      if (!val && countdown > 0) return;
+      onOpenChange(val);
+    }}>
+      <DialogContent 
+        className="max-w-sm p-0 overflow-y-auto max-h-[95vh] rounded-2xl" 
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader className="p-6 pb-4 sticky top-0 bg-background z-20 border-b">
           <div className="flex justify-between items-start">
-            <div>
-              <DialogTitle className="font-headline text-2xl text-primary">
-                {type === 'rewarded' ? readyText : (language === 'kn' ? 'ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹಕ್ಕೆ ಧನ್ಯವಾದಗಳು' : 'Express Appreciation')}
+            <div className="space-y-1">
+              <DialogTitle className="font-headline text-xl text-primary leading-tight">
+                {type === 'rewarded' ? readyText : (language === 'kn' ? 'ಪ್ರಚಾರದ ಅವಧಿ' : 'Promotional Break')}
               </DialogTitle>
-              <div className="flex flex-col gap-1 mt-1">
-                <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">
-                   Promotional Slot
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] font-black uppercase text-amber-600 tracking-widest bg-amber-50 px-2 py-0.5 rounded">
+                   Sponsor Slot
                 </p>
-                <DialogDescription className="font-bold flex items-center gap-2">
-                  <Clock size={14} className="text-amber-500 animate-spin" />
-                  {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
-                </DialogDescription>
+                {countdown > 0 && (
+                  <DialogDescription className="font-bold text-xs flex items-center gap-1.5 text-muted-foreground">
+                    <Clock size={12} className="text-amber-500 animate-spin" />
+                    {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಪೂರ್ಣ` : `Ready in ${countdown}s`}
+                  </DialogDescription>
+                )}
               </div>
             </div>
-            {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
+            <div className="bg-muted p-2 rounded-full">
+              {isNative ? <Smartphone size={18} className="text-primary" /> : <Globe size={18} className="text-muted-foreground" />}
+            </div>
           </div>
         </DialogHeader>
 
-        <div className="relative h-96 w-full bg-black flex flex-col items-center justify-center">
+        <div className="relative h-64 sm:h-80 w-full bg-black flex flex-col items-center justify-center">
           {adImage && (
              <Image
                 src={adImage.imageUrl}
                 alt={adImage.description}
                 fill
-                className="opacity-40 object-cover"
+                className="opacity-50 object-cover"
                 data-ai-hint={adImage.imageHint}
               />
           )}
           
-          <div className="relative z-10 text-center p-6 space-y-6">
-             <div className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
-               <span className="text-white text-4xl font-black">{countdown}</span>
-             </div>
-             <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                {isNative ? `Native Rewarded Unit` : `Reward Simulation`}
+          <div className="relative z-10 text-center p-6 space-y-4">
+             {countdown > 0 ? (
+               <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
+                 <span className="text-white text-3xl font-black">{countdown}</span>
+               </div>
+             ) : (
+               <div className="h-20 w-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto border-2 border-green-500/40 animate-in zoom-in-50 duration-300">
+                 <CheckCircle2 size={40} className="text-green-500" />
+               </div>
+             )}
+             <p className="text-white font-black text-[10px] uppercase tracking-[0.3em] opacity-80">
+                {isNative ? `Native Reward Unit` : `Digital Ad Support`}
              </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 p-6 bg-muted/30">
+        <div className="p-6 bg-muted/30 sticky bottom-0 z-20 border-t">
           <Button 
             size="lg" 
             onClick={handleRewardCollection} 
-            className="h-14 font-black text-lg shadow-xl"
-            disabled={countdown > 0}
+            className={cn(
+              "h-14 w-full font-black text-lg shadow-xl transition-all active:scale-95",
+              countdown === 0 && !isProcessing ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-primary"
+            )}
+            disabled={countdown > 0 || isProcessing}
           >
-            {countdown > 0 
-              ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : "Collect Reward & Play"}
+            {isProcessing ? (
+              <RefreshCw size={20} className="animate-spin" />
+            ) : countdown > 0 ? (
+              <span className="flex items-center gap-2">
+                {language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`}
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <CheckCircle2 size={20} />
+                {language === 'kn' ? "ಬಹುಮಾನ ಪಡೆಯಿರಿ ಮತ್ತು ಪ್ಲೇ ಮಾಡಿ" : "Unlock & Play Now"}
+              </span>
+            )}
           </Button>
         </div>
       </DialogContent>
