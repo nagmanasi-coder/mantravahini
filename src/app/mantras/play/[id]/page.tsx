@@ -1,3 +1,4 @@
+
 "use client";
 
 import { use, useMemo } from 'react';
@@ -12,6 +13,7 @@ import { UpgradeDialog } from '@/app/components/upgrade-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { NativeAdSlot } from '@/app/components/ads';
 
 interface AssetData {
   id: string;
@@ -165,6 +167,11 @@ export default function MantraPlayerPage({ params }: { params: Promise<{ id: str
               {t('backToMain')}
             </Link>
           </Button>
+        </div>
+
+        {/* NATIVE ADVANCED AD SLOT - UTILIZING EMPTY SPACE */}
+        <div className="pb-20">
+          <NativeAdSlot />
         </div>
       </div>
     </div>
