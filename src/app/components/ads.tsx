@@ -97,7 +97,6 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   const { language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
   const [countdown, setCountdown] = useState(5);
-  const [adSequence, setAdSequence] = useState(1);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
 
   useEffect(() => {
@@ -109,25 +108,15 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     if (open) {
       setCountdown(5);
       timer = setInterval(() => setCountdown((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
-    } else {
-      // Reset sequence when closed
-      setAdSequence(1);
     }
     return () => { if (timer) clearInterval(timer); };
-  }, [open, adSequence]);
+  }, [open]);
 
   const handleRewardCollection = () => {
-    if (type === 'rewarded' && adSequence < 2) {
-      // Move to next ad immediately
-      setAdSequence(2);
-      setCountdown(5);
-    } else {
-      // Sequence complete
-      onOpenChange(false);
-      if (onAdComplete) {
-        // Ensure standard state reset before playing
-        setTimeout(() => onAdComplete(), 100);
-      }
+    onOpenChange(false);
+    if (onAdComplete) {
+      // Ensure standard state reset before playing
+      setTimeout(() => onAdComplete(), 100);
     }
   };
 
@@ -144,7 +133,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
               </DialogTitle>
               <div className="flex flex-col gap-1 mt-1">
                 <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">
-                   {type === 'rewarded' ? `Ad ${adSequence} of 2` : 'Promotional Slot'}
+                   Promotional Slot
                 </p>
                 <DialogDescription className="font-bold flex items-center gap-2">
                   <Clock size={14} className="text-amber-500 animate-spin" />
@@ -172,7 +161,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
                <span className="text-white text-4xl font-black">{countdown}</span>
              </div>
              <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                {isNative ? `Native Rewarded Unit ${adSequence}` : `Reward Simulation ${adSequence}`}
+                {isNative ? `Native Rewarded Unit` : `Reward Simulation`}
              </p>
           </div>
         </div>
@@ -186,7 +175,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
           >
             {countdown > 0 
               ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : (adSequence < 2 ? "Show Next Ad" : "Collect Reward & Play")}
+              : "Collect Reward & Play"}
           </Button>
         </div>
       </DialogContent>
