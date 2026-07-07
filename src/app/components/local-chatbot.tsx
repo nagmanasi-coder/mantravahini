@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -68,10 +69,10 @@ export function LocalChatbot() {
     : ["Kali", "Eye", "Deeksha", "Prana", "Rashi", "Premium", "Workshop", "Manual", "Delete", "Streak"];
 
   return (
-    <div className="fixed bottom-32 right-4 z-[4500] flex flex-col items-end pointer-events-none">
+    <div className="fixed bottom-40 right-4 z-[4500] flex flex-col items-end pointer-events-none">
       {isOpen && (
-        <Card className="mb-4 w-[90vw] max-w-[350px] shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto overflow-hidden">
-          <CardHeader className="bg-primary p-4 text-white flex flex-row items-center justify-between space-y-0">
+        <Card className="mb-4 w-[90vw] max-w-[350px] max-h-[70vh] flex flex-col shadow-2xl border-2 border-primary/20 animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto overflow-hidden">
+          <CardHeader className="bg-primary p-4 text-white flex flex-row items-center justify-between space-y-0 shrink-0">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
                  <ShieldCheck size={18} />
@@ -86,8 +87,8 @@ export function LocalChatbot() {
             </Button>
           </CardHeader>
           
-          <CardContent className="p-0">
-            <ScrollArea className="h-[320px] p-4">
+          <CardContent className="p-0 flex-1 overflow-hidden flex flex-col">
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
                 {messages.map((m) => (
                   <div key={m.id} className={cn("flex", m.role === 'user' ? "justify-end" : "justify-start")}>
@@ -106,7 +107,7 @@ export function LocalChatbot() {
             </ScrollArea>
 
             {/* Suggestion Chips */}
-            <div className="p-3 border-t bg-muted/20">
+            <div className="p-3 border-t bg-muted/20 shrink-0">
                <p className="text-[9px] font-black uppercase text-muted-foreground/60 mb-2 px-1 tracking-[0.2em]">{language === 'kn' ? 'ಸಲಹೆಗಳು' : 'Quick Topics'}</p>
                <div className="flex flex-wrap gap-1.5">
                   {suggestionKeywords.map((kw) => (
@@ -122,7 +123,7 @@ export function LocalChatbot() {
             </div>
           </CardContent>
 
-          <CardFooter className="p-3 border-t bg-muted/30">
+          <CardFooter className="p-3 border-t bg-muted/30 shrink-0">
             <div className="flex w-full gap-2">
               <Input 
                 placeholder={language === 'kn' ? "ಪ್ರಶ್ನೆ ಕೇಳಿ..." : "Ask a question..."}
