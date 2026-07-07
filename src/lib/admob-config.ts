@@ -2,6 +2,8 @@
  * ADMOB CONFIGURATION
  * 
  * Updated with Google Test App ID for the testing period.
+ * REPLACE the placeholders below with your REAL IDs from the AdMob Console
+ * when you are ready to publish to the Play Store.
  */
 export const ADMOB_CONFIG = {
   // Official Google Test App ID for Android
@@ -10,17 +12,17 @@ export const ADMOB_CONFIG = {
   // Ad Unit IDs (Mapping to real console IDs)
   units: {
     banner: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
+      // PROD ID: Replace with your "Banner" unit ID
       android: "ca-app-pub-3940256099942544/6300978111", 
       ios: "ca-app-pub-3940256099942544/2934735716",
     },
     rewarded: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
+      // PROD ID: Replace with your "Rewarded" unit ID
       android: "ca-app-pub-3940256099942544/5224354917", 
       ios: "ca-app-pub-3940256099942544/1712485313",
     },
     native: {
-      // REPLACE THESE WITH YOUR REAL UNIT IDs FOR PRODUCTION
+      // PROD ID: Replace with your "Native Advanced" unit ID
       android: "ca-app-pub-3940256099942544/2247696110", 
       ios: "ca-app-pub-3940256099942544/3986624511",
     }

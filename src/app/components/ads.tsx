@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -19,13 +18,13 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
 import { cn } from "@/lib/utils";
-import { AdMob, BannerAdSize, BannerAdPosition, BannerAdPluginEvents, AdMobBannerSize } from '@capacitor-community/admob';
+import { AdMob, BannerAdSize, BannerAdPosition, BannerAdPluginEvents } from '@capacitor-community/admob';
 
 /**
  * UTILITY: Shared Logic to hide ads for Premium users
  */
 export function useShouldShowAds() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   
   const userDocRef = useMemoFirebase(() => {
@@ -33,17 +32,24 @@ export function useShouldShowAds() {
     return doc(firestore, "users", user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile } = useDoc<{ subscriptionTier?: string, isPranaPractitioner?: boolean }>(userDocRef);
+  const { data: userProfile, isLoading: profileLoading } = useDoc<{ subscriptionTier?: string, isPranaPractitioner?: boolean }>(userDocRef);
   
+  // If still loading auth state or profile, don't show ads yet to avoid UI flicker
+  if (isUserLoading || (user && profileLoading)) return false;
+
+  // Guest users (not logged in) always see ads
+  if (!user) return true;
+
   const isPremium = userProfile?.subscriptionTier === 'premium';
   const isPractitioner = !!userProfile?.isPranaPractitioner;
 
+  // Show ads if user is NOT premium and NOT a practitioner
   return !isPremium && !isPractitioner;
 }
 
 /**
  * 1. BANNER AD (Docked at the very bottom)
- * UPDATED: Uses Capacitor AdMob for real native banners.
+ * Uses Capacitor AdMob for native and a placeholder for web.
  */
 export function BannerAd() {
   const { t } = useLanguage();
@@ -57,6 +63,7 @@ export function BannerAd() {
     setIsNative(native);
 
     const initAdMob = async () => {
+      // Only initialize native ads if on a native platform and user should see ads
       if (native && showAds) {
         try {
           await AdMob.initialize({
@@ -81,12 +88,13 @@ export function BannerAd() {
 
     initAdMob();
 
-    // Refresh mock ad for web users
+    // Refresh mock ad for web users to show it's working
     const interval = setInterval(() => setRefreshKey((prev) => prev + 1), 30000);
 
     return () => {
       clearInterval(interval);
       if (native) {
+        // Cleanup native banner on unmount to prevent ghosting
         AdMob.removeBanner().catch(() => {});
       }
     };
@@ -94,7 +102,7 @@ export function BannerAd() {
 
   if (!showAds) return null;
 
-  // If native banner is active, we don't render the web UI placeholder to avoid double banners
+  // If real native banner is active, don't render the web UI placeholder
   if (nativeBannerActive) return null;
 
   return (
@@ -166,16 +174,12 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     if (countdown > 0 || isProcessing) return;
     
     setIsProcessing(true);
-    
-    // 1. Close the dialog
     onOpenChange(false);
     
-    // 2. Trigger completion callback (this unlocks the audio)
     if (onAdComplete) {
       onAdComplete();
     }
     
-    // Reset state after a delay
     setTimeout(() => {
       setIsProcessing(false);
     }, 500);
@@ -185,7 +189,6 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
 
   return (
     <Dialog open={open} onOpenChange={(val) => {
-      // Prevent closing manually if ad is not complete
       if (countdown === 0 && !val) {
          handleRewardCollection();
       } else if (countdown === 0) {
@@ -196,7 +199,6 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
         className="max-w-sm p-0 overflow-hidden max-h-[95vh] rounded-2xl border-none" 
         onPointerDownOutside={(e) => e.preventDefault()}
       >
-        {/* Explicit Close Button on Top Right - ENABLED ONLY WHEN COMPLETED */}
         {countdown === 0 && (
           <Button 
             variant="ghost" 
@@ -309,7 +311,7 @@ export function NativeAdSlot({ className }: { className?: string }) {
   return (
     <Card className={cn("overflow-hidden border-2 border-primary/10 shadow-sm animate-fade-in", className)}>
       <div className="bg-primary/5 px-3 py-1 flex justify-between items-center border-b">
-        <span className="text-[8px] font-black uppercase text-primary tracking-widest">Sponsored</span>
+        <span className="text-[8px] font-black uppercase text-primary tracking-widest">Sponsored Content</span>
         <span className="text-[8px] font-mono text-muted-foreground">ID: {ADMOB_CONFIG.units.native.android.slice(-4)}</span>
       </div>
       <CardContent className="p-4 flex gap-4 items-center">
@@ -317,8 +319,8 @@ export function NativeAdSlot({ className }: { className?: string }) {
           {adImage && <Image src={adImage.imageUrl} alt="ad" fill className="object-cover" data-ai-hint={adImage.imageHint} sizes="80px" />}
         </div>
         <div className="flex-1 space-y-1">
-          <h4 className="font-bold text-sm text-foreground">Explore Spiritual Wisdom</h4>
-          <p className="text-[10px] text-muted-foreground leading-tight">Unlock ancient secrets with our meditation partners. High-vibration content available.</p>
+          <h4 className="font-bold text-sm text-foreground">Explore Spiritual Wellness</h4>
+          <p className="text-[10px] text-muted-foreground leading-tight">Unlock ancient secrets with our meditation partners. Support the lineage mission.</p>
           <Button size="sm" className="h-7 text-[10px] font-black uppercase w-full mt-2" variant="outline">
             Visit Partner <ExternalLink size={10} className="ml-1" />
           </Button>
