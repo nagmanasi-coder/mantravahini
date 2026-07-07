@@ -1,37 +1,32 @@
 /**
  * ADMOB CONFIGURATION
  * 
- * Updated with Google Test App ID for the testing period.
- * REPLACE the placeholders below with your REAL IDs from the AdMob Console
- * when you are ready to publish to the Play Store.
+ * Updated with PRODUCTION Ad Unit IDs.
  */
 export const ADMOB_CONFIG = {
-  // Official Google Test App ID for Android
+  // Official Google Test App ID for Android (Replace with your PRODUCTION App ID from AdMob Console if different)
   appId: "ca-app-pub-3940256099942544~3347511713", 
 
-  // Ad Unit IDs (Mapping to real console IDs)
+  // Ad Unit IDs
   units: {
     banner: {
-      // PROD ID: Replace with your "Banner" unit ID
-      android: "ca-app-pub-3940256099942544/6300978111", 
-      ios: "ca-app-pub-3940256099942544/2934735716",
+      android: "ca-app-pub-3648420983615754/2904804439", 
+      ios: "ca-app-pub-3940256099942544/2934735716", // Placeholder for iOS
     },
     rewarded: {
-      // PROD ID: Replace with your "Rewarded" unit ID
-      android: "ca-app-pub-3940256099942544/5224354917", 
-      ios: "ca-app-pub-3940256099942544/1712485313",
+      android: "ca-app-pub-3648420983615754/7199272664", 
+      ios: "ca-app-pub-3940256099942544/1712485313", // Placeholder for iOS
     },
     native: {
-      // PROD ID: Replace with your "Native Advanced" unit ID
-      android: "ca-app-pub-3940256099942544/2247696110", 
-      ios: "ca-app-pub-3940256099942544/3986624511",
+      android: "ca-app-pub-3648420983615754/7442850639", 
+      ios: "ca-app-pub-3940256099942544/3986624511", // Placeholder for iOS
     }
   },
   
   // Strategy: Rewarded Ads are the primary unlock mechanism for Free users
   rewardedUnlockEnabled: true,
   
-  // Testing mode (Set to false for production APK builds)
+  // Testing mode (Automatically becomes false in production builds)
   testing: process.env.NODE_ENV !== 'production'
 };
 
