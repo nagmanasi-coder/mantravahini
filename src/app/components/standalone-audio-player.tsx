@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Play, Pause, Music2, Loader2, ThumbsUp, AlertCircle, WifiOff, Lock, CloudDownload } from "lucide-react";
 import { type Mantra } from "@/lib/mantras";
@@ -179,6 +180,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     }
   }, [isPlaying, hasMediaError, audioSrc]);
 
+  const startPlayback = useCallback(() => {
+    setIsPlaying(true);
+    setIsPlaybackFinished(false);
+  }, []);
+
   const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPlaying(false);
@@ -201,14 +207,13 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    // AD REVENUE LOGIC: Show Rewarded Ad for Free users playing specific mantras
+    // AD REVENUE LOGIC: Show Rewarded Ad Sequence (2 ads) for Free users playing restricted mantras
     if (!isPremium && mantra.tier === 'paid') {
       setShowAd(true);
       return;
     }
 
-    setIsPlaying(true);
-    setIsPlaybackFinished(false);
+    startPlayback();
   };
 
   const formatTime = (time: number) => {
@@ -219,7 +224,12 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
   return (
     <>
-      <InterstitialAd open={showAd} onOpenChange={setShowAd} type="rewarded" />
+      <InterstitialAd 
+        open={showAd} 
+        onOpenChange={setShowAd} 
+        onAdComplete={startPlayback}
+        type="rewarded" 
+      />
       <Card className={cn("overflow-hidden shadow-xl relative transition-all duration-300", isOffline && "border-destructive/20")}>
           <div className="absolute top-4 left-4 z-20 flex gap-2">
             {isOffline && (
@@ -237,7 +247,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
           {mantra.tier === 'paid' && !isPremium && (
              <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
               <Lock className="h-3 w-3 mr-1" />
-              Watch Ad to Play
+              Watch Ads to Play
             </Badge>
           )}
           

@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -84,19 +85,21 @@ export function BannerAd() {
 
 /**
  * 2. REWARDED AD (Fullscreen Dialog to unlock content)
+ * UPDATED: Now handles a sequence of 2 ads without stop.
  */
 interface InterstitialAdProps {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
+  onAdComplete?: () => void;
   type?: 'interstitial' | 'rewarded';
 }
 
-export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: InterstitialAdProps) {
+export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'interstitial' }: InterstitialAdProps) {
   const { t, language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [adSequence, setAdSequence] = useState(1);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
-  const unitId = type === 'rewarded' ? ADMOB_CONFIG.units.rewarded.android : ADMOB_CONFIG.units.interstitial.android;
 
   useEffect(() => {
     setIsNative(isNativePlatform());
@@ -107,9 +110,24 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     if (open) {
       setCountdown(5);
       timer = setInterval(() => setCountdown((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
+    } else {
+      // Reset sequence when closed
+      setAdSequence(1);
     }
     return () => { if (timer) clearInterval(timer); };
-  }, [open]);
+  }, [open, adSequence]);
+
+  const handleRewardCollection = () => {
+    if (type === 'rewarded' && adSequence < 2) {
+      // Move to next ad immediately
+      setAdSequence(2);
+      setCountdown(5);
+    } else {
+      // Sequence complete
+      onOpenChange(false);
+      if (onAdComplete) onAdComplete();
+    }
+  };
 
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
 
@@ -122,10 +140,15 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
               <DialogTitle className="font-headline text-2xl text-primary">
                 {type === 'rewarded' ? readyText : (language === 'kn' ? 'ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹಕ್ಕೆ ಧನ್ಯವಾದಗಳು' : 'Express Appreciation')}
               </DialogTitle>
-              <DialogDescription className="font-bold flex items-center gap-2">
-                <Clock size={14} className="text-amber-500 animate-spin" />
-                {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
-              </DialogDescription>
+              <div className="flex flex-col gap-1 mt-1">
+                <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">
+                   {type === 'rewarded' ? `Ad ${adSequence} of 2` : 'Promotional Slot'}
+                </p>
+                <DialogDescription className="font-bold flex items-center gap-2">
+                  <Clock size={14} className="text-amber-500 animate-spin" />
+                  {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
+                </DialogDescription>
+              </div>
             </div>
             {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
           </div>
@@ -147,7 +170,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
                <span className="text-white text-4xl font-black">{countdown}</span>
              </div>
              <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                {isNative ? "Native Rewarded Ad Unit" : "Web Reward Simulation"}
+                {isNative ? `Native Rewarded Unit ${adSequence}` : `Reward Simulation ${adSequence}`}
              </p>
           </div>
         </div>
@@ -155,14 +178,13 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
         <div className="flex flex-col gap-2 p-6 bg-muted/30">
           <Button 
             size="lg" 
-            onClick={() => onOpenChange(false)} 
+            onClick={handleRewardCollection} 
             className="h-14 font-black text-lg shadow-xl"
             disabled={countdown > 0}
           >
-            <ThumbsUp className="mr-2 h-5 w-5" />
             {countdown > 0 
               ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : "Collect Reward & Play"}
+              : (adSequence < 2 ? "Next Ad" : "Collect Reward & Play")}
           </Button>
         </div>
       </DialogContent>
