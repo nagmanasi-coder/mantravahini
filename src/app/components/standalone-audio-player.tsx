@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -17,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { doc, updateDoc } from "firebase/firestore";
 import { useNotifications } from "@/hooks/use-notifications";
 import { isToday, isYesterday } from "date-fns";
+import { InterstitialAd } from "./ads";
 
 interface StandaloneAudioPlayerProps {
   mantra: Mantra;
@@ -57,6 +57,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [isBuffering, setIsBuffering] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const [isCached, setIsCached] = useState(false);
+  const [showAd, setShowAd] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -104,7 +105,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     }
 
     const ref = doc(firestore, 'users', user.uid);
-    // Use standard updateDoc - it will queue for sync when internet is back
     updateDoc(ref, {
         streakCount: newStreak,
         lastStreakUpdate: today.toISOString()
@@ -117,11 +117,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     const audio = audioRef.current;
     if (!audio) return;
     
-    setHasMediaError(false);
-    setIsPlaybackFinished(false);
-    setProgress(0);
-    setCurrentTime(0);
-
     const setAudioData = () => {
       if(isFinite(audio.duration)) setDuration(audio.duration);
       setIsBuffering(false);
@@ -206,8 +201,9 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    if (mantra.tier === 'paid' && !isPremium) {
-      onUpgradeRequest(t('toastUpgradeRequiredTitle'), t('toastUpgradeRequiredDescription'));
+    // AD REVENUE LOGIC: Show Rewarded Ad for Free users playing specific mantras
+    if (!isPremium && mantra.tier === 'paid') {
+      setShowAd(true);
       return;
     }
 
@@ -222,109 +218,112 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   };
 
   return (
-    <Card className={cn("overflow-hidden shadow-xl relative transition-all duration-300", isOffline && "border-destructive/20")}>
-        <div className="absolute top-4 left-4 z-20 flex gap-2">
-          {isOffline && (
-            <Badge variant="outline" className="border-destructive/40 text-destructive bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold animate-pulse">
-              <WifiOff size={10} /> Offline
+    <>
+      <InterstitialAd open={showAd} onOpenChange={setShowAd} type="rewarded" />
+      <Card className={cn("overflow-hidden shadow-xl relative transition-all duration-300", isOffline && "border-destructive/20")}>
+          <div className="absolute top-4 left-4 z-20 flex gap-2">
+            {isOffline && (
+              <Badge variant="outline" className="border-destructive/40 text-destructive bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold animate-pulse">
+                <WifiOff size={10} /> Offline
+              </Badge>
+            )}
+            {isCached && (
+              <Badge variant="outline" className="border-green-500/40 text-green-600 bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
+                <CloudDownload size={10} /> Saved Offline
+              </Badge>
+            )}
+          </div>
+
+          {mantra.tier === 'paid' && !isPremium && (
+             <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
+              <Lock className="h-3 w-3 mr-1" />
+              Watch Ad to Play
             </Badge>
           )}
-          {isCached && (
-            <Badge variant="outline" className="border-green-500/40 text-green-600 bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-              <CloudDownload size={10} /> Saved Offline
-            </Badge>
-          )}
-        </div>
+          
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl text-center">
+              {language === 'kn' ? mantra?.name : mantra?.name_en}
+            </CardTitle>
+          </CardHeader>
 
-        {mantra.tier === 'paid' && !isPremium && (
-           <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500">
-            <Lock className="h-3 w-3 mr-1" />
-            Premium Feature
-          </Badge>
-        )}
-        
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl text-center">
-            {language === 'kn' ? mantra?.name : mantra?.name_en}
-          </CardTitle>
-        </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
+              {videoUrl && !isOffline ? (
+                <video 
+                  ref={videoRef}
+                  src={videoUrl} 
+                  className="w-full h-full object-cover" 
+                  loop 
+                  muted 
+                  playsInline
+                  poster={mantraImage?.imageUrl}
+                />
+              ) : mantraImage ? (
+                <Image
+                  src={mantraImage.imageUrl}
+                  alt={mantraImage.description}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={mantraImage.imageHint}
+                  priority
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <Music2 className="h-12 w-12 text-muted-foreground/30" />
+                </div>
+              )}
+              
+              {isBuffering && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+                  <Loader2 className="h-8 w-8 animate-spin text-white" />
+                </div>
+              )}
+            </div>
 
-        <CardContent className="space-y-6">
-          <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
-            {videoUrl && !isOffline ? (
-              <video 
-                ref={videoRef}
-                src={videoUrl} 
-                className="w-full h-full object-cover" 
-                loop 
-                muted 
-                playsInline
-                poster={mantraImage?.imageUrl}
-              />
-            ) : mantraImage ? (
-              <Image
-                src={mantraImage.imageUrl}
-                alt={mantraImage.description}
-                fill
-                className="object-cover"
-                data-ai-hint={mantraImage.imageHint}
-                priority
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <Music2 className="h-12 w-12 text-muted-foreground/30" />
+            <div className="space-y-2">
+              <Progress value={progress} aria-label="Mantra progress" />
+              <div className="flex justify-between text-xs text-muted-foreground font-mono">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
+            <div className="flex items-center justify-center gap-4">
+               {!audioSrc ? (
+                 <div className="flex flex-col items-center gap-2 text-muted-foreground animate-in fade-in">
+                   <AlertCircle className="h-8 w-8 opacity-20" />
+                   <p className="text-[10px] uppercase font-black tracking-widest">Audio source unavailable</p>
+                 </div>
+              ) : hasMediaError ? (
+                 <div className="flex flex-col items-center gap-2 text-destructive animate-in slide-in-from-bottom-2">
+                   <AlertCircle className="h-8 w-8" />
+                   <p className="text-[10px] uppercase font-black tracking-widest">Media Error - Check connection</p>
+                   <Button variant="outline" size="sm" onClick={() => window.location.reload()}>Retry</Button>
+                 </div>
+              ) : (
+                <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full shadow-lg" disabled={hasMediaError || !audioSrc}>
+                  {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+                </Button>
+              )}
+            </div>
+
+            {isPlaybackFinished && (
+              <div className="flex flex-col items-center gap-2 animate-fade-in">
+                <ThumbsUp size={20} className="text-primary" />
+                <p className="text-xs font-bold uppercase tracking-tight text-primary">{t('thanksForSupport')}</p>
               </div>
             )}
-            
-            {isBuffering && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
-                <Loader2 className="h-8 w-8 animate-spin text-white" />
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Progress value={progress} aria-label="Mantra progress" />
-            <div className="flex justify-between text-xs text-muted-foreground font-mono">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
-        </CardContent>
-
-        <CardFooter className="flex flex-col items-center justify-center gap-4 bg-muted/50 p-4">
-          <div className="flex items-center justify-center gap-4">
-             {!audioSrc ? (
-               <div className="flex flex-col items-center gap-2 text-muted-foreground animate-in fade-in">
-                 <AlertCircle className="h-8 w-8 opacity-20" />
-                 <p className="text-[10px] uppercase font-black tracking-widest">Audio source unavailable</p>
-               </div>
-            ) : hasMediaError ? (
-               <div className="flex flex-col items-center gap-2 text-destructive animate-in slide-in-from-bottom-2">
-                 <AlertCircle className="h-8 w-8" />
-                 <p className="text-[10px] uppercase font-black tracking-widest">Media Error - Check connection</p>
-                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>Retry</Button>
-               </div>
-            ) : (
-              <Button onClick={handlePlayPause} size="lg" className="h-16 w-16 rounded-full shadow-lg" disabled={hasMediaError || !audioSrc}>
-                {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
-              </Button>
-            )}
-          </div>
-
-          {isPlaybackFinished && (
-            <div className="flex flex-col items-center gap-2 animate-fade-in">
-              <ThumbsUp size={20} className="text-primary" />
-              <p className="text-xs font-bold uppercase tracking-tight text-primary">{t('thanksForSupport')}</p>
-            </div>
-          )}
-        </CardFooter>
-      <audio 
-        key={mantra.id} 
-        ref={audioRef} 
-        src={audioSrc || ''} 
-        preload="auto" 
-      />
-    </Card>
+          </CardFooter>
+        <audio 
+          key={mantra.id} 
+          ref={audioRef} 
+          src={audioSrc || ''} 
+          preload="auto" 
+        />
+      </Card>
+    </>
   );
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -74,7 +73,7 @@ export function BannerAd() {
         )}
       >
          <p className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
-           {t('bannerAd')}
+           {t('bannerAd') || "Spiritual Wellness Ad"}
            <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">
              ID: {ADMOB_CONFIG.units.banner.android.slice(-4)}
            </span>
@@ -133,7 +132,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
                     <Clock size={14} className="text-amber-500 animate-spin" />
                     {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
                   </>
-                ) : t('adDescription')}
+                ) : (t('adDescription') || "Unlock premium vibes")}
               </DialogDescription>
             </div>
             {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
@@ -194,7 +193,7 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
             <ThumbsUp className="mr-2 h-5 w-5" />
             {countdown > 0 
               ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : (type === 'rewarded' ? "Collect Reward" : t('thanksForSupport'))}
+              : (type === 'rewarded' ? "Collect Reward" : (t('thanksForSupport') || "Close"))}
           </Button>
           <p className="text-[10px] text-center text-muted-foreground italic font-bold">
             {isNative 

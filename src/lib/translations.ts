@@ -1,4 +1,3 @@
-
 export const translations = {
   kn: {
     appTitle: "ಮಂತ್ರವಾಹಿನಿ",
@@ -96,7 +95,7 @@ export const translations = {
     submitting: "ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...",
     submissionSuccess: "ಸಲ್ಲಿಸಲಾಗಿದೆ! ನಿಮ್ಮ ಅನುಭವ ಈಗ ಲೈವ್ ಆಗಿದೆ.",
     divineResultsTitle: "ಆಧ್ಯಾತ್ಮಿಕ ಅನುಭವಗಳು",
-    divineResultsSubtitle: "ಪ್ರಾಣವಿದ್ಯಾ ಸಾಧಕರ ಅದ್ಭುತ ಸೇವೆಗಳು",
+    divineResultsSubtitle: "ಪ್ರಾಣವಿದ್ಯಾ ಸಾಧಕರ அத್ಭುತ ಸೇವೆಗಳು",
     manageTestimonials: "ಅನುಭವಗಳ ನಿರ್ವಹಣೆ",
     hanumanPranaTherapyTitle: "ಹನುಮಾನ್ ಪ್ರಾಣ ವಿಧಾನ",
     hanumanPranaTherapyDescription: "ಅಕಾಲಿಕ ಮರಣದ ಭಯದಿಂದ ರಕ್ಷಣೆ ಮತ್ತು ಜೀವನ ಶಕ್ತಿಯ ಸಂವರ್ಧನೆ.",
@@ -234,7 +233,9 @@ export const translations = {
     dataDeletedContent: "ವಿನಂತಿಯ ಮೇರೆಗೆ, ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್, ಫೋಟೋ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಗತಿಯ ಇತಿಹಾಸವನ್ನು ನಾವು ಅಳಿಸುತ್ತೇವೆ.",
     dataRetentionTitle: "ದತ್ತಾಂಶ ಉಳಿಸಿಕೊಳ್ಳುವಿಕೆ",
     dataRetentionContent: "ಕಾನೂನು ಅಥವಾ ಆಡಿಟ್ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಕೆಲವು ವಹಿವಾಟು ದಾಖಲೆಗಳನ್ನು ೧ ವರ್ಷದವರೆಗೆ ಇರಿಸಿಕೊಳ್ಳಬಹುದು.",
-    deleteRequestContact: "ಅಳಿಸುವಿಕೆಗಾಗಿ ಸಂಪರ್ಕಿಸಿ"
+    deleteRequestContact: "ಅಳಿಸುವಿಕೆಗಾಗಿ ಸಂಪರ್ಕಿಸಿ",
+    bannerAd: "ಆಧ್ಯಾತ್ಮಿಕ ಸ್ವಾಸ್ಥ್ಯ ಜಾಹೀರಾತು",
+    adDescription: "ಪ್ರೀಮಿಯಂ ಮಂತ್ರಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ವೀಕ್ಷಿಸಿ"
   },
   en: {
     appTitle: "Mantravaahini",
@@ -467,6 +468,8 @@ export const translations = {
     dataDeletedContent: "Upon request, we will delete your name, email, photo, and spiritual progress history (streak, practitioner level, referrals).",
     dataRetentionTitle: "Data retention",
     dataRetentionContent: "Some transaction logs may be kept for legal or audit purposes for a period of up to 1 year.",
-    deleteRequestContact: "Contact for Deletion"
+    deleteRequestContact: "Contact for Deletion",
+    bannerAd: "Spiritual Wellness Ad",
+    adDescription: "Watch to unlock Premium mantras"
   }
 };

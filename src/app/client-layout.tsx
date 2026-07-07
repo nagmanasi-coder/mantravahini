@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '@/context/language-context';
@@ -10,6 +9,7 @@ import { AppHeader } from './components/app-header';
 import { AppFooter } from './components/app-footer';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { HandleReferral } from './components/handle-referral';
+import { BannerAd } from './components/ads';
 import { WifiOff } from 'lucide-react';
 
 /**
@@ -68,6 +68,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <div className="pb-32 min-h-screen">
               {children}
             </div>
+            <BannerAd />
             <AppFooter />
             <Toaster />
             <FirebaseErrorListener />
