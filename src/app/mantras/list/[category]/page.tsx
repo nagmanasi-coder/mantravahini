@@ -1,4 +1,3 @@
-
 'use client';
 
 import { use, useMemo, useState, useEffect } from 'react';
@@ -12,6 +11,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { NativeAdSlot } from '@/app/components/ads';
 
 export default function MantraListPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params);
@@ -54,16 +54,13 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
           <p className="text-muted-foreground">
             {filteredMantras.length} {language === 'kn' ? 'ಮಂತ್ರಗಳು ಪಟ್ಟಿಯಲ್ಲಿವೆ' : 'Mantras in collection'}
           </p>
-          {isDevMode && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 mt-2">
-              <Wrench className="h-3 w-3 mr-1" />
-              Dev Mode: All Access Enabled
-            </Badge>
-          )}
         </header>
 
+        {/* TOP NATIVE AD */}
+        <NativeAdSlot className="mb-6" />
+
         <div className="grid gap-4">
-          {filteredMantras.map((mantra) => {
+          {filteredMantras.map((mantra, index) => {
             const isActuallyReady = readyMantraIds.includes(mantra.id);
             const canAccess = isActuallyReady || isDevMode;
             
@@ -72,45 +69,47 @@ export default function MantraListPage({ params }: { params: Promise<{ category:
               : `/mantras/play/${mantra.id}`;
               
             return (
-              <Link key={mantra.id} href={canAccess ? targetHref : '#'} className={cn(!canAccess && "pointer-events-none")}>
-                <Card className={cn(
-                  "hover:border-primary/50 transition-all hover:shadow-md group",
-                  !canAccess && "opacity-60 grayscale-[0.5]"
-                )}>
-                  <CardContent className="p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "p-3 rounded-full transition-colors",
-                        canAccess ? (isActuallyReady ? "bg-primary/10 group-hover:bg-primary group-hover:text-white" : "bg-blue-100 text-blue-700 group-hover:bg-blue-500 group-hover:text-white") : "bg-muted"
-                      )}>
-                        <Music className="h-5 w-5" />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="font-bold text-lg leading-tight">
-                          {language === 'kn' ? mantra.name : mantra.name_en}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          {isActuallyReady ? (
-                            <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
-                              <CheckCircle2 className="h-2 w-2 mr-1" />
-                              Ready
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary" className={cn(
-                              "text-[10px] uppercase border-none",
-                              isDevMode ? "bg-blue-100 text-blue-700" : "text-muted-foreground bg-muted"
-                            )}>
-                              {isDevMode ? <Wrench className="h-2 w-2 mr-1 inline" /> : <Clock className="h-2 w-2 mr-1 inline" />}
-                              {isDevMode ? 'Dev Access (Test Link)' : (language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon')}
-                            </Badge>
-                          )}
+              <div key={mantra.id} className="space-y-4">
+                <Link href={canAccess ? targetHref : '#'} className={cn(!canAccess && "pointer-events-none")}>
+                  <Card className={cn(
+                    "hover:border-primary/50 transition-all hover:shadow-md group",
+                    !canAccess && "opacity-60 grayscale-[0.5]"
+                  )}>
+                    <CardContent className="p-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "p-3 rounded-full transition-colors",
+                          canAccess ? (isActuallyReady ? "bg-primary/10 group-hover:bg-primary group-hover:text-white" : "bg-blue-100 text-blue-700 group-hover:bg-blue-500 group-hover:text-white") : "bg-muted"
+                        )}>
+                          <Music className="h-5 w-5" />
+                        </div>
+                        <div className="text-left">
+                          <h3 className="font-bold text-lg leading-tight">
+                            {language === 'kn' ? mantra.name : mantra.name_en}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            {isActuallyReady ? (
+                              <Badge variant="outline" className="text-[10px] uppercase text-green-600 border-green-200">
+                                <CheckCircle2 className="h-2 w-2 mr-1" />
+                                Ready
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="text-[10px] uppercase border-none text-muted-foreground bg-muted">
+                                <Clock className="h-2 w-2 mr-1 inline" />
+                                {language === 'kn' ? 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ' : 'Coming Soon'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    {canAccess && <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors" />}
-                  </CardContent>
-                </Card>
-              </Link>
+                      {canAccess && <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors" />}
+                    </CardContent>
+                  </Card>
+                </Link>
+                
+                {/* MIDDLE LIST AD (Show every 4th item) */}
+                {index === 3 && <NativeAdSlot />}
+              </div>
             );
           })}
         </div>

@@ -15,19 +15,15 @@ export const ADMOB_CONFIG = {
       android: "ca-app-pub-3940256099942544/6300978111",
       ios: "ca-app-pub-3940256099942544/2934735716",
     },
-    interstitial: {
-      android: "ca-app-pub-3940256099942544/1033173712",
-      ios: "ca-app-pub-3940256099942544/4411468910",
-    },
     rewarded: {
-      android: "ca-app-pub-3940256099942544/5224354917", // HIGH REVENUE
+      android: "ca-app-pub-3940256099942544/5224354917", // HIGH REVENUE - Unlocks Mantras
       ios: "ca-app-pub-3940256099942544/1712485313",
+    },
+    native: {
+      android: "ca-app-pub-3940256099942544/2247696110", // Native Advanced - Blends into lists
+      ios: "ca-app-pub-3940256099942544/3986624511",
     }
   },
-  
-  // Video Ad served in the player during playback for free users
-  // In a real APK, this would be served via Native Video Ad units
-  simulationAdVideoUrl: "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4", 
   
   // Strategy: Rewarded Ads are the primary unlock mechanism for Free users
   rewardedUnlockEnabled: true,

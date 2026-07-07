@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -28,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { NativeAdSlot } from "@/app/components/ads";
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -121,7 +121,6 @@ export default function Home() {
 
   const cardAnimation = "animate-fade-in-up";
 
-  // Prevent Hydration Errors
   if (!hasMounted) {
     return <div className="min-h-screen bg-background" />;
   }
@@ -135,13 +134,6 @@ export default function Home() {
               {t('appTitle')}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">{t('appSubtitle')}</p>
-            
-            {isOffline && (
-              <div className="mt-4 inline-flex items-center gap-2 bg-destructive/10 text-destructive border border-destructive/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter animate-pulse">
-                <WifiOff size={10} />
-                Offline: Functioning via device storage
-              </div>
-            )}
           </header>
 
           {user && (
@@ -191,17 +183,15 @@ export default function Home() {
             </div>
           )}
 
+          {/* NATIVE ADVANCED AD SLOT */}
+          <NativeAdSlot className="mb-8" />
+
           <div className="grid grid-cols-1 gap-4 mb-8">
             <Link href="/kalajnana" className={cn("block", cardAnimation)}>
                 <Card className="border-2 border-primary bg-primary/5 hover:shadow-xl transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <Compass size={120} />
                     </div>
-                    {!isAuthorized && !isOffline && (
-                    <Badge variant="outline" className="absolute top-4 left-4 z-20 border-primary/40 text-primary bg-white/80 backdrop-blur-sm flex items-center gap-1 font-bold">
-                        <Lock size={10} /> Maintenance
-                    </Badge>
-                    )}
                     <CardContent className="p-6 flex items-center justify-between gap-4 relative z-10">
                     <div className="flex items-center gap-4">
                         <div className="h-14 w-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
@@ -266,73 +256,7 @@ export default function Home() {
                 <Link href="/prana-vidya">{t('pranaVidyaLink')}<ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
             </div>
-
-            {user && testimonials && testimonials.length > 0 && (
-              <section className={cn("space-y-6 pt-8", cardAnimation)}>
-                <div className="text-center">
-                  <h2 className="text-2xl font-headline font-bold text-primary">{t('divineResultsTitle')}</h2>
-                  <p className="text-muted-foreground text-sm">{t('divineResultsSubtitle')}</p>
-                </div>
-                <div className="grid grid-cols-1 gap-6">
-                  {testimonials.map((test) => (
-                    <Card key={test.id} className="overflow-hidden border-primary/10 bg-primary/5">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          <Users className="h-5 w-5 text-primary" />
-                          {test.userName}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        {test.videoUrl && !isOffline && (
-                          <div className="relative aspect-video w-full rounded-lg overflow-hidden border shadow-sm">
-                            <video src={test.videoUrl} controls className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <p className="text-sm font-medium italic leading-relaxed">"{test.content}"</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            <Card className={cn("mt-4", cardAnimation)}>
-                <CardContent className="p-6 text-center space-y-4">
-                  <p className="font-semibold text-foreground text-lg">{t('serviceToHumanity')}</p>
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild><Button><Heart className="mr-2 h-4 w-4" />{t('donateButton')}</Button></AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>{t('donateTitle')}</AlertDialogTitle><AlertDialogDescription>{t('donateDescription')}</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogAction>OK</AlertDialogAction></AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    {isPaidUser ? (
-                       <Button asChild variant="outline"><Link href={whatsAppGroupUrl} target="_blank"><Users className="mr-2 h-4 w-4" />{t('joinGroupButton')}</Link></Button>
-                     ) : (
-                       <AlertDialog open={showJoinGroupDialog} onOpenChange={setShowJoinGroupDialog}>
-                         <AlertDialogTrigger asChild><Button variant="outline" disabled={isOffline}><Users className="mr-2 h-4 w-4" />{t('joinGroupButton')}</Button></AlertDialogTrigger>
-                         <AlertDialogContent>
-                           <AlertDialogHeader><AlertDialogTitle>{t('joinGroupTitle')}</AlertDialogTitle><AlertDialogDescription>{t('joinGroupDescription')}</AlertDialogDescription></AlertDialogHeader>
-                           <AlertDialogFooter><Button onClick={() => router.push('/upgrade')}>{t('upgradeButton')}</Button><AlertDialogAction>{t('closeButton')}</AlertDialogAction></AlertDialogFooter>
-                         </AlertDialogContent>
-                       </AlertDialog>
-                     )}
-                    <Button onClick={handleShareApp}><Share2 className="mr-2 h-4 w-4" />{t('shareAppButton')}</Button>
-                  </div>
-                </CardContent>
-              </Card>
           </div>
-
-          <Card className={cn("mt-8", cardAnimation)}>
-            <CardFooter className="flex flex-col items-center justify-center gap-4 p-4">
-               <div className="text-center">
-                <p className="text-sm">{t('contactForServices')}</p>
-                <p className="font-bold text-lg text-primary">7022070287, {t('hosadurga')}</p>
-               </div>
-              <Button asChild disabled={isOffline}><Link href={whatsAppUrl} target="_blank"><WhatsAppIcon />{t('contactOnWhatsApp')}</Link></Button>
-            </CardFooter>
-          </Card>
         </div>
       </main>
       <UpgradeDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog} title={upgradeDialogContent.title} description={upgradeDialogContent.description} />

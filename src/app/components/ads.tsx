@@ -10,16 +10,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock, RefreshCw } from "lucide-react";
+import { ThumbsUp, Smartphone, Globe, ShieldCheck, Clock, RefreshCw, Sparkles, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
 import { cn } from "@/lib/utils";
 
-export function BannerAd() {
-  const { t } = useLanguage();
+/**
+ * UTILITY: Shared Logic to hide ads for Premium users
+ */
+function useShouldShowAds() {
   const { user } = useUser();
   const firestore = useFirestore();
   
@@ -30,32 +33,28 @@ export function BannerAd() {
 
   const { data: userProfile } = useDoc<{ subscriptionTier?: string, isPranaPractitioner?: boolean }>(userDocRef);
   
-  const [isAdFreePassActive, setIsAdFreePassActive] = useState(false);
+  const isPremium = userProfile?.subscriptionTier === 'premium';
+  const isPractitioner = !!userProfile?.isPranaPractitioner;
+
+  return !isPremium && !isPractitioner;
+}
+
+/**
+ * 1. BANNER AD (Bottom Docked)
+ */
+export function BannerAd() {
+  const { t } = useLanguage();
+  const showAds = useShouldShowAds();
   const [isNative, setIsNative] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     setIsNative(isNativePlatform());
-    const checkPass = () => {
-      const expiry = localStorage.getItem('ad_free_until');
-      setIsAdFreePassActive(expiry ? new Date(expiry) > new Date() : false);
-    };
-    checkPass();
-
-    // Ad Refresh Logic: 30 seconds interval
-    const interval = setInterval(() => {
-      setRefreshKey((prev) => prev + 1);
-    }, 30000);
-
+    const interval = setInterval(() => setRefreshKey((prev) => prev + 1), 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const isPremium = userProfile?.subscriptionTier === 'premium';
-  const isPractitioner = !!userProfile?.isPranaPractitioner;
-
-  if (isPremium || isPractitioner || isAdFreePassActive) {
-    return null;
-  }
+  if (!showAds) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10">
@@ -77,13 +76,15 @@ export function BannerAd() {
            <span className="text-[8px] bg-primary/10 text-primary px-1 rounded font-mono">
              ID: {ADMOB_CONFIG.units.banner.android.slice(-4)}
            </span>
-           <span className="text-[7px] text-primary/40 font-bold">R:{refreshKey}</span>
          </p>
       </div>
     </div>
   );
 }
 
+/**
+ * 2. REWARDED AD (Fullscreen Dialog to unlock content)
+ */
 interface InterstitialAdProps {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
@@ -101,18 +102,13 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
     setIsNative(isNativePlatform());
   }, []);
 
-  // Timer logic
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (open) {
       setCountdown(5);
-      timer = setInterval(() => {
-        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
+      timer = setInterval(() => setCountdown((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
     }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
+    return () => { if (timer) clearInterval(timer); };
   }, [open]);
 
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ, ನಿರೀಕ್ಷಿಸಿ..." : "Mantra is getting ready, wait...";
@@ -127,12 +123,8 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
                 {type === 'rewarded' ? readyText : (language === 'kn' ? 'ನಿಮ್ಮ ಪ್ರೋತ್ಸಾಹಕ್ಕೆ ಧನ್ಯವಾದಗಳು' : 'Express Appreciation')}
               </DialogTitle>
               <DialogDescription className="font-bold flex items-center gap-2">
-                {type === 'rewarded' ? (
-                  <>
-                    <Clock size={14} className="text-amber-500 animate-spin" />
-                    {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
-                  </>
-                ) : (t('adDescription') || "Unlock premium vibes")}
+                <Clock size={14} className="text-amber-500 animate-spin" />
+                {language === 'kn' ? `${countdown} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸಿದ್ಧ` : `Ready in ${countdown}s...`}
               </DialogDescription>
             </div>
             {isNative ? <Smartphone size={20} className="text-primary" /> : <Globe size={20} className="text-muted-foreground" />}
@@ -151,35 +143,12 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
           )}
           
           <div className="relative z-10 text-center p-6 space-y-6">
-             <div className="relative">
-                <div className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
-                  <span className="text-white text-4xl font-black">{countdown}</span>
-                </div>
-                {type === 'rewarded' && countdown > 0 && (
-                  <div className="absolute -top-2 -right-4 bg-amber-500 text-white text-[10px] font-black px-3 py-1 rounded shadow-lg animate-bounce uppercase tracking-tighter">
-                    {language === 'kn' ? 'ಸಿದ್ಧವಾಗುತ್ತಿದೆ' : 'GETTING READY'}
-                  </div>
-                )}
+             <div className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border-2 border-primary/40 animate-pulse">
+               <span className="text-white text-4xl font-black">{countdown}</span>
              </div>
-
-             <div className="space-y-2">
-                <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                  {isNative ? "Native APK Ad Load" : readyText}
-                </p>
-                <div className="flex items-center justify-center gap-2">
-                   <ShieldCheck size={12} className="text-green-500" />
-                   <p className="text-white/40 text-[10px] font-mono">
-                    UNIT: {unitId.slice(0, 18)}...
-                   </p>
-                </div>
-             </div>
-          </div>
-
-          <div className="absolute bottom-4 left-4 right-4 h-1.5 bg-white/20 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-primary transition-all duration-1000 ease-linear" 
-              style={{ width: `${(1 - countdown/5) * 100}%` }}
-            />
+             <p className="text-white font-black text-sm uppercase tracking-[0.2em]">
+                {isNative ? "Native Rewarded Ad Unit" : "Web Reward Simulation"}
+             </p>
           </div>
         </div>
 
@@ -193,15 +162,46 @@ export function InterstitialAd({ open, onOpenChange, type = 'interstitial' }: In
             <ThumbsUp className="mr-2 h-5 w-5" />
             {countdown > 0 
               ? (language === 'kn' ? `ನಿರೀಕ್ಷಿಸಿ (${countdown})` : `Wait (${countdown}s)`) 
-              : (type === 'rewarded' ? "Collect Reward" : (t('thanksForSupport') || "Close"))}
+              : "Collect Reward & Play"}
           </Button>
-          <p className="text-[10px] text-center text-muted-foreground italic font-bold">
-            {isNative 
-              ? "Official AdMob integration for your ABB/APK bundle." 
-              : "Web simulation for your PWA users."}
-          </p>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * 3. NATIVE ADVANCED AD (Blends into content feeds)
+ */
+export function NativeAdSlot({ className }: { className?: string }) {
+  const showAds = useShouldShowAds();
+  const [isNative, setIsNative] = useState(false);
+  const adImage = PlaceHolderImages.find((img) => img.id === "coming-soon-app-icon");
+
+  useEffect(() => {
+    setIsNative(isNativePlatform());
+  }, []);
+
+  if (!showAds) return null;
+
+  return (
+    <Card className={cn("overflow-hidden border-2 border-primary/10 shadow-sm animate-fade-in", className)}>
+      <div className="bg-primary/5 px-3 py-1 flex justify-between items-center border-b">
+        <span className="text-[8px] font-black uppercase text-primary tracking-widest">Sponsored</span>
+        <span className="text-[8px] font-mono text-muted-foreground">ID: {ADMOB_CONFIG.units.native.android.slice(-4)}</span>
+      </div>
+      <CardContent className="p-4 flex gap-4 items-center">
+        <div className="relative h-20 w-20 shrink-0 rounded-lg overflow-hidden border shadow-inner">
+          {adImage && <Image src={adImage.imageUrl} alt="ad" fill className="object-cover" data-ai-hint={adImage.imageHint} />}
+        </div>
+        <div className="flex-1 space-y-1">
+          <h4 className="font-bold text-sm text-foreground">Explore Spiritual Wisdom</h4>
+          <p className="text-[10px] text-muted-foreground leading-tight">Unlock ancient secrets with our meditation partners. High-vibration content available.</p>
+          <Button size="sm" className="h-7 text-[10px] font-black uppercase w-full mt-2" variant="outline">
+            Visit Partner <ExternalLink size={10} className="ml-1" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
