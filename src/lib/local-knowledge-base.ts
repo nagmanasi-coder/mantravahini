@@ -53,6 +53,26 @@ export const LOCAL_KNOWLEDGE: KnowledgeEntry[] = [
     keywords: ["referral", "link", "ಲಿಂಕ್", "earn", "ಪ್ರತಿಫಲ"],
     kn: "೩ ಸ್ನೇಹಿತರನ್ನು ಸೇರಿಸುವ ಮೂಲಕ ೧ ತಿಂಗಳ ಪ್ರೀಮಿಯಂ ಉಚಿತವಾಗಿ ಪಡೆಯಿರಿ. ನಿಮ್ಮ ಲಿಂಕ್ ಅನ್ನು ಪ್ರೊಫೈಲ್ ಮೆನುವಿನಲ್ಲಿರುವ 'Refer & Earn' ನಲ್ಲಿ ಪಡೆಯಿರಿ.",
     en: "Invite 3 active friends to unlock 1 month of Free Premium. Get your unique link from 'Refer & Earn' in the Profile menu."
+  },
+  {
+    keywords: ["workshop", "ಕಾರ್ಯಾಗಾರ", "training", "ತರಬೇತಿ"],
+    kn: "ನಾವು ಆನ್‌ಲೈನ್ ಮತ್ತು ಆಫ್‌ಲೈನ್ ಕಾರ್ಯಾಗಾರಗಳನ್ನು ನಡೆಸುತ್ತೇವೆ. ಪ್ರಾಣ ವಿದ್ಯಾ ಮತ್ತು ಮುದ್ರಾ ತರಬೇತಿಗಾಗಿ ವಿವರಗಳನ್ನು ಪಡೆಯಲು WhatsApp ಮಾಡಿ.",
+    en: "We conduct online and offline workshops. WhatsApp for details on Prana Vidya and Mudra training sessions."
+  },
+  {
+    keywords: ["manual", "ಕೈಪಿಡಿ", "guide", "ಹೇಗೆ"],
+    kn: "ಬಳಕೆದಾರರ ಕೈಪಿಡಿಯು ಅಪ್ಲಿಕೇಶನ್‌ನ ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳ ವಿವರವಾದ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ಹೊಂದಿದೆ. ಇದನ್ನು ನೀವು ಹೋಮ್ ಪೇಜ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿ ಕಾಣಬಹುದು.",
+    en: "The User Manual provides a detailed guide for all app features. You can find it at the bottom of the home page."
+  },
+  {
+    keywords: ["delete", "ಅಳಿಸು", "account", "ಖಾತೆ"],
+    kn: "ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಡೇಟಾವನ್ನು ಅಳಿಸಲು ವಿನಂತಿಸಲು 'Delete Account' ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಿ ಅಥವಾ ನಮ್ಮ ಬೆಂಬಲ ತಂಡವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+    en: "To request account and data deletion, visit the 'Delete Account' page or contact our support team."
+  },
+  {
+    keywords: ["streak", "ಸತತ", "daily", "ಪ್ರತಿದಿನ"],
+    kn: "ಪ್ರತಿದಿನ ಮಂತ್ರಗಳನ್ನು ಕೇಳುವ ಮೂಲಕ ನಿಮ್ಮ 'Spiritual Streak' ಅನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ. ಇದು ನಿಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಶಕ್ತಿಯನ್ನು ಸ್ಥಿರವಾಗಿರಿಸುತ್ತದೆ.",
+    en: "Maintain your 'Spiritual Streak' by listening to mantras daily. This keeps your energy flow consistent."
   }
 ];
 

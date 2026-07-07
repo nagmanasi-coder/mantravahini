@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -56,7 +55,7 @@ export function LocalChatbot() {
       );
 
       const botText = match 
-        ? (language === 'kn' ? match.kn : entryToText(match, language))
+        ? (language === 'kn' ? match.kn : match.en)
         : (language === 'kn' ? DEFAULT_RESPONSE.kn : DEFAULT_RESPONSE.en);
 
       const botMsg: Message = { id: (Date.now() + 1).toString(), role: "bot", text: botText };
@@ -64,13 +63,9 @@ export function LocalChatbot() {
     }, 400);
   };
 
-  const entryToText = (entry: any, lang: string) => {
-    return lang === 'kn' ? entry.kn : entry.en;
-  }
-
   const suggestionKeywords = language === 'kn' 
-    ? ["ಕಾಳಿ", "ಕಣ್ಣು", "ದೀಕ್ಷೆ", "ಪ್ರಾಣ", "ರಾಶಿ", "ತೈಲ", "ಪ್ರೀಮಿಯಂ"]
-    : ["Kali", "Eye", "Deeksha", "Prana", "Rashi", "Oil", "Premium"];
+    ? ["ಕಾಳಿ", "ಕಣ್ಣು", "ದೀಕ್ಷೆ", "ಪ್ರಾಣ", "ರಾಶಿ", "ಪ್ರೀಮಿಯಂ", "ಕಾರ್ಯಾಗಾರ", "ಕೈಪಿಡಿ", "ಅಳಿಸು", "ಸತತ"]
+    : ["Kali", "Eye", "Deeksha", "Prana", "Rashi", "Premium", "Workshop", "Manual", "Delete", "Streak"];
 
   return (
     <div className="fixed bottom-32 right-4 z-[4500] flex flex-col items-end pointer-events-none">
@@ -92,7 +87,7 @@ export function LocalChatbot() {
           </CardHeader>
           
           <CardContent className="p-0">
-            <ScrollArea className="h-[280px] p-4">
+            <ScrollArea className="h-[320px] p-4">
               <div className="space-y-4">
                 {messages.map((m) => (
                   <div key={m.id} className={cn("flex", m.role === 'user' ? "justify-end" : "justify-start")}>
