@@ -1,11 +1,11 @@
 /**
  * ADMOB CONFIGURATION
  * 
- * Updated with PRODUCTION Ad Unit IDs.
+ * Updated with PRODUCTION IDs.
  */
 export const ADMOB_CONFIG = {
-  // Official Google Test App ID for Android (Replace with your PRODUCTION App ID from AdMob Console if different)
-  appId: "ca-app-pub-3940256099942544~3347511713", 
+  // Your Production App ID from AdMob Console
+  appId: "ca-app-pub-3648420983615754~3239846352", 
 
   // Ad Unit IDs
   units: {
