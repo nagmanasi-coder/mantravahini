@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Smartphone, Globe, Clock, RefreshCw, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Smartphone, Globe, Clock, RefreshCw, ExternalLink, CheckCircle2, X } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -142,17 +142,23 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ..." : "Mantra is getting ready...";
 
   return (
-    <Dialog open={open} onOpenChange={(val) => {
-      // Prevent accidental dismissal by clicking outside
-      if (!val && countdown > 0) return;
-      onOpenChange(val);
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-sm p-0 overflow-y-auto max-h-[95vh] rounded-2xl" 
+        className="max-w-sm p-0 overflow-hidden max-h-[95vh] rounded-2xl border-none" 
         onPointerDownOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader className="p-6 pb-4 sticky top-0 bg-background z-20 border-b">
-          <div className="flex justify-between items-start">
+        {/* Explicit Close Button on Top Right */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="absolute right-2 top-2 z-[60] h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40 backdrop-blur-md border border-white/20"
+          onClick={() => onOpenChange(false)}
+        >
+          <X size={18} strokeWidth={3} />
+        </Button>
+
+        <DialogHeader className="p-6 pb-4 bg-background border-b relative z-10">
+          <div className="flex justify-between items-start pr-8">
             <div className="space-y-1">
               <DialogTitle className="font-headline text-xl text-primary leading-tight">
                 {type === 'rewarded' ? readyText : (language === 'kn' ? 'ಪ್ರಚಾರದ ಅವಧಿ' : 'Promotional Break')}
@@ -169,13 +175,10 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
                 )}
               </div>
             </div>
-            <div className="bg-muted p-2 rounded-full">
-              {isNative ? <Smartphone size={18} className="text-primary" /> : <Globe size={18} className="text-muted-foreground" />}
-            </div>
           </div>
         </DialogHeader>
 
-        <div className="relative h-64 sm:h-80 w-full bg-black flex flex-col items-center justify-center">
+        <div className="relative h-64 sm:h-80 w-full bg-black flex flex-col items-center justify-center overflow-hidden">
           {adImage && (
              <Image
                 src={adImage.imageUrl}
@@ -202,7 +205,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
           </div>
         </div>
 
-        <div className="p-6 bg-muted/30 sticky bottom-0 z-20 border-t">
+        <div className="p-6 bg-muted/30 border-t relative z-10">
           <Button 
             size="lg" 
             onClick={handleRewardCollection} 
@@ -225,6 +228,12 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
               </span>
             )}
           </Button>
+          
+          {countdown > 0 && (
+            <p className="text-[10px] text-center text-muted-foreground mt-3 font-bold uppercase tracking-tight">
+              Watch full ad to support our mission
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
