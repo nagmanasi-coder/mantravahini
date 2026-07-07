@@ -184,14 +184,8 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     setIsPlaybackFinished(false);
   }, []);
 
-  /**
-   * Called when the rewarded ad flow is finished.
-   * This handles both the Unlock button and the Close (X) button.
-   */
   const handleAdComplete = useCallback(() => {
     setIsUnlockedForSession(true);
-    // Mandatory delay to ensure UI transition finishes before audio starts
-    // This also helps satisfy Android WebView's focus requirements for playback
     setTimeout(() => {
       startPlayback();
     }, 600);
@@ -219,8 +213,6 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    // AD REVENUE CHECK
-    // If user is not premium, and mantra is paid, and it hasn't been unlocked this session
     if (!isPremium && mantra.tier === 'paid' && !isUnlockedForSession) {
       setShowAd(true);
       return; 
@@ -294,6 +286,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
                   src={mantraImage.imageUrl}
                   alt={mantraImage.description}
                   fill
+                  sizes="(max-width: 768px) 100vw, 600px"
                   className="object-cover"
                   data-ai-hint={mantraImage.imageHint}
                   priority

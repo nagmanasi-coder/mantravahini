@@ -23,7 +23,6 @@ To make your app live and update your APKs automatically:
     *   In the Vercel dashboard, go to **Settings > Environment Variables**.
     *   Add:
         *   `GOOGLE_GENAI_API_KEY`: From Google AI Studio.
-        *   `SARVAM_AI_API_KEY`: Your Sarvam AI key.
 
 ---
 

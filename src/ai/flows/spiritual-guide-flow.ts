@@ -3,7 +3,7 @@
 /**
  * @fileOverview AI Master Spiritual Guide Flow for Mantravaahini.
  *
- * - chatWithGuide - Handles communication with the spiritual guide using Sarvam AI REST API.
+ * - chatWithGuide - Handles communication with the spiritual guide using Gemini 1.5 Flash.
  * - ChatInput - Input schema for the chat.
  * - ChatOutput - Output schema for the chat response.
  */
@@ -57,59 +57,22 @@ const spiritualGuideFlow = ai.defineFlow(
       4. Activation: For deep healing, always guide users to contact the center at 7022070287 for personalized mantra activation.
       5. Integrity: Stick to the provided app context. Do not invent rituals or offer clinical medical advice outside of these spiritual healing frameworks.`;
 
-    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
-      {
-        role: 'system',
-        content: systemPrompt,
-      }
-    ];
-
-    if (input.history && input.history.length > 0) {
-      // Limit history to last 6 messages to keep context window small and avoid token limits
-      const recentHistory = input.history.slice(-6);
-      recentHistory.forEach(h => {
-        messages.push({
-          role: h.role === 'model' ? 'assistant' : 'user',
-          content: h.content,
-        });
-      });
-    }
-
-    messages.push({
-      role: 'user',
-      content: input.message,
-    });
+    const chatHistory = input.history?.map(h => ({
+      role: h.role,
+      content: [{ text: h.content }]
+    })) || [];
 
     try {
-      const apiKey = process.env.SARVAM_AI_API_KEY;
-      if (!apiKey) {
-        console.error("SARVAM_AI_API_KEY is missing.");
-        throw new Error('API_KEY_MISSING');
-      }
-
-      const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'api-subscription-key': apiKey,
-        },
-        body: JSON.stringify({
-          model: 'sarvam-m',
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 500,
-        }),
+      const { text } = await ai.generate({
+        model: 'googleai/gemini-1.5-flash-latest',
+        system: systemPrompt,
+        messages: chatHistory,
+        prompt: input.message,
       });
 
-      if (!response.ok) {
-        throw new Error(`API_FAIL_${response.status}`);
-      }
-
-      const data = await response.json();
-      const responseText = data.choices?.[0]?.message?.content;
-
-      return { response: responseText || "No response" };
+      return { response: text || "No response" };
     } catch (error: any) {
+      console.error("Gemini Spiritual Guide Error:", error);
       const errorMsg = input.language === 'kn' 
         ? "ಕ್ಷಮಿಸಿ, ದೈವಿಕ ಸಂಪರ್ಕದಲ್ಲಿ ಸ್ವಲ್ಪ ವ್ಯತ್ಯಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ: 7022070287." 
         : "Apologies, there is a temporary interruption in the divine connection. Please try again in a few moments or contact the center: 7022070287.";
