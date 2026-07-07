@@ -147,15 +147,17 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
         className="max-w-sm p-0 overflow-hidden max-h-[95vh] rounded-2xl border-none" 
         onPointerDownOutside={(e) => e.preventDefault()}
       >
-        {/* Explicit Close Button on Top Right */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="absolute right-2 top-2 z-[60] h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40 backdrop-blur-md border border-white/20"
-          onClick={() => onOpenChange(false)}
-        >
-          <X size={18} strokeWidth={3} />
-        </Button>
+        {/* Explicit Close Button on Top Right - ENABLED ONLY WHEN COMPLETED */}
+        {countdown === 0 && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-2 top-2 z-[60] h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40 backdrop-blur-md border border-white/20 animate-in fade-in zoom-in duration-300"
+            onClick={() => onOpenChange(false)}
+          >
+            <X size={18} strokeWidth={3} />
+          </Button>
+        )}
 
         <DialogHeader className="p-6 pb-4 bg-background border-b relative z-10">
           <div className="flex justify-between items-start pr-8">
