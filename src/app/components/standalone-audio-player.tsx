@@ -59,6 +59,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
   const [isOffline, setIsOffline] = useState(false);
   const [isCached, setIsCached] = useState(false);
   const [showAd, setShowAd] = useState(false);
+  const [isUnlockedForSession, setIsUnlockedForSession] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -183,6 +184,14 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
     setIsPlaybackFinished(false);
   }, []);
 
+  const handleAdComplete = useCallback(() => {
+    setIsUnlockedForSession(true);
+    // Mandatory delay to ensure UI transition finishes before audio starts
+    setTimeout(() => {
+      startPlayback();
+    }, 500);
+  }, [startPlayback]);
+
   const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPlaying(false);
@@ -205,11 +214,11 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
 
     await requestPermission();
 
-    // STRICT REVENUE ENFORCEMENT: 
-    // Always check for Ad requirement before allowing startPlayback()
-    if (!isPremium && mantra.tier === 'paid') {
+    // AD REVENUE CHECK
+    // If user is not premium, and mantra is paid, and it hasn't been unlocked this session
+    if (!isPremium && mantra.tier === 'paid' && !isUnlockedForSession) {
       setShowAd(true);
-      return; // Stop here, InterstitialAd will trigger startPlayback on completion
+      return; 
     }
 
     startPlayback();
@@ -226,7 +235,7 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
       <InterstitialAd 
         open={showAd} 
         onOpenChange={setShowAd} 
-        onAdComplete={startPlayback}
+        onAdComplete={handleAdComplete}
         type="rewarded" 
       />
       <Card className={cn("overflow-hidden shadow-xl relative transition-all duration-300", isOffline && "border-destructive/20")}>
@@ -243,10 +252,17 @@ export function StandaloneAudioPlayer({ mantra, onUpgradeRequest, imageId, video
             )}
           </div>
 
-          {mantra.tier === 'paid' && !isPremium && (
+          {mantra.tier === 'paid' && !isPremium && !isUnlockedForSession && (
              <Badge variant="default" className="absolute top-4 right-4 z-10 bg-amber-500 animate-pulse">
               <Lock className="h-3 w-3 mr-1" />
               Watch Ads to Play
+            </Badge>
+          )}
+
+          {isUnlockedForSession && !isPremium && (
+             <Badge variant="default" className="absolute top-4 right-4 z-10 bg-green-500">
+              <ThumbsUp className="h-3 w-3 mr-1" />
+              Unlocked
             </Badge>
           )}
           

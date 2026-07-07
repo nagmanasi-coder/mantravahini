@@ -88,7 +88,7 @@ export function BannerAd() {
  */
 interface InterstitialAdProps {
   open: boolean;
-  onOpenChange: Dispatch<SetStateAction<boolean>>;
+  onOpenChange: (open: boolean) => void;
   onAdComplete?: () => void;
   type?: 'interstitial' | 'rewarded';
 }
@@ -96,7 +96,7 @@ interface InterstitialAdProps {
 export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'interstitial' }: InterstitialAdProps) {
   const { language } = useLanguage();
   const [isNative, setIsNative] = useState(false);
-  const [countdown, setCountdown] = useState(5); // Testing duration
+  const [countdown, setCountdown] = useState(5); 
   const [isProcessing, setIsProcessing] = useState(false);
   const adImage = PlaceHolderImages.find((img) => img.id === "interstitial-ad");
 
@@ -107,7 +107,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (open) {
-      setCountdown(5); // Reset countdown on open
+      setCountdown(5); 
       setIsProcessing(false);
       timer = setInterval(() => {
         setCountdown((prev) => {
@@ -126,23 +126,28 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
     if (countdown > 0 || isProcessing) return;
     
     setIsProcessing(true);
-    // Visual confirmation before closing
+    
+    // 1. First close the dialog
+    onOpenChange(false);
+    
+    // 2. Then trigger completion callback
+    if (onAdComplete) {
+      onAdComplete();
+    }
+    
+    // Reset state after a delay
     setTimeout(() => {
-      onOpenChange(false);
-      if (onAdComplete) {
-        // Delay completion slightly to ensure dialog closing doesn't block audio initiation
-        setTimeout(() => {
-          onAdComplete();
-          setIsProcessing(false);
-        }, 300);
-      }
-    }, 200);
+      setIsProcessing(false);
+    }, 500);
   };
 
   const readyText = language === 'kn' ? "ಮಂತ್ರವು ಸಿದ್ಧವಾಗುತ್ತಿದೆ..." : "Mantra is getting ready...";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(val) => {
+      // Prevent closing manually if ad is not complete
+      if (countdown === 0) onOpenChange(val);
+    }}>
       <DialogContent 
         className="max-w-sm p-0 overflow-hidden max-h-[95vh] rounded-2xl border-none" 
         onPointerDownOutside={(e) => e.preventDefault()}
