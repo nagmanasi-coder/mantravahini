@@ -19,6 +19,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { ADMOB_CONFIG, isNativePlatform } from "@/lib/admob-config";
 import { cn } from "@/lib/utils";
+import { AdMob, BannerAdSize, BannerAdPosition, BannerAdPluginEvents, AdMobBannerSize } from '@capacitor-community/admob';
 
 /**
  * UTILITY: Shared Logic to hide ads for Premium users
@@ -42,20 +43,59 @@ export function useShouldShowAds() {
 
 /**
  * 1. BANNER AD (Docked at the very bottom)
+ * UPDATED: Uses Capacitor AdMob for real native banners.
  */
 export function BannerAd() {
   const { t } = useLanguage();
   const showAds = useShouldShowAds();
   const [isNative, setIsNative] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [nativeBannerActive, setNativeBannerActive] = useState(false);
 
   useEffect(() => {
-    setIsNative(isNativePlatform());
+    const native = isNativePlatform();
+    setIsNative(native);
+
+    const initAdMob = async () => {
+      if (native && showAds) {
+        try {
+          await AdMob.initialize({
+            appId: ADMOB_CONFIG.appId,
+          });
+
+          // Show native banner
+          await AdMob.showBanner({
+            adId: ADMOB_CONFIG.units.banner.android,
+            adSize: BannerAdSize.BANNER,
+            position: BannerAdPosition.BOTTOM_CENTER,
+            margin: 0,
+            isTesting: ADMOB_CONFIG.testing
+          });
+          
+          setNativeBannerActive(true);
+        } catch (error) {
+          console.error("AdMob Native Banner Error:", error);
+        }
+      }
+    };
+
+    initAdMob();
+
+    // Refresh mock ad for web users
     const interval = setInterval(() => setRefreshKey((prev) => prev + 1), 30000);
-    return () => clearInterval(interval);
-  }, []);
+
+    return () => {
+      clearInterval(interval);
+      if (native) {
+        AdMob.removeBanner().catch(() => {});
+      }
+    };
+  }, [showAds]);
 
   if (!showAds) return null;
+
+  // If native banner is active, we don't render the web UI placeholder to avoid double banners
+  if (nativeBannerActive) return null;
 
   return (
     <div className="relative flex h-16 w-full flex-col items-center justify-center bg-card shadow-[0_-4px_12px_rgba(0,0,0,0.1)] border-t border-primary/10 select-none">
@@ -146,7 +186,6 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
   return (
     <Dialog open={open} onOpenChange={(val) => {
       // Prevent closing manually if ad is not complete
-      // If complete and user tries to close, trigger the reward logic automatically
       if (countdown === 0 && !val) {
          handleRewardCollection();
       } else if (countdown === 0) {
@@ -158,7 +197,6 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         {/* Explicit Close Button on Top Right - ENABLED ONLY WHEN COMPLETED */}
-        {/* UPDATED: Clicking X now correctly triggers handleRewardCollection */}
         {countdown === 0 && (
           <Button 
             variant="ghost" 
@@ -199,6 +237,7 @@ export function InterstitialAd({ open, onOpenChange, onAdComplete, type = 'inter
                 fill
                 className="opacity-50 object-cover"
                 data-ai-hint={adImage.imageHint}
+                sizes="(max-width: 768px) 100vw, 400px"
               />
           )}
           
@@ -275,7 +314,7 @@ export function NativeAdSlot({ className }: { className?: string }) {
       </div>
       <CardContent className="p-4 flex gap-4 items-center">
         <div className="relative h-20 w-20 shrink-0 rounded-lg overflow-hidden border shadow-inner">
-          {adImage && <Image src={adImage.imageUrl} alt="ad" fill className="object-cover" data-ai-hint={adImage.imageHint} />}
+          {adImage && <Image src={adImage.imageUrl} alt="ad" fill className="object-cover" data-ai-hint={adImage.imageHint} sizes="80px" />}
         </div>
         <div className="flex-1 space-y-1">
           <h4 className="font-bold text-sm text-foreground">Explore Spiritual Wisdom</h4>
